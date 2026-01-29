@@ -117,14 +117,17 @@ This is based on a vagrant image with selections enabled. e.g. No Gui or firewal
 Note: More tests are run during audit as we check config and running state.
 
 ```sh
-ok: [rocky9_efi] =>
-  msg:
-  - 'The pre remediation results are: Count: 804, Failed: 416, Duration: 6.488s.'
-  - 'The post remediation results are: Count: 804, Failed: 28, Duration: 68.687s.'
-  - Full breakdown can be found in /opt
+ok: [testhost] => {
+    "msg": [
+        "The pre remediation audit results are: Count: 460, Failed: 176, Skipped: 15, Duration: 1.075s",
+        "The post remediation audit results are: Count: 460, Failed: 41, Skipped: 3, Duration: 1.868s",
+        "Full breakdown can be found in /opt",
+        ""
+    ]
+}
 
-PLAY RECAP ****************************************************************************************************************
-rocky9_efi                 : ok=482  changed=269  unreachable=0    failed=0    skipped=207  rescued=0    ignored=0
+PLAY RECAP ***********************************************************************************************************************************************************************
+testhost                   : ok=293  changed=107  unreachable=0    failed=0    skipped=71   rescued=0    ignored=0
 ```
 
 ## Branches
