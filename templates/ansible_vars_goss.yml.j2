@@ -1,0 +1,280 @@
+## metadata for Audit benchmark
+benchmark_version: {{ benchmark_version }}
+
+## Benchmark name used by auditing control role
+# The audit variable found at the base
+benchmark: {{ benchmark }}
+
+timeout_ms: {{ audit_cmd_timeout }}
+
+# Whether to skip the OS check for supported OS's
+skip_os_check: false
+
+az2023stig_cat1: {{ az2023stig_cat1 }}
+az2023stig_cat2: {{ az2023stig_cat2 }}
+az2023stig_cat3: {{ az2023stig_cat3 }}
+
+
+# If using sssd on host
+az2023stig_uses_sssd: {{ az2023stig_sssd_configure }}
+
+# Some tests may need to scan every filesystem or have an impact on a system
+# these may need be scheduled to minimise impact
+run_heavy_tests: {{ audit_run_heavy_tests }}
+
+# tweak role to run in a non-privileged container (default value)- dynamically discovered in tasks/main.yml
+system_is_container: {{ system_is_container }}
+
+# system acts or requires router networking options
+az2023stig_system_is_router: {{ az2023stig_system_is_router }}
+
+# Allow aide check to run - this can be very resource intensive - not good on shared storage multiple hosts
+az2023stig_allow_aide_check: {{ az2023stig_allow_aide_check }}
+
+
+# Controls
+# Cat 1
+az2023stig_000100: {{ az2023stig_000100 }}
+az2023stig_000115: {{ az2023stig_000115 }}
+az2023stig_000120: {{ az2023stig_000120 }}
+az2023stig_000125: {{ az2023stig_000125 }}
+az2023stig_000130: {{ az2023stig_000130 }}
+az2023stig_000300: {{ az2023stig_000300 }}
+az2023stig_001180: {{ az2023stig_001180 }}
+az2023stig_001185: {{ az2023stig_001185 }}
+az2023stig_001225: {{ az2023stig_001225 }}
+az2023stig_001255: {{ az2023stig_001255 }}
+az2023stig_001275: {{ az2023stig_001275 }}
+az2023stig_001280: {{ az2023stig_001280 }}
+az2023stig_002450: {{ az2023stig_002450 }}
+
+# Cat 2
+az2023stig_000110: {{ az2023stig_000110 }}
+az2023stig_000135: {{ az2023stig_000135 }}
+az2023stig_000200: {{ az2023stig_000200 }}
+az2023stig_000205: {{ az2023stig_000205 }}
+az2023stig_000210: {{ az2023stig_000210 }}
+az2023stig_000215: {{ az2023stig_000215 }}
+az2023stig_000220: {{ az2023stig_000220 }}
+az2023stig_000225: {{ az2023stig_000225 }}
+az2023stig_000305: {{ az2023stig_000305 }}
+az2023stig_000310: {{ az2023stig_000310 }}
+az2023stig_000315: {{ az2023stig_000315 }}
+az2023stig_000320: {{ az2023stig_000320 }}
+az2023stig_001000: {{ az2023stig_001000 }}
+az2023stig_001005: {{ az2023stig_001005 }}
+az2023stig_001010: {{ az2023stig_001010 }}
+az2023stig_001015: {{ az2023stig_001015 }}
+az2023stig_001020: {{ az2023stig_001020 }}
+az2023stig_001025: {{ az2023stig_001025 }}
+az2023stig_001030: {{ az2023stig_001030 }}
+az2023stig_001035: {{ az2023stig_001035 }}
+az2023stig_001040: {{ az2023stig_001040 }}
+az2023stig_001045: {{ az2023stig_001045 }}
+az2023stig_001050: {{ az2023stig_001050 }}
+az2023stig_001055: {{ az2023stig_001055 }}
+az2023stig_001060: {{ az2023stig_001060 }}
+az2023stig_001065: {{ az2023stig_001065 }}
+az2023stig_001070: {{ az2023stig_001070 }}
+az2023stig_001075: {{ az2023stig_001075 }}
+az2023stig_001080: {{ az2023stig_001080 }}
+az2023stig_001085: {{ az2023stig_001085 }}
+az2023stig_001090: {{ az2023stig_001090 }}
+az2023stig_001095: {{ az2023stig_001095 }}
+az2023stig_001105: {{ az2023stig_001105 }}
+az2023stig_001110: {{ az2023stig_001110 }}
+az2023stig_001115: {{ az2023stig_001115 }}
+az2023stig_001120: {{ az2023stig_001120 }}
+az2023stig_001125: {{ az2023stig_001125 }}
+az2023stig_001130: {{ az2023stig_001130 }}
+az2023stig_001195: {{ az2023stig_001195 }}
+az2023stig_001200: {{ az2023stig_001200 }}
+az2023stig_001205: {{ az2023stig_001205 }}
+az2023stig_001210: {{ az2023stig_001210 }}
+az2023stig_001215: {{ az2023stig_001215 }}
+az2023stig_001220: {{ az2023stig_001220 }}
+az2023stig_001230: {{ az2023stig_001230 }}
+az2023stig_001235: {{ az2023stig_001235 }}
+az2023stig_001240: {{ az2023stig_001240 }}
+az2023stig_001245: {{ az2023stig_001245 }}
+az2023stig_001250: {{ az2023stig_001250 }}
+az2023stig_001260: {{ az2023stig_001260 }}
+az2023stig_001265: {{ az2023stig_001265 }}
+az2023stig_001270: {{ az2023stig_001270 }}
+az2023stig_001285: {{ az2023stig_001285 }}
+az2023stig_001290: {{ az2023stig_001290 }}
+az2023stig_001295: {{ az2023stig_001295 }}
+az2023stig_001300: {{ az2023stig_001300 }}
+az2023stig_001305: {{ az2023stig_001305 }}
+az2023stig_001310: {{ az2023stig_001310 }}
+az2023stig_001315: {{ az2023stig_001315 }}
+
+# az2023stig 0020xx
+az2023stig_002000: {{ az2023stig_002000 }}
+az2023stig_002005: {{ az2023stig_002005 }}
+az2023stig_002015: {{ az2023stig_002015 }}
+az2023stig_002025: {{ az2023stig_002025 }}
+az2023stig_002030: {{ az2023stig_002030 }}
+az2023stig_002035: {{ az2023stig_002035 }}
+az2023stig_002040: {{ az2023stig_002040 }}
+az2023stig_002045: {{ az2023stig_002045 }}
+az2023stig_002050: {{ az2023stig_002050 }}
+az2023stig_002055: {{ az2023stig_002055 }}
+az2023stig_002060: {{ az2023stig_002060 }}
+az2023stig_002065: {{ az2023stig_002065 }}
+az2023stig_002070: {{ az2023stig_002070 }}
+az2023stig_002075: {{ az2023stig_002075 }}
+az2023stig_002085: {{ az2023stig_002085 }}
+az2023stig_002090: {{ az2023stig_002090 }}
+az2023stig_002095: {{ az2023stig_002095 }}
+
+# az2023stig 0021xx
+az2023stig_002100: {{ az2023stig_002100 }}
+az2023stig_002105: {{ az2023stig_002105 }}
+az2023stig_002110: {{ az2023stig_002110 }}
+az2023stig_002115: {{ az2023stig_002115 }}
+az2023stig_002120: {{ az2023stig_002120 }}
+az2023stig_002125: {{ az2023stig_002125 }}
+az2023stig_002130: {{ az2023stig_002130 }}
+az2023stig_002135: {{ az2023stig_002135 }}
+az2023stig_002140: {{ az2023stig_002140 }}
+az2023stig_002145: {{ az2023stig_002145 }}
+az2023stig_002150: {{ az2023stig_002150 }}
+az2023stig_002155: {{ az2023stig_002155 }}
+az2023stig_002160: {{ az2023stig_002160 }}
+az2023stig_002165: {{ az2023stig_002165 }}
+az2023stig_002175: {{ az2023stig_002175 }}
+az2023stig_002180: {{ az2023stig_002180 }}
+az2023stig_002185: {{ az2023stig_002185 }}
+az2023stig_002190: {{ az2023stig_002190 }}
+az2023stig_002195: {{ az2023stig_002195 }}
+
+# az2023stig 0022xx
+az2023stig_002200: {{ az2023stig_002200 }}
+az2023stig_002205: {{ az2023stig_002205 }}
+az2023stig_002210: {{ az2023stig_002210 }}
+az2023stig_002215: {{ az2023stig_002215 }}
+az2023stig_002220: {{ az2023stig_002220 }}
+az2023stig_002225: {{ az2023stig_002225 }}
+az2023stig_002230: {{ az2023stig_002230 }}
+az2023stig_002235: {{ az2023stig_002235 }}
+az2023stig_002240: {{ az2023stig_002240 }}
+az2023stig_002245: {{ az2023stig_002245 }}
+az2023stig_002250: {{ az2023stig_002250 }}
+az2023stig_002255: {{ az2023stig_002255 }}
+az2023stig_002260: {{ az2023stig_002260 }}
+az2023stig_002265: {{ az2023stig_002265 }}
+az2023stig_002270: {{ az2023stig_002270 }}
+az2023stig_002275: {{ az2023stig_002275 }}
+az2023stig_002280: {{ az2023stig_002280 }}
+az2023stig_002285: {{ az2023stig_002285 }}
+az2023stig_002290: {{ az2023stig_002290 }}
+az2023stig_002295: {{ az2023stig_002295 }}
+az2023stig_002300: {{ az2023stig_002300 }}
+az2023stig_002305: {{ az2023stig_002305 }}
+az2023stig_002310: {{ az2023stig_002310 }}
+az2023stig_002315: {{ az2023stig_002315 }}
+az2023stig_002320: {{ az2023stig_002320 }}
+az2023stig_002325: {{ az2023stig_002325 }}
+az2023stig_002330: {{ az2023stig_002330 }}
+az2023stig_002335: {{ az2023stig_002335 }}
+az2023stig_002340: {{ az2023stig_002340 }}
+az2023stig_002345: {{ az2023stig_002345 }}
+az2023stig_002350: {{ az2023stig_002350 }}
+az2023stig_002355: {{ az2023stig_002355 }}
+az2023stig_002360: {{ az2023stig_002360 }}
+az2023stig_002365: {{ az2023stig_002365 }}
+az2023stig_002370: {{ az2023stig_002370 }}
+az2023stig_002375: {{ az2023stig_002375 }}
+az2023stig_002380: {{ az2023stig_002380 }}
+az2023stig_002385: {{ az2023stig_002385 }}
+az2023stig_002390: {{ az2023stig_002390 }}
+az2023stig_002396: {{ az2023stig_002396 }}
+
+# az2023stig 0024xx
+az2023stig_002400: {{ az2023stig_002400 }}
+az2023stig_002405: {{ az2023stig_002405 }}
+az2023stig_002410: {{ az2023stig_002410 }}
+az2023stig_002415: {{ az2023stig_002415 }}
+az2023stig_002420: {{ az2023stig_002420 }}
+az2023stig_002425: {{ az2023stig_002425 }}
+az2023stig_002430: {{ az2023stig_002430 }}
+az2023stig_002435: {{ az2023stig_002435 }}
+az2023stig_002440: {{ az2023stig_002440 }}
+az2023stig_002445: {{ az2023stig_002445 }}
+az2023stig_002455: {{ az2023stig_002455 }}
+az2023stig_002460: {{ az2023stig_002460 }}
+az2023stig_002465: {{ az2023stig_002465 }}
+az2023stig_002470: {{ az2023stig_002470 }}
+az2023stig_002475: {{ az2023stig_002475 }}
+az2023stig_002480: {{ az2023stig_002480 }}
+az2023stig_002485: {{ az2023stig_002485 }}
+az2023stig_002489: {{ az2023stig_002489 }}
+az2023stig_002490: {{ az2023stig_002490 }}
+az2023stig_002495: {{ az2023stig_002495 }}
+
+# az2023stig 0025xx
+az2023stig_002500: {{ az2023stig_002500 }}
+az2023stig_002505: {{ az2023stig_002505 }}
+az2023stig_002510: {{ az2023stig_002510 }}
+az2023stig_002515: {{ az2023stig_002515 }}
+az2023stig_002520: {{ az2023stig_002520 }}
+az2023stig_002535: {{ az2023stig_002535 }}
+az2023stig_002540: {{ az2023stig_002540 }}
+az2023stig_002555: {{ az2023stig_002555 }}
+az2023stig_002560: {{ az2023stig_002560 }}
+az2023stig_002565: {{ az2023stig_002565 }}
+az2023stig_002570: {{ az2023stig_002570 }}
+az2023stig_002575: {{ az2023stig_002575 }}
+az2023stig_002580: {{ az2023stig_002580 }}
+az2023stig_002585: {{ az2023stig_002585 }}
+az2023stig_002590: {{ az2023stig_002590 }}
+az2023stig_002595: {{ az2023stig_002595 }}
+
+# az2023stig 0026xx
+az2023stig_002600: {{ az2023stig_002600 }}
+az2023stig_002605: {{ az2023stig_002605 }}
+az2023stig_002610: {{ az2023stig_002610 }}
+az2023stig_002615: {{ az2023stig_002615 }}
+az2023stig_002620: {{ az2023stig_002620 }}
+az2023stig_002625: {{ az2023stig_002625 }}
+az2023stig_002630: {{ az2023stig_002630 }}
+
+# az2023stig-50xx
+az2023stig_005000: {{ az2023stig_005000 }}
+
+# CAT 3 rules
+
+az2023stig_002020: {{ az2023stig_002020 }}
+az2023stig_002080: {{ az2023stig_002080 }}
+az2023stig_002395: {{ az2023stig_002395 }}
+
+
+# Variables
+
+# The following variable represents a setting for periodical checking of the filesystem's
+# integrity using AIDE. It provides a parameter required to configure the cron job on
+# the target system. Cron is a time-based job scheduling program in Unix OS, which
+# allows tasks to be scheduled and executed automatically at a certain point in time.
+# This variable represents the path to the AIDE crontab file.
+az2023stig_aide_cron_file: /etc/cron.d/aide
+
+az2023stig_syslog_trustedcertificatefile: {{ az2023stig_syslog_trustedcertificatefile }}
+az2023stig_syslog_servercertificatefile: {{ az2023stig_syslog_servercertificatefile }}
+az2023stig_syslog_serverkeyfile: {{ az2023stig_syslog_serverkeyfile }}
+az2023stig_syslog_remote_log_server: {{ az2023stig_syslog_remote_log_server }}
+
+az2023stig_dod_ciphers: {{ az2023stig_dod_ciphers | join(',') }}
+
+az2023stig_dod_macs: {{ az2023stig_dod_macs | join(',') }}
+
+az2023stig_selinux_policy: {{ az2023stig_selinux_policy }}
+
+az2023stig_maxlogins: {{ az2023stig_maxlogins }}
+
+az2023stig_logon_banner:
+  - '"You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only. By using this IS (which includes any device attached to this IS), you consent to the following conditions:\n-The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations.\n-At any time, the USG may inspect and seize data stored on this IS.\n-Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose.\n-This IS includes security measures (e.g., authentication and access controls) to protect USG interests..not for your personal benefit or privacy.\n-Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details."'
+
+az2023stig_audit_log_filesystem: {{ az2023stig_audit_log_filesystem }}
+
+az2023stig_pass_max_days: {{ az2023stig_pass_max_days }}

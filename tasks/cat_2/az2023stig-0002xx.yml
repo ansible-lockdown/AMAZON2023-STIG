@@ -1,0 +1,128 @@
+---
+
+- name: MEDIUM | AZLX-23-000200 | PATCH | Amazon Linux 2023 must restrict access to the kernel message buffer.
+  when: az2023stig_000200
+  tags:
+    - azlx-23-000200
+    - CAT2
+    - SV-274001r1119991_rule
+    - V-274001
+    - SRG-OS-000132-GPOS-00067
+    - SRG-OS-000138-GPOS-00069
+    - NIST800-53R4_SC-2
+    - NIST800-53R4_SC-4
+    - kernel
+    - sysctl
+  ansible.posix.sysctl:
+    name: kernel.dmesg_restrict
+    state: present
+    reload: true
+    sysctl_file: "{{ az2023stig_sysctl_file_kernel }}"
+    sysctl_set: true
+    value: '1'
+
+- name: MEDIUM | AZLX-23-000205 | PATCH | Amazon Linux 2023 must prevent kernel profiling by nonprivileged users.
+  when: az2023stig_000205
+  tags:
+    - azlx-23-000205
+    - CAT2
+    - SV-274002r1119994_rule
+    - V-274002
+    - SRG-OS-000132-GPOS-00067
+    - SRG-OS-000138-GPOS-00069
+    - CCI-001082
+    - CCI-001090
+    - NIST800-53R4_SC-2
+    - NIST800-53R4_SC-4
+    - kernel
+    - sysctl
+  ansible.posix.sysctl:
+    name: kernel.perf_event_paranoid
+    state: present
+    reload: true
+    sysctl_file: "{{ az2023stig_sysctl_file_kernel }}"
+    sysctl_set: true
+    value: '2'
+
+- name: MEDIUM | AZLX-23-000210 | PATCH | Amazon Linux 2023 must restrict exposed kernel pointer addresses access.
+  when: az2023stig_000210
+  tags:
+    - azlx-23-000210
+    - CAT2
+    - SV-274003r1119997_rule
+    - V-274003
+    - SRG-OS-000132-GPOS-00067
+    - SRG-OS-000433-GPOS-00192
+    - CCI-001082
+    - CCI-002824
+    - NIST800-53R4_SC-2
+    - NIST800-53R4_SI-16
+    - kernel
+    - sysctl
+  ansible.posix.sysctl:
+    name: kernel.kptr_restrict
+    state: present
+    reload: true
+    sysctl_file: "{{ az2023stig_sysctl_file_kernel }}"
+    sysctl_set: true
+    value: '1'
+
+- name: MEDIUM | AZLX-23-000215 | PATCH | Amazon Linux 2023 must disable access to network bpf system call from nonprivileged processes.
+  when: az2023stig_000215
+  tags:
+    - azlx-23-000215
+    - CAT2
+    - SV-274004r1120000_rule
+    - V-274004
+    - SRG-OS-000132-GPOS-00067
+    - CCI-001082
+    - NIST800-53R4_SC-2
+    - kernel
+    - sysctl
+  ansible.posix.sysctl:
+    name: kernel.unprivileged_bpf_disabled
+    state: present
+    reload: true
+    sysctl_file: "{{ az2023stig_sysctl_file_kernel }}"
+    sysctl_set: true
+    value: '1'
+
+- name: MEDIUM | AZLX-23-000220 | PATCH | Amazon Linux 2023 must restrict usage of ptrace to descendant processes.
+  when: az2023stig_000220
+  tags:
+    - azlx-23-000220
+    - CAT2
+    - SV-274005r1120003_rule
+    - V-274005
+    - SRG-OS-000132-GPOS-00067
+    - CCI-001082
+    - NIST800-53R4_SC-2
+    - kernel
+    - sysctl
+  ansible.posix.sysctl:
+    name: kernel.yama.ptrace_scope
+    state: present
+    reload: true
+    sysctl_file: "{{ az2023stig_sysctl_file_kernel }}"
+    sysctl_set: true
+    value: '1'
+
+- name: MEDIUM | AZLX-23-000225 | PATCH | Amazon Linux 2023 must implement address space layout randomization (ASLR) to protect its memory from unauthorized code execution.
+  when: az2023stig_000225
+  tags:
+    - azlx-23-000225
+    - CAT2
+    - SV-274006r1120006_rule
+    - V-274006
+    - SRG-OS-000433-GPOS-00193
+    - CCI-002824
+    - NIST800-53R4_SI-16
+    - kernel
+    - sysctl
+  ansible.posix.sysctl:
+    name: kernel.randomize_va_space
+    state: present
+    reload: true
+    sysctl_file: "{{ az2023stig_sysctl_file_kernel }}"
+    sysctl_set: true
+    value: '2'

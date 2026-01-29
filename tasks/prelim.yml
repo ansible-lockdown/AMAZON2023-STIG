@@ -1,0 +1,99 @@
+---
+
+- name: Include audit specific variables
+  when:
+    - run_audit or audit_only or setup_audit
+  tags:
+    - setup_audit
+    - run_audit
+  ansible.builtin.include_vars:
+    file: audit.yml
+
+- name: Include pre-remediation audit tasks
+  when:
+    - run_audit or audit_only
+  tags: run_audit
+  ansible.builtin.import_tasks:
+    file: pre_remediation_audit.yml
+
+- name: "PRELIM | PATCH | Find all sudoers files."
+  when:
+    - az2023stig_001010 or
+      az2023stig_001015 or
+      az2023stig_001020
+  tags: always
+  ansible.builtin.shell: "find /etc/sudoers /etc/sudoers.d/ -type f ! -name '*~' ! -name '*.*'"
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  register: prelim_sudoers_files
+
+- name: "PRELIM | AUDIT | Check chronyd source status"
+  when: az2023stig_001055
+  tags: always
+  ansible.builtin.stat:
+    path: /run/chrony.d/ntp-pool.sources
+  register: prelim_chronyd_source_status
+
+- name: "PRELIM | PATCH | Ensure cronie is installed"
+  when:
+    - not system_is_container
+    - az2023stig_001065
+  tags: always
+  ansible.builtin.package:
+    name: cronie
+    state: present
+
+- name: "PRELIM | PATCH | Ensure aide is installed"
+  when:
+    - not system_is_container
+    - az2023stig_001070
+  tags: always
+  ansible.builtin.package:
+    name: aide
+    state: present
+
+- name: "PRELIM | PATCH | Find all ssh config files."
+  when: az2023stig_001215
+  tags: always
+  ansible.builtin.find:
+    paths:
+      - /etc/ssh/
+      - /etc/ssh/sshd_config.d
+    patterns: 'sshd_config,*.conf'
+    recurse: false
+  register: prelim_sshd_config_files
+
+- name: "PRELIM | PATCH | Add sssd package"
+  when:
+    - not system_is_container
+    - az2023stig_001290 or
+      az2023stig_001295 or
+      az2023stig_001300 or
+      az2023stig_001305 or
+      az2023stig_001310 or
+      az2023stig_001315 or
+      az2023stig_002620
+    - az2023stig_disruption_high
+  tags: always
+  ansible.builtin.package:
+    name:
+      - sssd
+      - sssd-common
+    state: present
+
+- name: "PRELIM | AUDIT | Get list of system accounts"
+  when: az2023stig_002350
+  tags: always
+  ansible.builtin.shell: "awk -F: '($3 < 1000) { print $1 }' /etc/passwd"
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  register: prelim_system_accounts
+
+- name: Install systemd-journal-upload package
+  when: az2023stig_002080
+  tags: always
+  ansible.builtin.package:
+    name: systemd-journal-remote
+    state: present

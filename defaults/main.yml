@@ -1,0 +1,583 @@
+---
+
+## metadata for Audit benchmark
+benchmark_version: 'v1.0.0'
+
+## Benchmark name used by auditing control role
+# The audit variable found at the base
+benchmark: AMAZON2023-STIG
+
+# Whether to skip the OS check for supported OS's
+# Note this can affect some actual benchmark controls
+skip_os_check: false
+
+az2023stig_cat1: true
+az2023stig_cat2: true
+az2023stig_cat3: true
+
+# We've defined disruption-high to indicate items that are likely to cause
+# disruption in a normal workflow.  These items can be remediated automatically
+# but are disabled by default to avoid disruption.
+az2023stig_disruption_high: false
+
+# Allow aide check to run - this can be very resource intensive - not good on shared storage multiple hosts
+az2023stig_allow_aide_check: false
+
+# SSSD
+# Ability to easily turn off sssd configuration changes
+az2023stig_sssd_configure: false
+
+# Place to find the container yml file for your environment - /vars/...
+container_vars_file: is_container.yml
+
+# Whether to skip the reboot
+skip_reboot: true
+
+# system acts or requires router networking options
+az2023stig_system_is_router: false
+
+# Create managed not custom local_facts files
+create_benchmark_facts: true
+ansible_facts_path: /etc/ansible/facts.d
+
+########## BEGIN ##########
+### Audit role Settings ###
+###########################
+## Goss the audit binary
+## is required to be available
+## on the remote host
+## Other settings found vars/audit.yml
+
+# Allow audit to setup the requirements including installing git (if option chosen and downloading and adding goss binary to system)
+setup_audit: false
+
+# enable audits to run - this runs the audit and get the latest content
+run_audit: false
+
+# Run heavy tests - some tests can have more impact on a system enabling these can have greater impact on a system
+audit_run_heavy_tests: true
+
+## Only run Audit do not remediate
+audit_only: false
+
+##############################
+## If using audit content ###
+## e.g. lockdown dashboard ##
+#############################
+## Ability to collect and take audit files moving to a centralised location
+
+## This enables the collection of the files from the host
+fetch_audit_output: false
+
+## Method of getting,uploading the summary files
+## Ensure access and permissions are available for these to occur.
+## options are
+## fetch - fetches from server and moves to location on the ansible controller (could be a mount point available to controller)
+## copy - copies file to a location available to the managed node
+audit_output_collection_method: fetch
+
+## Location to put the audit files
+audit_output_destination: /opt/audit_summaries/
+
+############################
+### Audit binary options ###
+############################
+## How to retrieve audit binary
+## Options are copy or download - detailed settings at the bottom of this file
+## you will need to access to either github or the file already downloaded
+get_audit_binary_method: download
+
+## If downloading the audit binary(goss)
+## Useful when self hosting the content
+## This enables the ability to not check ssl certificates using the get_url module
+audit_bin_validate_certs: true
+
+## Added the following options will default to not pass options
+## Please utilize a vault or alternative way to ensure encryption of details
+#
+# audit_bin_url_username:
+# audit_bin_url_password:
+
+## if get_audit_binary_method - copy the following needs to be updated for your environment
+## it is expected that it will be copied from somewhere accessible to the control node
+## e.g copy from ansible control node to remote host
+audit_bin_copy_location: /some/accessible/path
+
+#############################
+### Audit Content options ###
+#############################
+## how to get audit files onto host options
+## options are git/copy/archive/get_url other e.g. if you wish to run from already downloaded conf
+audit_content: git
+
+## If using authenticated git
+## Populate the required fields below
+## Location of the key file used to authenticate
+## Please ensure that the key does not have a password set
+## Best practice it to use some form of vault for this information
+#
+# audit_content_key_file: 'somepath to key file'
+
+## If using self hosted repository
+## the url will need to be updated with
+## Can pass user/pass in url - please use vault options
+#
+# self_hosted_audit_repo: https://USER:PASS@gitrepo.com/audit_reponame
+
+## If using either archive, copy, get_url:
+## Note will work with .tar files - zip will require extra configuration
+## If using get_url this is expecting github url in tar.gz format e.g.
+## https://github.com/ansible-lockdown/{OSTYPE}-{BENCMHARK_TYPE}-Audit/archive/refs/heads/benchmark-{{ benchmark_version }}.tar.gz
+audit_conf_source: "some path or url to copy from"
+
+## Destination for the audit content to be placed on managed node
+## note may not need full path e.g. /opt with the directory being the {{ benchmark }}-Audit directory
+audit_conf_dest: "/opt"
+
+## Where the audit logs are stored
+audit_log_dir: '/opt'
+
+########### END ###########
+### Audit role Settings ###
+###########################
+
+# Controls
+# Cat 1
+az2023stig_000100: true
+az2023stig_000115: true
+az2023stig_000120: true
+az2023stig_000125: true
+az2023stig_000130: true
+az2023stig_000300: true
+az2023stig_001180: true
+az2023stig_001185: true
+az2023stig_001225: true
+az2023stig_001255: true
+az2023stig_001275: true
+az2023stig_001280: true
+az2023stig_002450: true
+
+# Cat 2
+az2023stig_000110: true
+az2023stig_000135: true
+az2023stig_000200: true
+az2023stig_000205: true
+az2023stig_000210: true
+az2023stig_000215: true
+az2023stig_000220: true
+az2023stig_000225: true
+az2023stig_000305: true
+az2023stig_000310: true
+az2023stig_000315: true
+az2023stig_000320: true
+az2023stig_001000: true
+az2023stig_001005: true
+az2023stig_001010: true
+az2023stig_001015: true
+az2023stig_001020: true
+az2023stig_001025: true
+az2023stig_001030: true
+az2023stig_001035: true
+az2023stig_001040: true
+az2023stig_001045: true
+az2023stig_001050: true
+az2023stig_001055: true
+az2023stig_001060: true
+az2023stig_001065: true
+az2023stig_001070: true
+az2023stig_001075: true
+az2023stig_001080: true
+az2023stig_001085: true
+az2023stig_001090: true
+az2023stig_001095: true
+az2023stig_001105: true
+az2023stig_001110: true
+az2023stig_001115: true
+az2023stig_001120: true
+az2023stig_001125: true
+az2023stig_001130: true
+az2023stig_001195: true
+az2023stig_001200: true
+az2023stig_001205: true
+az2023stig_001210: true
+az2023stig_001215: true
+az2023stig_001220: true
+az2023stig_001230: true
+az2023stig_001235: true
+az2023stig_001240: true
+az2023stig_001245: true
+az2023stig_001250: true
+az2023stig_001260: true
+az2023stig_001265: true
+az2023stig_001270: true
+az2023stig_001285: true
+az2023stig_001290: true
+az2023stig_001295: TESTTEST
+az2023stig_001300: true
+az2023stig_001305: true
+az2023stig_001310: true
+az2023stig_001315: true
+
+# az2023stig 0020xx
+az2023stig_002000: true
+az2023stig_002005: true
+az2023stig_002015: true
+az2023stig_002025: true
+az2023stig_002030: true
+az2023stig_002035: true
+az2023stig_002040: true
+az2023stig_002045: true
+az2023stig_002050: true
+az2023stig_002055: true
+az2023stig_002060: true
+az2023stig_002065: true
+az2023stig_002070: true
+az2023stig_002075: true
+az2023stig_002085: true
+az2023stig_002090: true
+az2023stig_002095: true
+
+# az2023stig 0021xx
+az2023stig_002100: true
+az2023stig_002105: true
+az2023stig_002110: true
+az2023stig_002115: true
+az2023stig_002120: true
+az2023stig_002125: true
+az2023stig_002130: true
+az2023stig_002135: true
+az2023stig_002140: true
+az2023stig_002145: true
+az2023stig_002150: true
+az2023stig_002155: true
+az2023stig_002160: true
+az2023stig_002165: true
+az2023stig_002175: true
+az2023stig_002180: true
+az2023stig_002185: true
+az2023stig_002190: true
+az2023stig_002195: true
+
+# az2023stig 0022xx
+az2023stig_002200: true
+az2023stig_002205: true
+az2023stig_002210: true
+az2023stig_002215: true
+az2023stig_002220: true
+az2023stig_002225: true
+az2023stig_002230: true
+az2023stig_002235: true
+az2023stig_002240: true
+az2023stig_002245: true
+az2023stig_002250: true
+az2023stig_002255: true
+az2023stig_002260: true
+az2023stig_002265: true
+az2023stig_002270: true
+az2023stig_002275: true
+az2023stig_002280: true
+az2023stig_002285: true
+az2023stig_002290: true
+az2023stig_002295: true
+az2023stig_002300: true
+az2023stig_002305: true
+az2023stig_002310: true
+az2023stig_002315: true
+az2023stig_002320: true
+az2023stig_002325: true
+az2023stig_002330: true
+az2023stig_002335: true
+az2023stig_002340: true
+az2023stig_002345: true
+az2023stig_002350: true
+az2023stig_002355: true
+az2023stig_002360: true
+az2023stig_002365: true
+az2023stig_002370: true
+az2023stig_002375: true
+az2023stig_002380: true
+az2023stig_002385: true
+az2023stig_002390: true
+az2023stig_002396: true
+
+# az2023stig 0024xx
+az2023stig_002400: true
+az2023stig_002405: true
+az2023stig_002410: true
+az2023stig_002415: true
+az2023stig_002420: true
+az2023stig_002425: true
+az2023stig_002430: true
+az2023stig_002435: true
+az2023stig_002440: true
+az2023stig_002445: true
+az2023stig_002455: true
+az2023stig_002460: true
+az2023stig_002465: true
+az2023stig_002470: true
+az2023stig_002475: true
+az2023stig_002480: true
+az2023stig_002485: true
+az2023stig_002489: true
+az2023stig_002490: true
+az2023stig_002495: true
+
+# az2023stig 0025xx
+az2023stig_002500: true
+az2023stig_002505: true
+az2023stig_002510: true
+az2023stig_002515: true
+az2023stig_002520: true
+az2023stig_002535: true
+az2023stig_002540: true
+az2023stig_002555: true
+az2023stig_002560: true
+az2023stig_002565: true
+az2023stig_002570: true
+az2023stig_002575: true
+az2023stig_002580: true
+az2023stig_002585: true
+az2023stig_002590: true
+az2023stig_002595: true
+
+# az2023stig 0026xx
+az2023stig_002600: true
+az2023stig_002605: true
+az2023stig_002610: true
+az2023stig_002615: true
+az2023stig_002620: true
+az2023stig_002625: true
+az2023stig_002630: true
+
+# az2023stig-50xx
+az2023stig_005000: true
+
+# CAT 3 rules
+
+az2023stig_002020: true
+az2023stig_002080: true
+az2023stig_002395: true
+
+# Common reused variables
+az2023stig_sysctl_file_kernel: /etc/sysctl.d/99_stig_kernel.conf
+
+# 001xxx sudo variables
+# Ability to enable some users to keep the NOPASSWD option
+# This is dependant on how you have setup sudoers
+# This will skip any matching user and leave the NOPASSWD for escalation
+az2023stig_sudoers_exclude_nopasswd_list:
+  - vagrant
+
+# 001xxx aide variables
+# The following variable represents a setting for periodical checking of the filesystem's
+# integrity using AIDE. It provides a parameter required to configure the cron job on
+# the target system. Cron is a time-based job scheduling program in Unix OS, which
+# allows tasks to be scheduled and executed automatically at a certain point in time.
+# This variable represents the path to the AIDE crontab file.
+az2023stig_aide_cron_file: /etc/cron.d/aide
+# The following variable represents a setting for periodical checking of the filesystem's
+# integrity using AIDE. It provides a parameter required to configure the cron job on
+# the target system. Cron is a time-based job scheduling program in Unix OS, which
+# allows tasks to be scheduled and executed automatically at a certain point in time.
+# This variable represents the actual command or script that the cron job
+# will execute for running AIDE.
+az2023stig_aide_cron_job: '/usr/sbin/aide --check | /bin/mail -s "$HOSTNAME - Daily aide integrity check run"'
+# The following variable represents a setting for email address to send the aide daily report.
+# integrity using AIDE. It provides a parameter required to configure the cron job on
+# the target system.
+az2023stig_aide_send_email: root@localhost
+# These variables define the schedule for the cron job, if aide is selected to be scanned with cron
+# The following variable represents a setting for periodical checking of the filesystem's
+# integrity using AIDE. It provides a parameter required to configure the cron job on
+# the target system. Cron is a time-based job scheduling program in Unix OS, which
+# allows tasks to be scheduled and executed automatically at a certain point in time.
+# This variable governs the minute of the time of day when the AIDE cronjob is run.
+# It must be in the range `0-59`.
+az2023stig_aide_cron_minute: 0
+# The following variable represents a setting for periodical checking of the filesystem's
+# integrity using AIDE. It provides a parameter required to configure the cron job on
+# the target system. Cron is a time-based job scheduling program in Unix OS, which
+# allows tasks to be scheduled and executed automatically at a certain point in time.
+# This variable governs the hour of the time of day when the AIDE cronjob is run.
+# It must be in the range `0-23`.
+az2023stig_aide_cron_hour: 5
+# The following variable represents a setting for periodical checking of the filesystem's
+# integrity using AIDE. It provides a parameter required to configure the cron job on
+# the target system. Cron is a time-based job scheduling program in Unix OS, which
+# allows tasks to be scheduled and executed automatically at a certain point in time.
+# This variable governs the day of the month when the AIDE cronjob is run.
+# `*` signifies that the job is run on all days; furthermore, specific days
+# can be given in the range `1-31`; several days can be concatenated with a comma.
+# The specified day(s) can must be in the range  `1-31`.
+az2023stig_aide_cron_day: '*'
+# The following variable represents a setting for periodical checking of the filesystem's
+# integrity using AIDE. It provides a parameter required to configure the cron job on
+# the target system. Cron is a time-based job scheduling program in Unix OS, which
+# allows tasks to be scheduled and executed automatically at a certain point in time.
+# This variable governs months when the AIDE cronjob is run.
+# `*` signifies that the job is run in every month; furthermore, specific months
+# can be given in the range `1-12`; several months can be concatenated with commas.
+# The specified month(s) can must be in the range  `1-12`.
+az2023stig_aide_cron_month: '*'
+
+# 001xxx firewalld variables
+az2023_firewalld_service:
+  - ssh
+  - ntp
+  - dns
+
+# az2023_firewalld_ports:
+# - port:
+#   protocol:
+# - port:
+#   protocol:
+
+# 001xxx ssh variables
+
+az2023stig_ssh_clientalive_interval: 600
+az2023stig_ssh_clientalive_countmax: 1
+
+# 001270 crypto FIPS options
+# The following allows additional submodules to be added to FIPS crypto
+# Only following options are valid
+# AD-SUPPORT
+# NO-ENFORCE-EMS
+# Only uncomment required options and ensure they are documented in accordance with site policy
+#
+# amzn2023stig_fips_submodules:
+#   - AD-SUPPORT
+#   - NO-ENFORCE-EMS
+
+# 002000 Banner
+## Banner
+az2023stig_logon_banner: |
+    "You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only.
+
+    By using this IS (which includes any device attached to this IS), you consent to the following conditions:
+
+    -The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations.
+
+    -At any time, the USG may inspect and seize data stored on this IS.
+
+    -Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose.
+
+    -This IS includes security measures (e.g., authentication and access controls) to protect USG interests -- not for your personal benefit or privacy.
+
+    -Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details."
+
+# AuditD
+# Ability to easily turn off auditd updates to file
+az2023stig_auditd_required: true
+
+# 002015
+az2023stig_audit_log_filesystem: /var/log/audit
+
+# 002025 - How to use the name format in audit logs
+# must be one of "hostname", "fqd", "numeric"
+az2023stig_auditd_name_format: hostname
+
+# 002030 - system action when event queue is full
+# must be one of "syslog", "single", "halt"
+az2023stig_auditd_overflow_action: syslog
+
+# 002035 - auditd storage space left
+az2023stig_auditd_space_left: 25%
+
+# 002040 - system action when auditd storage hits 75% full
+az2023stig_auditd_space_left_action: email
+
+# 002045 - when auditd storage hits 95% full
+# Must be a percentage value of 5% currently no other options are supported by STIG
+az2023stig_auditd_admin_space_left: 5%
+
+# 002050 - when auditd storage hits 95% full
+# The supported mode is single currently no other options are supported by STIG
+az2023stig_auditd_admin_space_left_action: single
+
+# 002055 & 0020215 - Who to mail when audit process failure
+az2023stig_auditd_action_mail_acct: root
+
+# 002220
+# Setting for action if audit storage becomes full
+# Must be one of "SYSLOG", "SINGLE", "HALT" currently no other options are supported by STIG
+az2023stig_auditd_disk_full_action: SYSLOG
+
+# 002260 - auditd log format
+# The expected format is "ENRICHED" currently no other options are supported by STIG
+az2023stig_audit_conf_log_format: ENRICHED
+
+az2023stig_audit_tools:
+  - /sbin/auditctl
+  - /sbin/aureport
+  - /sbin/ausearch
+  - /sbin/autrace
+  - /sbin/auditd
+  - /sbin/augenrules
+  - /sbin/rsyslogd
+
+# 0020065/70/75 rsyslog
+# Please amend to custom location as required - defaults to /etc/rsyslog.conf
+# az2023stig_rsyslog_offload_conf_file: /etc/rsyslog.d/offload_settings.conf
+
+# 0023xx pwquality variables
+az2023stig_pwquality_ucredit: -1
+az2023stig_pwquality_lcredit: -1
+az2023stig_pwquality_dcredit: -1
+az2023stig_pwquality_difok: 8
+az2023stig_pwquality_dictcheck: 1
+az2023stig_pwquality_minlen: 15
+az2023stig_pwquality_ocredit: -1
+
+# 002395 maxlogins
+# Must be 10 or less
+az2023stig_maxlogins: 10
+
+# 0024xx Password setting
+# Must be 1 or more
+az2023stig_min_days_login: 1
+# Minimum seconds before login prompts must be 4 or greater
+az2023stig_fail_delay_login: 4
+# umask 077 of more restrictive
+az2023stig_umask_login: '077'
+# 0024025 Maximum password lifetime before expiry 60
+az2023stig_pass_max_days: 60
+# 002430 max days for inactive account before locked
+az2023stig_pass_inactive_days: 30
+
+# 002445 selinux
+az2023stig_selinux_policy: targeted
+az2023stig_selinux_mode: enforcing
+
+## 002490
+# Must be 10000 or greater
+az2023stig_pam_rounds: 10000
+
+# 002510
+az2023stig_logind_conf_stopsessionidle: 0
+# 002520
+az2023stig_audit_backlog_limit: 8192
+
+# 002535
+az2023stig_sysctl_reload: true
+az2023stig_sysctl_file: /etc/sysctl.d/99_stig_kernel.conf
+
+# 002560
+# Ensure to update the chrony sever with your DOD timesource
+az2023stig_chrony_server: 'tick.usno.navy.mil'
+az2023stig_chrony_server_options: 'iburst maxpoll 16'
+
+# 0026xx autofs variables
+az2023stig_autofs_required: false
+
+# # 002465, 002470,0026xx pam_faillock variables
+az2023stig_pam_faillock_dir: /var/log/faillock
+az2023stig_pam_faillock_attempts: 3
+az2023stig_pam_faillock_fail_for_root: true
+az2023stig_pam_faillock_interval: 900
+az2023stig_pam_faillock_unlock_time: 0
+
+# 002080 syslog journal-upload variables
+az2023stig_syslog_remote_log_server: 192.168.2.100
+az2023stig_syslog_serverkeyfile: /etc/ssl/private/syslog.pem
+az2023stig_syslog_servercertificatefile: /etc/ssl/certs/syslog.pem
+az2023stig_syslog_trustedcertificatefile: /etc/ssl/ca/trusted.pem

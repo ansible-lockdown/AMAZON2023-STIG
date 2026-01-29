@@ -1,0 +1,9 @@
+# STIG requirement for AMAZON2023
+# Set via Ansible-Lockdown - https://github.com/ansible-lockdown
+# Maintained and sponsored by {{ company_title }}
+
+# Disable CHACHA20-POLY1305 for the TLS protocol (OpenSSL, GnuTLS, NSS, and OpenJDK)
+cipher@TLS = -CHACHA20-POLY1305
+
+# Disable all CBC mode ciphers for the SSH protocol (libssh and OpenSSH)
+cipher@SSH = -*-CBC

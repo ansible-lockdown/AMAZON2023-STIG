@@ -1,0 +1,562 @@
+---
+
+- name: MEDIUM | AZLX-23-002200 | PATCH | Amazon Linux 2023 audit tools must be group-owned by root.
+  when:
+    - az2023stig_002200
+    - az2023stig_disruption_high
+  tags:
+    - azlx-23-002200
+    - CAT2
+    - SV-274103r1120297_rule
+    - V-274103
+    - SRG-OS-000256-GPOS-00097
+    - CCI-001493
+    - NIST800-53R4_AU-9
+    - permissions
+    - auditd
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: file
+    group: root
+    mode: 'go-w'
+  failed_when: discovered_audit_tools.state not in '[ file, absent ]'
+  register: discovered_audit_tools
+  loop: "{{ az2023stig_audit_tools }}"
+
+- name: MEDIUM | AZLX-23-002205 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/passwd.
+  when: az2023stig_002205
+  tags:
+    - azlx-23-002205
+    - CAT2
+    - SV-274104r1120300_rule
+    - V-274104
+    - SRG-OS-000004-GPOS-00004
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000304-GPOS-00121
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000470-GPOS-00214
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000239-GPOS-00089
+    - SRG-OS-000240-GPOS-00090
+    - SRG-OS-000241-GPOS-00091
+    - SRG-OS-000303-GPOS-00120
+    - SRG-OS-000466-GPOS-00210
+    - SRG-OS-000476-GPOS-00221
+    - SRG-OS-000274-GPOS-00104
+    - SRG-OS-000275-GPOS-00105
+    - SRG-OS-000276-GPOS-00106
+    - SRG-OS-000277-GPOS-00107
+    - CCI-000018
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-000015
+    - CCI-002884
+    - CCI-000172
+    - CCI-001403
+    - CCI-001404
+    - CCI-001405
+    - CCI-002130
+    - NIST800-53R4_AC-2
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002210 | PATCH | Amazon Linux 2023 must audit all successful/unsuccessful uses of the chage command.
+  when: az2023stig_002210
+  tags:
+    - azlx-23-002210
+    - CAT2
+    - SV-274105r1120661_rule
+    - V-274105
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000064-GPOS-00033
+    - SRG-OS-000466-GPOS-00210
+    - SRG-OS-000458-GPOS-00203
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-002884
+    - CCI-000172
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002215 | PATCH | Amazon Linux 2023 must alert the information system security officer (ISSO) and system administrator (SA), at a minimum, in the event of an audit processing failure.
+  when: az2023stig_002215
+  tags:
+    - azlx-23-002215
+    - CAT2
+    - SV-274106r1120657_rule
+    - V-274106
+    - SRG-OS-000046-GPOS-00022
+    - CCI-000139
+    - NIST800-53R4_AU-5
+    - auditd
+  ansible.builtin.lineinfile:
+    path: /etc/audit/auditd.conf
+    regexp: ^(#?)action_mail_acct\s*=\s*{{ az2023stig_auditd_action_mail_acct }}.*
+    line: action_mail_acct = {{ az2023stig_auditd_action_mail_acct }}
+
+- name: MEDIUM | AZLX-23-002220 | PATCH | Amazon Linux 2023 must off-load audit records onto a different system in the event the audit storage volume is full.
+  when: az2023stig_002220
+  tags:
+    - azlx-23-002220
+    - CAT2
+    - SV-274107r1120309_rule
+    - V-274107
+    - SRG-OS-000342-GPOS-00133
+    - CCI-001851
+    - NIST800-53R4_AU-4
+    - auditd
+  ansible.builtin.lineinfile:
+    path: /etc/audit/auditd.conf
+    regexp: ^(#?)disk_full_action\s*=\s*{{ az2023stig_auditd_disk_full_action }}.*
+    line: disk_full_action = {{ az2023stig_auditd_disk_full_action }}
+
+- name: MEDIUM | AZLX-23-002225 | PATCH | Amazon Linux 2023 audit logs must be group-owned by root or by a restricted logging group to prevent unauthorized read access.
+  when: az2023stig_002225
+  tags:
+    - azlx-23-002225
+    - CAT2
+    - SV-274108r1120312_rule
+    - V-274108
+    - SRG-OS-000057-GPOS-00027
+    - SRG-OS-000058-GPOS-00028
+    - SRG-OS-000059-GPOS-00029
+    - SRG-OS-000206-GPOS-00084
+    - CCI-000162
+    - CCI-000163
+    - CCI-000164
+    - CCI-001314
+    - NIST800-53R4_AU-9
+    - NIST800-53R4_SI-11
+    - auditd
+  block:
+    - name: MEDIUM | AZLX-23-002225 | AUDIT | Amazon Linux 2023 audit logs must be group-owned by root or by a restricted logging group to prevent unauthorized read access.
+      ansible.builtin.shell: grep log_group /etc/audit/auditd.conf | awk '{ print $NF }'
+      changed_when: false
+      failed_when: discovered_auditd_log_group.rc not in [ 0, 1]
+      register: discovered_auditd_log_group
+
+    - name: MEDIUM | AZLX-23-002225 | AUDIT | Amazon Linux 2023 audit logs must be group-owned by root or by a restricted logging group to prevent unauthorized read access.
+      ansible.builtin.shell: grep log_file /etc/audit/auditd.conf | awk '{ print $NF }'
+      changed_when: false
+      failed_when: discovered_auditd_log_file.rc not in [ 0, 1]
+      register: discovered_auditd_log_file
+
+    - name: MEDIUM | AZLX-23-002225 | PATCH | Amazon Linux 2023 audit logs must be group-owned by root or by a restricted logging group to prevent unauthorized read access.
+      ansible.builtin.file:
+        path: "{{ discovered_auditd_log_file.stdout }}"
+        state: directory
+        group: "{{ discovered_auditd_log_group.stdout | default('root') }}"
+        mode: 'u-x,go-wx'
+
+- name: MEDIUM | AZLX-23-002230 | PATCH | Amazon Linux 2023 audit log directory must be owned by root to prevent unauthorized read access.
+  when: az2023stig_002230
+  tags:
+    - azlx-23-002230
+    - CAT2
+    - SV-274109r1120315_rule
+    - V-274109
+    - SRG-OS-000057-GPOS-00027
+    - SRG-OS-000058-GPOS-00028
+    - SRG-OS-000059-GPOS-00029
+    - SRG-OS-000206-GPOS-00084
+    - CCI-000162
+    - CCI-000163
+    - CCI-000164
+    - CCI-001314
+    - NIST800-53R4_AU-9
+    - NIST800-53R4_SI-11
+  block:
+    - name: MEDIUM | AZLX-23-002230 | AUDIT | Amazon Linux 2023 audit log directory must be owned by root to prevent unauthorized read access.
+      ansible.builtin.shell: grep log_file /etc/audit/auditd.conf | awk '{ print $NF }'
+      changed_when: false
+      failed_when: discovered_auditd_log_file.rc not in [ 0, 1]
+      register: discovered_auditd_log_file
+
+    - name: MEDIUM | AZLX-23-002230 | PATCH | Amazon Linux 2023 audit log directory must be owned by root to prevent unauthorized read access.
+      ansible.builtin.file:
+        path: "{{ discovered_auditd_log_file.stdout }}"
+        state: directory
+        owner: root
+        mode: 'u-x,go-wx'
+
+- name: MEDIUM | AZLX-23-002235 | PATCH | Amazon Linux 2023 audit logs file must have mode "0600" or less permissive to prevent unauthorized access to the audit log
+  when: az2023stig_002235
+  tags:
+    - azlx-23-002235
+    - CAT2
+    - SV-274110r1120318_rule
+    - V-274110
+    - SRG-OS-000057-GPOS-00027
+    - SRG-OS-000058-GPOS-00028
+    - SRG-OS-000059-GPOS-00029
+    - SRG-OS-000206-GPOS-00084
+    - CCI-000162
+    - CCI-000163
+    - CCI-000164
+    - CCI-001314
+    - NIST800-53R4_AU-9
+    - NIST800-53R4_SI-11
+  block:
+    - name: MEDIUM | AZLX-23-002235 | AUDIT | Amazon Linux 2023 audit logs file must have mode "0600" or less permissive to prevent unauthorized access to the audit log
+      ansible.builtin.shell: grep ^log_file /etc/audit/auditd.conf | awk '{ print $NF }'
+      changed_when: false
+      register: discovered_auditd_logfile
+
+    - name: MEDIUM | AZLX-23-002235 | AUDIT | Amazon Linux 2023 audit logs file must have mode "0600" or less permissive to prevent unauthorized access to the audit log
+      ansible.builtin.find:
+        paths: "{{ discovered_auditd_logfile.stdout | dirname }}"
+        file_type: file
+      register: discovered_auditd_logs
+
+    - name: MEDIUM | AZLX-23-002235 | PATCH | Amazon Linux 2023 audit logs file must have mode "0600" or less permissive to prevent unauthorized access to the audit log
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: file
+        mode: 'u-x,go-rwx'
+      failed_when: discovered_auditd_log_perm_change.state not in [ 'file', 'absent' ]
+      register: discovered_auditd_log_perm_change
+      loop: "{{ discovered_auditd_logs.files }}"
+
+- name: MEDIUM | AZLX-23-002240 | PATCH | Amazon Linux 2023 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to select which auditable events are to be audited.
+  when: az2023stig_002240
+  tags:
+    - azlx-23-002240
+    - CAT2
+    - SV-274111r1120321_rule
+    - V-274111
+    - SRG-OS-000063-GPOS-00032
+    - CCI-000171
+    - NIST800-53R4_AU-12
+  block:
+    - name: MEDIUM | AZLX-23-002240 | AUDIT | Amazon Linux 2023 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to select which auditable events are to be audited.
+      ansible.builtin.find:
+        paths: /etc/audit/rules.d/
+        patterns: '*.(conf|rules)'
+      register: discovered_auditd_conf_rules
+
+    - name: MEDIUM | AZLX-23-002240 | PATCH | Amazon Linux 2023 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to select which auditable events are to be audited.
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: file
+        mode: 'u-x,g-wx,o-rwx'
+      failed_when: discovered_auditd_log_perm_change.state not in [ 'file', 'absent' ]
+      register: discovered_auditd_conf_rules_change
+      loop: "{{ discovered_auditd_conf_rules.files }}"
+
+    - name: MEDIUM | AZLX-23-002240 | PATCH | Amazon Linux 2023 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to select which auditable events are to be audited.
+      ansible.builtin.file:
+        path: /etc/audit/auditd.conf
+        state: file
+        mode: 'u-x,g-wx,o-rwx'
+
+- name: MEDIUM | AZLX-23-002245 | PATCH | Amazon Linux 2023 must audit all uses of the sudo command.
+  when: az2023stig_002245
+  tags:
+    - azlx-23-002245
+    - CAT2
+    - SV-274112r1120324_rule
+    - V-274112
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000064-GPOS-00033
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000466-GPOS-00210
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-002884
+    - CCI-000172
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002250 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/passwd.
+  when: az2023stig_002250
+  tags:
+    - azlx-23-002250
+    - CAT2
+    - SV-274113r1120327_rule
+    - V-274113
+    - SRG-OS-000004-GPOS-00004
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000304-GPOS-00121
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000470-GPOS-00214
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000239-GPOS-00089
+    - SRG-OS-000240-GPOS-00090
+    - SRG-OS-000241-GPOS-00091
+    - SRG-OS-000303-GPOS-00120
+    - SRG-OS-000466-GPOS-00210
+    - SRG-OS-000476-GPOS-00221
+    - SRG-OS-000274-GPOS-00104
+    - SRG-OS-000275-GPOS-00105
+    - SRG-OS-000276-GPOS-00106
+    - SRG-OS-000277-GPOS-00107
+    - CCI-000018
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-000015
+    - CCI-002884
+    - CCI-000172
+    - CCI-001403
+    - CCI-001404
+    - CCI-001405
+    - CCI-002130
+    - NIST800-53R4_AC-2
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002255 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/shadow.
+  when: az2023stig_002255
+  tags:
+    - azlx-23-002255
+    - CAT2
+    - SV-274114r1120330_rule
+    - V-274114
+    - SRG-OS-000004-GPOS-00004
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000304-GPOS-00121
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000470-GPOS-00214
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000239-GPOS-00089
+    - SRG-OS-000240-GPOS-00090
+    - SRG-OS-000241-GPOS-00091
+    - SRG-OS-000303-GPOS-00120
+    - SRG-OS-000466-GPOS-00210
+    - SRG-OS-000476-GPOS-00221
+    - SRG-OS-000275-GPOS-00105
+    - CCI-000018
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-000015
+    - CCI-002884
+    - CCI-000172
+    - CCI-001403
+    - CCI-001404
+    - CCI-001405
+    - CCI-002130
+    - NIST800-53R4_AC-2
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002260 | PATCH | Amazon Linux 2023 must produce audit records containing information to establish the identity of any individual or process associated with the event.
+  when: az2023stig_002260
+  tags:
+    - azlx-23-002260
+    - CAT2
+    - SV-274115r1120333_rule
+    - V-274115
+    - SRG-OS-000255-GPOS-00096
+    - CCI-001487
+    - NIST800-53R4_AU-3
+    - auditd
+  ansible.builtin.lineinfile:
+    path: /etc/audit/auditd.conf
+    regexp: ^(#?)\s*log_format\s*=
+    line: log_format = {{ az2023stig_audit_conf_log_format }}
+
+- name: MEDIUM | AZLX-23-002265 | PATCH | Amazon Linux 2023 must produce audit records containing information to establish the identity of any individual or process associated with the event.
+  when: az2023stig_002265
+  tags:
+    - azlx-23-002265
+    - CAT2
+    - SV-274116r1120336_rule
+    - V-274116
+    - SRG-OS-000206-GPOS-00084
+    - CCI-001314
+    - NIST800-53R4_SI-11
+    - auditd
+  block:
+    - name: MEDIUM | AZLX-23-002265 | AUDIT | Amazon Linux 2023 must produce audit records containing information to establish the identity of any individual or process associated with the event.
+      ansible.builtin.shell: grep log_group /etc/audit/auditd.conf | awk '{ print $NF }'
+      changed_when: false
+      failed_when: discovered_auditd_log_group.rc not in [ 0, 1]
+      register: discovered_auditd_log_group
+
+    - name: MEDIUM | AZLX-23-002265 | PATCH | Amazon Linux 2023 must produce audit records containing information to establish the identity of any individual or process associated with the event.
+      ansible.builtin.file:
+        path: "{{ discovered_auditd_log_file.stdout }}"
+        group: "{{ discovered_auditd_log_group.stdout | default('root') }}"
+
+- name: MEDIUM | AZLX-23-002270 | PATCH | Amazon Linux 2023 must ensure the audit log directory be owned by root to prevent unauthorized read access.
+  when: az2023stig_002270
+  tags:
+    - azlx-23-002270
+    - CAT2
+    - SV-274117r1120339_rule
+    - V-274117
+    - SRG-OS-000206-GPOS-00084
+    - CCI-0001314
+    - NIST800-53R4_SI-11
+  block:
+    - name: MEDIUM | AZLX-23-002270 | AUDIT | Amazon Linux 2023 must ensure the audit log directory be owned by root to prevent unauthorized read access.
+      ansible.builtin.shell: grep log_file /etc/audit/auditd.conf | awk '{ print $NF }'
+      changed_when: false
+      failed_when: discovered_auditd_log_file.rc not in [ 0, 1]
+      register: discovered_auditd_log_file
+
+    - name: MEDIUM | AZLX-23-002270 | PATCH | Amazon Linux 2023 must ensure the audit log directory be owned by root to prevent unauthorized read access.
+      ansible.builtin.file:
+        path: "{{ discovered_auditd_log_file.stdout | dirname }}"
+        owner: root
+
+- name: MEDIUM | AZLX-23-002275 | PATCH | Amazon Linux 2023 audit logs file must have mode "0600" or less permissive to prevent unauthorized access to the audit log.
+  when: az2023stig_002275
+  tags:
+    - azlx-23-002275
+    - CAT2
+    - SV-274118r1120342_rule
+    - V-274118
+    - SRG-OS-000206-GPOS-00084
+    - CCI-0001314
+    - NIST800-53R4_SI-11
+    - auditd
+  block:
+    - name: MEDIUM | AZLX-23-002275 | AUDIT | Amazon Linux 2023 audit logs file must have mode "0600" or less permissive to prevent unauthorized access to the audit log.
+      ansible.builtin.shell: grep log_file /etc/audit/auditd.conf | awk '{ print $NF }'
+      changed_when: false
+      failed_when: discovered_auditd_log_file.rc not in [ 0, 1]
+      register: discovered_auditd_log_file
+
+    - name: MEDIUM | AZLX-23-002275 | PATCH | Amazon Linux 2023 audit logs file must have mode "0600" or less permissive to prevent unauthorized access to the audit log.
+      ansible.builtin.file:
+        path: "{{ discovered_auditd_log_file.stdout }}"
+        mode: 'u-x,go-rwx'
+
+- name: MEDIUM | AZLX-23-002280 | PATCH | AAmazon Linux 2023 library directories must be group-owned by root or a system account.
+  when: az2023stig_002280
+  tags:
+    - azlx-23-002280
+    - CAT2
+    - SV-274119r1120345_rule
+    - V-274119
+    - SRG-OS-000259-GPOS-00100
+    - CCI-0001499
+    - NIST800-53R4_CM-5
+    - permissions
+  block:
+    - name: MEDIUM | AZLX-23-002280 | AUDIT | Amazon Linux 2023 library directories must be group-owned by root or a system account.
+      ansible.builtin.shell: find /lib /lib64 /usr/lib /usr/lib64 ! -group root -type d
+      changed_when: false
+      failed_when: discovered_lib_dirs_group.rc not in [ 0, 1]
+      register: discovered_lib_dirs_group
+
+    - name: MEDIUM | AZLX-23-002280 | PATCH | Amazon Linux 2023 library directories must be group-owned by root or a system account.
+      ansible.builtin.file:
+        path: "{{ item }}"
+        group: root
+      loop: "{{ discovered_lib_dirs_group.stdout_lines }}"
+
+- name: MEDIUM | AZLX-23-002285 | PATCH | Amazon Linux 2023 library directories must have mode "755" or less permissive.
+  when: az2023stig_002285
+  tags:
+    - azlx-23-002285
+    - CAT2
+    - SV-274120r1120348_rule
+    - V-274120
+    - SRG-OS-000259-GPOS-00100
+    - CCI-0001499
+    - NIST800-53R4_CM-5
+    - permissions
+  block:
+    - name: MEDIUM | AZLX-23-002285 | AUDIT | Amazon Linux 2023 library directories must have mode "755" or less permissive.
+      ansible.builtin.shell: find /lib /lib64 /usr/lib /usr/lib64 ! -group root -type f
+      changed_when: false
+      failed_when: discovered_lib_files_group.rc not in [ 0, 1]
+      register: discovered_lib_files_group
+
+    - name: MEDIUM | AZLX-23-002285 | PATCH | Amazon Linux 2023 library directories must have mode "755" or less permissive.
+      ansible.builtin.file:
+        path: "{{ item }}"
+        mode: 'g-wx,o-rwx'
+      loop: "{{ discovered_lib_files_group.stdout_lines }}"
+
+- name: MEDIUM | AZLX-23-002290 | PATCH | Amazon Linux 2023 library files must have mode "755" or less permissive.
+  when: az2023stig_002290
+  tags:
+    - azlx-23-002290
+    - CAT2
+    - SV-274121r1120351_rule
+    - V-274121
+    - SRG-OS-000259-GPOS-00100
+    - CCI-0001499
+    - NIST800-53R4_CM-5
+    - permissions
+  block:
+    - name: MEDIUM | AZLX-23-002290 | AUDIT | Amazon Linux 2023 library files must have mode "755" or less permissive.
+      ansible.builtin.shell: find /lib /lib64 /usr/lib /usr/lib64 ! -group root -type f
+      changed_when: false
+      failed_when: discovered_lib_files_group.rc not in [ 0, 1]
+      register: discovered_lib_files_group
+
+    - name: MEDIUM | AZLX-23-002290 | PATCH | Amazon Linux 2023 library files must have mode "755" or less permissive.
+      ansible.builtin.file:
+        path: "{{ item }}"
+        mode: 'u+x,go-w'
+      loop: "{{ discovered_lib_files_group.stdout_lines }}"
+
+- name: MEDIUM | AZLX-23-002295 | PATCH | Amazon Linux 2023 library directories must be owned by root.
+  when: az2023stig_002295
+  tags:
+    - azlx-23-002295
+    - CAT2
+    - SV-274122r1120354_rule
+    - V-274122
+    - SRG-OS-000259-GPOS-00100
+    - CCI-0001499
+    - NIST800-53R4_CM-5
+    - permissions
+  block:
+    - name: MEDIUM | AZLX-23-002295 | AUDIT | Amazon Linux 2023 library directories must be owned by root.
+      ansible.builtin.shell: find /lib /lib64 /usr/lib /usr/lib64 ! -user root -type d
+      changed_when: false
+      failed_when: discovered_lib_dirs_owner.rc not in [ 0, 1]
+      register: discovered_lib_dirs_owner
+
+    - name: MEDIUM | AZLX-23-002295 | PATCH | Amazon Linux 2023 library directories must be owned by root.
+      ansible.builtin.file:
+        path: "{{ item }}"
+        owner: root
+      loop: "{{ discovered_lib_dirs_owner.stdout_lines }}"

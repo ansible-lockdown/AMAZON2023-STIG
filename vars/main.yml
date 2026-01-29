@@ -1,0 +1,49 @@
+---
+# vars file forAMAZON2023-STIG
+
+min_ansible_version: 2.14.1
+
+# tweak role to run in a non-privileged container (default value)- dynamically discovered in tasks/main.yml
+system_is_container: false
+
+# Used to control warning summary
+warn_control_list: ""
+warn_count: 0
+
+gpg_key_package: "{{ ansible_distribution | lower }}-gpg-keys"
+
+os_gpg_key_pubkey_name: gpg-pubkey-d832c631-6515c85e  # pragma: allowlist secret
+os_gpg_key_pubkey_content: "Amazon Linux <amazon-linux@amazon.com> public key"
+
+# Allow automated discovery of uids
+discover_int_uid: true
+
+# Default for facts
+change_requires_reboot: false
+update_audit_template: false
+
+combined_crypto_policy_config: FIPS
+
+# DOD encryption
+az2023stig_dod_ciphers:
+  - aes256-gcm@openssh.com
+  - aes256-ctr
+  - aes128-gcm@openssh.com
+  - aes128-ctr
+az2023stig_dod_macs:
+  - hmac-sha2-256-etm@openssh.com
+  - hmac-sha2-512-etm@openssh.com
+  - hmac-sha2-256
+  - hmac-sha2-512
+
+# Defaults added for searches
+az2023stig_ungrouped_files_found: false
+az2023stig_unowned_files_found: false
+
+# Aide packages
+aide_packages:
+  - aide
+# Aide initiate command for new DB creation
+aide_initiate_command: /usr/sbin/aide --init
+
+company_title: 'Tyto Athene - https://gotyto.com'

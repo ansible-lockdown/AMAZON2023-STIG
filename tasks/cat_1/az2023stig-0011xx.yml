@@ -1,0 +1,52 @@
+---
+
+- name: HIGH | AZLX-23-001180 | PATCH | Amazon Linux 2023 must have SSH installed.
+  when: az2023stig_001180
+  tags:
+    - azlx-23-001180
+    - CAT1
+    - SV-274038r1120102_rule
+    - V-274038
+    - SRG-OS-000112-GPOS-00057
+    - SRG-OS-000113-GPOS-00058
+    - SRG-OS-000423-GPOS-00187
+    - SRG-OS-000424-GPOS-00188
+    - SRG-OS-000425-GPOS-00189
+    - SRG-OS-000426-GPOS-00190
+    - NIST800-53R4_IA-2
+    - NIST800-53R4_SC-8
+    - CCI-001941
+    - CCI-002418
+    - CCI-002421
+    - CCI-002420
+    - CCI-002422
+    - ssh
+  ansible.builtin.package:
+    name: openssh-server
+    state: present
+
+- name: HIGH | AZLX-23-001185 | PATCH | Amazon Linux 2023 must have SSH installed.
+  when: az2023stig_001185
+  tags:
+    - azlx-23-001185
+    - CAT1
+    - SV-274039r1120105_rule
+    - V-274039
+    - SRG-OS-000112-GPOS-00057
+    - SRG-OS-000113-GPOS-00058
+    - SRG-OS-000423-GPOS-00187
+    - SRG-OS-000424-GPOS-00188
+    - SRG-OS-000425-GPOS-00189
+    - SRG-OS-000426-GPOS-00190
+    - NIST800-53R4_IA-2
+    - NIST800-53R4_SC-8
+    - CCI-001941
+    - CCI-002418
+    - CCI-002421
+    - CCI-002420
+    - CCI-002422
+    - ssh
+  ansible.builtin.systemd:
+    name: sshd
+    state: started
+    enabled: true

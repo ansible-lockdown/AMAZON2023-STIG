@@ -1,0 +1,131 @@
+---
+
+- name: MEDIUM | AZLX-23-002600 | PATCH | Amazon Linux 2023 file system automount function must be disabled unless required.
+  when:
+    - az2023stig_002600
+    - not az2023stig_autofs_required
+    - "'autofs' in ansible_facts.packages"
+  tags:
+    - azlx-23-002600
+    - CAT2
+    - SV-274182r1120729_rule
+    - V-274182
+    - SRG-OS-000378-GPOS-00163
+    - CCI-001958
+    - NIST800-53R4_IA-3
+    - autofs
+  ansible.builtin.service:
+    name: autofs
+    enabled: false
+    state: stopped
+
+- name: MEDIUM | AZLX-23-002605 | PATCH | Amazon Linux 2023 must protect against or limit the effects of denial-of-service (DoS) attacks by ensuring rate-limiting measures are configured on impacted network interfaces.
+  when: az2023stig_002605
+  tags:
+    - azlx-23-002605
+    - CAT2
+    - SV-274183r1120714_rule
+    - V-274183
+    - SRG-OS-000420-GPOS-00186
+    - CCI-002385
+    - NIST800-53R4_SC-5
+  vars:
+    warn_control_id: "MEDIUM | AZLX-23-002605"
+  block:
+    - name: MEDIUM | AZLX-23-002605 | AUDIT | Amazon Linux 2023 must protect against or limit the effects of denial-of-service (DoS) attacks by ensuring rate-limiting measures are configured on impacted network interfaces. | discover status
+      ansible.builtin.debug:
+        msg: "Warning!! Please investigate rate-limiting measures for AWS EC2 for ALB"
+
+    - name: MEDIUM | AZLX-23-002605 | AUDIT | Amazon Linux 2023 must protect against or limit the effects of denial-of-service (DoS) attacks by ensuring rate-limiting measures are configured on impacted network interfaces. | warn_count
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: MEDIUM | AZLX-23-002610 | PATCH | Amazon Linux 2023 must implement nonexecutable data to protect its memory from unauthorized code execution.
+  when: az2023stig_002610
+  tags:
+    - azlx-23-002610
+    - CAT2
+    - SV-274184r1120540_rule
+    - V-274184
+    - SRG-OS-000433-GPOS-00192
+    - CCI-002824
+    - NIST800-53R4_SI-16
+  vars:
+    warn_control_id: "MEDIUM | AZLX-23-002610"
+  block:
+    - name: MEDIUM | AZLX-23-002610 | PATCH | Amazon Linux 2023 must implement nonexecutable data to protect its memory from unauthorized code execution. | discover status
+      ansible.builtin.command: dmesg | grep -i "execute disable"
+      changed_when: false
+      failed_when: discovered_dmesg_nx_value.rc not in [ 0, 1 ]
+      register: discovered_dmesg_nx_value
+
+    - name: MEDIUM | AZLX-23-002610 | PATCH | Amazon Linux 2023 must implement nonexecutable data to protect its memory from unauthorized code execution. | discover status
+      when: discovered_dmesg_nx_value.stdout is not defined
+      ansible.builtin.shell: grep flags /proc/cpuinfo | grep -w nx | sort -u
+      changed_when: false
+      failed_when: discovered_nx_cpuinfo_settings.rc not in [ 0, 1 ]
+      register: discovered_nx_cpuinfo_settings
+
+    - name: MEDIUM | AZLX-23-002610 | PATCH | Amazon Linux 2023 must implement nonexecutable data to protect its memory from unauthorized code execution. | warn_out
+      when: discovered_dmesg_nx_value.stdout is not defined or discovered_nx_cpuinfo_settings.stdout is not defined
+      ansible.builtin.debug:
+        msg: "Warning!! The Amazon Linux 2023 system you are on does not have NX enabled. Please validate system BIOS settings"
+
+    - name: MEDIUM | AZLX-23-002610 | PATCH | Amazon Linux 2023 must implement nonexecutable data to protect its memory from unauthorized code execution. | warn_count
+      when: discovered_dmesg_nx_value.stdout is not defined or discovered_nx_cpuinfo_settings.stdout is not defined
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: MEDIUM | AZLX-23-002615 | PATCH | Amazon Linux 2023 must remove all software components after updated versions have been installed.
+  when: az2023stig_002615
+  tags:
+    - azlx-23-002615
+    - CAT2
+    - SV-274185r1120543_rule
+    - V-274185
+    - SRG-OS-000437-GPOS-00194
+    - CCI-0002617
+    - NIST800-53R4_SI-2
+    - dnf
+  ansible.builtin.lineinfile:
+    path: /etc/dnf/dnf.conf
+    regexp: ^(clean_requirements_on_remove.*)
+    line: clean_requirements_on_remove=1
+
+- name: MEDIUM | AZLX-23-002620 | PATCH | Amazon Linux 2023 must configure the use of the pam_faillock.so module in the /etc/pam.d/system-auth file.
+  when:
+    - az2023stig_002620
+    - az2023stig_disruption_high
+  tags:
+    - azlx-23-002620
+    - CAT2
+    - SV-274186r1120546_rule
+    - V-274186
+    - SRG-OS-000021-GPOS-00005
+    - CCI-000044
+    - NIST800-53R4_AC-7
+    - pamd
+  block:
+    - name: MEDIUM | AZLX-23-002620 | PATCH | Amazon Linux 2023 must configure the use of the pam_faillock.so module in the /etc/pam.d/system-auth file. | Set preauth
+      ansible.builtin.lineinfile:
+        path: /etc/pam.d/system-auth
+        regexp: ^(auth\s*required\s*pam_faillock.so preauth.*)
+        line: auth        required      pam_faillock.so preauth dir={{ az2023stig_pam_faillock_dir }} silent audit deny={{ az2023stig_pam_faillock_attempts }}{{ (az2023stig_pam_faillock_fail_for_root) | ternary(' even_deny_root ', ' ') }}fail_interval={{ az2023stig_pam_faillock_interval }} unlock_time={{ az2023stig_pam_faillock_unlock_time }}
+        insertafter: '^auth\s+required\s+pam_env.so'
+      notify: Restart sssd
+
+    - name: MEDIUM | AZLX-23-002620 | PATCH | Amazon Linux 2023 must configure the use of the pam_faillock.so module in the /etc/pam.d/system-auth file. | Set authfail
+      ansible.builtin.lineinfile:
+        path: /etc/pam.d/system-auth
+        regexp: ^(auth\s*required\s*pam_faillock.so authfail.*)
+        line: auth        required      pam_faillock.so authfail dir={{ az2023stig_pam_faillock_dir }} unlock_time={{ az2023stig_pam_faillock_unlock_time }}
+        insertafter: '^auth'
+      notify: Restart sssd
+
+    - name: MEDIUM | AZLX-23-002620 | PATCH | Amazon Linux 2023 must configure the use of the pam_faillock.so module in the /etc/pam.d/system-auth file. | Set account faillock
+      ansible.builtin.lineinfile:
+        path: /etc/pam.d/system-auth
+        regexp: ^(account\s*required\s*pam_faillock.so.*)
+        line: account     required       pam_faillock.so
+        insertbefore: '^account'
+      notify: Restart sssd

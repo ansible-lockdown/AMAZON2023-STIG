@@ -1,0 +1,519 @@
+---
+
+- name: MEDIUM | AZLX-23-002300 | PATCH | Amazon Linux 2023 library files must be group-owned by root or a system account.
+  when: az2023stig_002300
+  tags:
+    - azlx-23-002300
+    - CAT2
+    - SV-274123r1120357_rule
+    - V-274123
+    - SRG-OS-000259-GPOS-00100
+    - CCI-001499
+    - NIST800-53R4_CM-5
+    - permissions
+  block:
+    - name: MEDIUM | AZLX-23-002300 | AUDIT | Amazon Linux 2023 library files must be group-owned by root or a system account.
+      ansible.builtin.shell: find /lib /lib64 /usr/lib /usr/lib64 ! -group root -type f
+      changed_when: false
+      failed_when: discovered_lib_files_group.rc not in [ 0, 1]
+      register: discovered_lib_files_group
+
+    - name: MEDIUM | AZLX-23-002300 | PATCH | Amazon Linux 2023 library files must be group-owned by root or a system account.
+      ansible.builtin.file:
+        path: "{{ item }}"
+        group: root
+      loop: "{{ discovered_lib_files_group.stdout_lines }}"
+
+- name: MEDIUM | AZLX-23-002305 | PATCH | Amazon Linux 2023 library directories must be owned by root.
+  when: az2023stig_002305
+  tags:
+    - azlx-23-002305
+    - CAT2
+    - SV-274124r1120360_rule
+    - V-274124
+    - SRG-OS-000259-GPOS-00100
+    - CCI-001499
+    - NIST800-53R4_CM-5
+    - permissions
+  block:
+    - name: MEDIUM | AZLX-23-002305 | AUDIT | Amazon Linux 2023 library directories must be owned by root.
+      ansible.builtin.shell: find /lib /lib64 /usr/lib /usr/lib64 ! -user root -type d
+      changed_when: false
+      failed_when: discovered_lib_dirs_owner.rc not in [ 0, 1]
+      register: discovered_lib_dirs_owner
+
+    - name: MEDIUM | AZLX-23-002305 | PATCH | Amazon Linux 2023 library directories must be owned by root.
+      ansible.builtin.file:
+        path: "{{ item }}"
+        owner: root
+      loop: "{{ discovered_lib_dirs_owner.stdout_lines }}"
+
+- name: MEDIUM | AZLX-23-002315 | PATCH | Amazon Linux 2023 must ensure the /var/log directory have mode "0755" or less permissive.
+  when: az2023stig_002315
+  tags:
+    - azlx-23-002315
+    - CAT2
+    - SV-274125r1120363_rule
+    - V-274125
+    - SRG-OS-000259-GPOS-00084
+    - CCI-001314
+    - NIST800-53R4_SI-11
+    - permissions
+  ansible.builtin.file:
+    path: /var/log
+    mode: 'u+x,go-w'
+    modification_time: preserve
+    state: directory
+
+- name: MEDIUM | AZLX-23-002320 | PATCH | Amazon Linux 2023 must ensure the /var/log directory be owned by root.
+  when: az2023stig_002320
+  tags:
+    - azlx-23-002320
+    - CAT2
+    - SV-274126r1120366_rule
+    - V-274126
+    - SRG-OS-000259-GPOS-00084
+    - CCI-001314
+    - NIST800-53R4_SI-11
+    - permissions
+  ansible.builtin.file:
+    path: /var/log
+    owner: root
+    mode: 'u+x,go-w'
+    modification_time: preserve
+    state: directory
+
+- name: MEDIUM | AZLX-23-002325 | PATCH | Amazon Linux 2023 must ensure the /var/log directory be group-owned by root.
+  when: az2023stig_002325
+  tags:
+    - azlx-23-002325
+    - CAT2
+    - SV-274127r1120369_rule
+    - V-274127
+    - SRG-OS-000259-GPOS-00084
+    - CCI-001314
+    - NIST800-53R4_SI-11
+    - permissions
+  ansible.builtin.file:
+    path: /var/log
+    group: root
+    mode: 'u+x,go-w'
+    modification_time: preserve
+    state: directory
+
+- name: MEDIUM | AZLX-23-002330 | PATCH | Amazon Linux 2023 must ensure the /var/log/messages file have mode "0640" or less permissive.
+  when: az2023stig_002330
+  tags:
+    - azlx-23-002330
+    - CAT2
+    - SV-274128r1120372_rule
+    - V-274128
+    - SRG-OS-000259-GPOS-00084
+    - CCI-001314
+    - NIST800-53R4_SI-11
+    - permissions
+  ansible.builtin.file:
+    path: /var/log/messages
+    mode: 'u-x,g-wx,o-rwx'
+    modification_time: preserve
+    state: file
+
+- name: MEDIUM | AZLX-23-002335 | PATCH | Amazon Linux 2023 must ensure the /var/log/messages file be group-owned by root.
+  when: az2023stig_002335
+  tags:
+    - azlx-23-002335
+    - CAT2
+    - SV-274129r1120375_rule
+    - V-274129
+    - SRG-OS-000259-GPOS-00084
+    - CCI-001314
+    - NIST800-53R4_SI-11
+    - permissions
+  ansible.builtin.file:
+    path: /var/log/messages
+    group: root
+    mode: 'u-x,g-wx,o-rwx'
+    modification_time: preserve
+    state: file
+
+- name: MEDIUM | AZLX-23-002340 | PATCH | Amazon Linux 2023 must ensure the /var/log/messages file be owned by root.
+  when: az2023stig_002340
+  tags:
+    - azlx-23-002340
+    - CAT2
+    - SV-274130r1120378_rule
+    - V-274130
+    - SRG-OS-000259-GPOS-00084
+    - CCI-001314
+    - NIST800-53R4_SI-11
+    - permissions
+  ansible.builtin.file:
+    path: /var/log/messages
+    owner: root
+    mode: 'u-x,g-wx,o-rwx'
+    modification_time: preserve
+    state: file
+
+- name: MEDIUM | AZLX-23-002345 | PATCH | Amazon Linux 2023 system commands must be owned by root.
+  when: az2023stig_002345
+  tags:
+    - azlx-23-002345
+    - CAT2
+    - SV-274131r1120381_rule
+    - V-274131
+    - SRG-OS-000259-GPOS-00100
+    - CCI-001499
+    - NIST800-53R4_CM-5
+    - permissions
+  block:
+    - name: MEDIUM | AZLX-23-002345 | AUDIT | Amazon Linux 2023 system commands must be owned by root.
+      ansible.builtin.shell: find -L /bin /sbin /usr/bin /usr/sbin /usr/libexec /usr/local/bin /usr/local/sbin ! -user root -exec ls {} \;
+      changed_when: false
+      failed_when: discovered_sys_commands_owner.rc not in [ 0, 1 ]
+      register: discovered_sys_commands_owner
+
+    - name: MEDIUM | AZLX-23-002345 | PATCH | Amazon Linux 2023 system commands must be owned by root.
+      when: discovered_sys_commands_owner.stdout | length > 0
+      ansible.builtin.file:
+        path: "{{ item }}"
+        owner: root
+      loop: "{{ discovered_sys_commands_owner.stdout_lines }}"
+      loop_control:
+        label: "{{ item }}"
+
+- name: MEDIUM | AZLX-23-002350 | PATCH | Amazon Linux 2023 system commands must be group-owned by root or a system account.
+  when: az2023stig_002350
+  tags:
+    - azlx-23-002350
+    - CAT2
+    - SV-274132r1120384_rule
+    - V-274132
+    - SRG-OS-000259-GPOS-00100
+    - CCI-001499
+    - NIST800-53R4_CM-5
+    - permissions
+  block:
+    - name: MEDIUM | AZLX-23-002350 | AUDIT | Amazon Linux 2023 system commands must be group-owned by root or a system account.
+      ansible.builtin.shell: find -L /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin ! \( -group root -o -group tty \) -exec ls -l {} \;
+      changed_when: false
+      failed_when: discovered_sys_commands_group.rc not in [ 0, 1 ]
+      register: discovered_sys_commands_group
+
+    - name: MEDIUM | AZLX-23-002350 | PATCH | Amazon Linux 2023 system commands must be group-owned by root or a system account.
+      when:
+        - discovered_sys_commands_group.stdout | length > 0
+        - "prelim_system_accounts.stdout not in item"
+      ansible.builtin.file:
+        path: "{{ item }}"
+        group: root
+      loop: "{{ discovered_sys_commands_group.stdout_lines }}"
+      loop_control:
+        label: "{{ item }}"
+      failed_when: discovered_sys_commands_group_patch.state not in [ 'file', 'absent' ]
+      register: discovered_sys_commands_group_patch
+
+- name: MEDIUM | AZLX-23-002355 | PATCH | Amazon Linux 2023 must enforce password complexity by requiring that at least one uppercase character be used.
+  when: az2023stig_002355
+  tags:
+    - azlx-23-002355
+    - CAT2
+    - SV-274133r1120387_rule
+    - V-274133
+    - SRG-OS-000069-GPOS-00037
+    - NIST800-53R4_NA
+    - pam
+  block:
+    - name: MEDIUM | AZLX-23-002355 | AUDIT | Amazon Linux 2023 must enforce password complexity by requiring that at least one uppercase character be used.
+      ansible.builtin.find:
+        paths: /etc/security/
+        patterns: '*.conf'
+        contains: ^(?#)ucredit\s*=\s*(?!-1)(0|-\d)
+      changed_when: false
+      register: discovered_pwquality_ucredit_conf
+
+    - name: MEDIUM | AZLX-23-002355 | PATCH | Amazon Linux 2023 must enforce password complexity by requiring that at least one uppercase character be used.
+      when: discovered_pwquality_ucredit_conf.matched > 0
+      ansible.builtin.replace:
+        path: "{{ item.path }}"
+        regexp: ^(?#)ucredit\s*=\s*.*
+        replace: 'ucredit = {{ az2023stig_pwquality_ucredit }}'
+      loop: "{{ discovered_pwquality_ucredit_conf.files }}"
+      loop_control:
+        label: "{{ item }}"
+
+    - name: MEDIUM | AZLX-23-002355 | PATCH | Amazon Linux 2023 must enforce password complexity by requiring that at least one uppercase character be used.
+      ansible.builtin.lineinfile:
+        path: /etc/security/pwquality.conf
+        regexp: ^(?#)ucredit\s*=\s*(?!-1)(0|-\d)
+        line: 'ucredit = {{ az2023stig_pwquality_ucredit }}'
+
+- name: MEDIUM | AZLX-23-002360 | PATCH | Amazon Linux 2023 must enforce password complexity by requiring that at least one lowercase character be used.
+  when: az2023stig_002360
+  tags:
+    - azlx-23-002360
+    - CAT2
+    - SV-274134r1120390_rule
+    - V-274134
+    - SRG-OS-000070-GPOS-00038
+    - NIST800-53R4_NA
+    - pam
+  block:
+    - name: MEDIUM | AZLX-23-002360 | AUDIT | Amazon Linux 2023 must enforce password complexity by requiring that at least one lowercase character be used.
+      ansible.builtin.find:
+        paths: /etc/security/
+        patterns: '*.conf'
+        contains: ^(?#)lcredit\s*=\s*(?!-1)(0|-\d)
+      changed_when: false
+      register: discovered_pwquality_lcredit_conf
+
+    - name: MEDIUM | AZLX-23-002360 | PATCH | Amazon Linux 2023 must enforce password complexity by requiring that at least one lowercase character be used.
+      when: discovered_pwquality_lcredit_conf.matched > 0
+      ansible.builtin.replace:
+        path: "{{ item.path }}"
+        regexp: ^(?#)lcredit\s*=\s*.*
+        replace: 'lcredit = {{ az2023stig_pwquality_lcredit }}'
+      loop: "{{ discovered_pwquality_lcredit_conf.files }}"
+      loop_control:
+        label: "{{ item }}"
+
+    - name: MEDIUM | AZLX-23-002360 | PATCH | Amazon Linux 2023 must enforce password complexity by requiring that at least one lowercase character be used.
+      ansible.builtin.lineinfile:
+        path: /etc/security/pwquality.conf
+        regexp: ^(?#)lcredit\s*=\s*(?!-1)(0|-\d)
+        line: 'lcredit = {{ az2023stig_pwquality_lcredit }}'
+
+- name: MEDIUM | AZLX-23-002365 | PATCH | Amazon Linux 2023 must enforce password complexity by requiring that at least one numeric character be used.
+  when: az2023stig_002365
+  tags:
+    - azlx-23-002365
+    - CAT2
+    - SV-274135r1120393_rule
+    - V-274135
+    - SRG-OS-000071-GPOS-00039
+    - NIST800-53R4_NA
+    - pam
+  block:
+    - name: MEDIUM | AZLX-23-002365 | AUDIT | Amazon Linux 2023 must enforce password complexity by requiring that at least one numeric character be used.
+      ansible.builtin.find:
+        paths: /etc/security/
+        patterns: '*.conf'
+        contains: ^(?#)dcredit\s*=\s*(?!-1)(0|-\d)
+      changed_when: false
+      register: discovered_pwquality_dcredit_conf
+
+    - name: MEDIUM | AZLX-23-002365 | PATCH | Amazon Linux 2023 must enforce password complexity by requiring that at least one numeric character be used.
+      when: discovered_pwquality_dcredit_conf.matched > 0
+      ansible.builtin.replace:
+        path: "{{ item.path }}"
+        regexp: ^(?#)dcredit\s*=\s*.*
+        replace: 'dcredit = {{ az2023stig_pwquality_dcredit }}'
+      loop: "{{ discovered_pwquality_dcredit_conf.files }}"
+      loop_control:
+        label: "{{ item }}"
+
+    - name: MEDIUM | AZLX-23-002365 | PATCH | Amazon Linux 2023 must enforce password complexity by requiring that at least one numeric character be used.
+      ansible.builtin.lineinfile:
+        path: /etc/security/pwquality.conf
+        regexp: ^(?#)dcredit\s*=\s*(?!-1)(0|-\d)
+        line: 'dcredit = {{ az2023stig_pwquality_dcredit }}'
+
+- name: MEDIUM | AZLX-23-002370 | PATCH | Amazon Linux 2023 must require the change of at least 50 percent of the total number of characters when passwords are changed.
+  when: az2023stig_002370
+  tags:
+    - azlx-23-002370
+    - CAT2
+    - SV-274136r1120697_rule
+    - V-274136
+    - SRG-OS-000072-GPOS-00040
+    - NIST800-53R4_NA
+    - pam
+  block:
+    - name: MEDIUM | AZLX-23-002370 | AUDIT | Amazon Linux 2023 must require the change of at least 50 percent of the total number of characters when passwords are changed.
+      ansible.builtin.find:
+        paths: /etc/security/
+        patterns: '*.conf'
+        contains: ^(?#)difok\s*=\s*(1-7)
+      changed_when: false
+      register: discovered_pwquality_difok_conf
+
+    - name: MEDIUM | AZLX-23-002370 | PATCH | Amazon Linux 2023 must require the change of at least 50 percent of the total number of characters when passwords are changed.
+      when: discovered_pwquality_difok_conf.matched > 0
+      ansible.builtin.replace:
+        path: "{{ item.path }}"
+        regexp: ^(?#)difok\s*=\s*.*
+        replace: 'difok = {{ az2023stig_pwquality_difok }}'
+      loop: "{{ discovered_pwquality_difok_conf.files }}"
+      loop_control:
+        label: "{{ item }}"
+
+    - name: MEDIUM | AZLX-23-002370 | PATCH | Amazon Linux 2023 must require the change of at least 50 percent of the total number of characters when passwords are changed.
+      ansible.builtin.lineinfile:
+        path: /etc/security/pwquality.conf
+        regexp: ^(?#)difok\s*=\s*(1-7)
+        line: 'difok = {{ az2023stig_pwquality_difok }}'
+
+- name: MEDIUM | AZLX-23-002375 | PATCH | Amazon Linux 2023 must enforce a minimum 15-character password length
+  when: az2023stig_002375
+  tags:
+    - azlx-23-002375
+    - CAT2
+    - SV-274137r1120725_rule
+    - V-274137
+    - SRG-OS-000072-GPOS-00046
+    - NIST800-53R4_NA
+    - pam
+  block:
+    - name: MEDIUM | AZLX-23-002375 | AUDIT | Amazon Linux 2023 must enforce a minimum 15-character password length
+      ansible.builtin.find:
+        paths: /etc/security/
+        patterns: '*.conf'
+        contains: ^(?#)minlen\s*=\s*([1-9]|1[0-4])
+      changed_when: false
+      register: discovered_pwquality_minlen_conf
+
+    - name: MEDIUM | AZLX-23-002375 | PATCH | Amazon Linux 2023 must enforce a minimum 15-character password length
+      when: discovered_pwquality_minlen_conf.matched > 0
+      ansible.builtin.replace:
+        path: "{{ item.path }}"
+        regexp: ^(?#)minlen\s*=\s*(!?{{ az2023stig_pwquality_minlen }})\d*
+        replace: 'minlen = {{ az2023stig_pwquality_minlen }}'
+      loop: "{{ discovered_pwquality_minlen_conf.files }}"
+      loop_control:
+        label: "{{ item }}"
+
+    - name: MEDIUM | AZLX-23-002375 | PATCH | Amazon Linux 2023 must enforce a minimum 15-character password length
+      ansible.builtin.lineinfile:
+        path: /etc/security/pwquality.conf
+        regexp: ^(?#)minlen\s*=\s*(!?{{ az2023stig_pwquality_minlen }})\d*
+        line: 'minlen = {{ az2023stig_pwquality_minlen }}'
+
+- name: MEDIUM | AZLX-23-002380 | PATCH | Amazon Linux 2023 must enforce password complexity by requiring that at least one special character be used.
+  when: az2023stig_002380
+  tags:
+    - azlx-23-002380
+    - CAT2
+    - SV-274138r1120402_rule
+    - V-274138
+    - SRG-OS-000266-GPOS-00101
+    - SRG-OS-000725-GPOS-00180
+    - NIST800-53R4_NA
+    - pam
+  block:
+    - name: MEDIUM | AZLX-23-002380 | AUDIT | Amazon Linux 2023 must enforce password complexity by requiring that at least one special character be used.
+      ansible.builtin.find:
+        paths: /etc/security/
+        patterns: '*.conf'
+        contains: ^(?#)ocredit\s*=\s*(?!-1)(0|-\d)
+      changed_when: false
+      register: discovered_pwquality_ocredit_conf
+
+    - name: MEDIUM | AZLX-23-002380 | PATCH | Amazon Linux 2023 must enforce password complexity by requiring that at least one special character be used.
+      when: discovered_pwquality_ocredit_conf.matched > 0
+      ansible.builtin.replace:
+        path: "{{ item.path }}"
+        regexp: ^(?#)ocredit\s*=\s*.*
+        replace: 'ocredit = {{ az2023stig_pwquality_ocredit }}'
+      loop: "{{ discovered_pwquality_ocredit_conf.files }}"
+      loop_control:
+        label: "{{ item }}"
+
+    - name: MEDIUM | AZLX-23-002380 | PATCH | Amazon Linux 2023 must enforce password complexity by requiring that at least one special character be used.
+      ansible.builtin.lineinfile:
+        path: /etc/security/pwquality.conf
+        regexp: ^(?#)ocredit\s*=\s*(?!-1)(0|-\d)
+        line: 'ocredit = {{ az2023stig_pwquality_ocredit }}'
+
+- name: MEDIUM | AZLX-23-002385 | PATCH | Amazon Linux 2023 must enforce password complexity rules for the root account.
+  when: az2023stig_002385
+  tags:
+    - azlx-23-002385
+    - CAT2
+    - SV-274139r1120405_rule
+    - V-274139
+    - SRG-OS-000072-GPOS-00040
+    - SRG-OS-000071-GPOS-00039
+    - SRG-OS-000070-GPOS-00038
+    - SRG-OS-000266-GPOS-00101
+    - SRG-OS-000078-GPOS-00046
+    - SRG-OS-000069-GPOS-00037
+    - NIST800-53R4_NA
+    - pam
+  ansible.builtin.lineinfile:
+    path: /etc/security/pwquality.conf
+    regexp: ^(?#)enforce_for_root
+    line: 'enforce_for_root'
+
+- name: MEDIUM | AZLX-23-002390 | PATCH | Amazon Linux 2023 must prevent the use of dictionary words for passwords.
+  when: az2023stig_002390
+  tags:
+    - azlx-23-002390
+    - CAT2
+    - SV-274140r1120408_rule
+    - V-274140
+    - SRG-OS-000480-GPOS-00225
+    - NIST800-53R4_NA
+    - pam
+  block:
+    - name: MEDIUM | AZLX-23-002390 | AUDIT | Amazon Linux 2023 must prevent the use of dictionary words for passwords.
+      ansible.builtin.find:
+        paths: /etc/security/
+        patterns: '*.conf'
+        contains: ^(?#)dictcheck\s*=\s*(!?1)\d*
+      changed_when: false
+      register: discovered_pwquality_dictcheck_conf
+
+    - name: MEDIUM | AZLX-23-002390 | PATCH | Amazon Linux 2023 must prevent the use of dictionary words for passwords.
+      when: discovered_pwquality_dictcheck_conf.matched > 0
+      ansible.builtin.replace:
+        path: "{{ item.path }}"
+        regexp: ^(?#)dictcheck\s*=\s*.*
+        replace: 'dictcheck = {{ az2023stig_pwquality_dictcheck }}'
+      loop: "{{ discovered_pwquality_dictcheck_conf.files }}"
+      loop_control:
+        label: "{{ item }}"
+
+    - name: MEDIUM | AZLX-23-002390 | PATCH | Amazon Linux 2023 must prevent the use of dictionary words for passwords.
+      ansible.builtin.lineinfile:
+        path: /etc/security/pwquality.conf
+        regexp: ^(?#)dictcheck\s*=\s*(!?1)\d*
+        line: 'dictcheck = {{ az2023stig_pwquality_dictcheck }}'
+
+- name: MEDIUM | AZLX-23-002396 | PATCH | Amazon Linux 2023 must automatically exit interactive command shell user sessions after 15 minutes of inactivity.
+  when: az2023stig_002396
+  tags:
+    - azlx-23-002396
+    - CAT2
+    - SV-274142r1120414_rule
+    - V-274142
+    - SRG-OS-000163-GPOS-00072
+    - CCI-000057
+    - CCI-001133
+    - NIST800-53R4_AC-11
+    - NIST800-53R4_SC-10
+    - pam
+  block:
+    - name: MEDIUM | AZLX-23-002396 | AUDIT | Amazon Linux 2023 must automatically exit interactive command shell user sessions after 15 minutes of inactivity.
+      ansible.builtin.find:
+        paths: /etc/profile /etc/profile.d/
+        patterns: '*.sh'
+        contains: ^(?#)declare -xr TMOUT=(?!([0-9]|[1-9][0-9]|[1-5][0-9][0-9]|600)\d*)
+      changed_when: false
+      register: discovered_profile_timeout
+
+    - name: MEDIUM | AZLX-23-002396 | PATCH | Amazon Linux 2023 must automatically exit interactive command shell user sessions after 15 minutes of inactivity.
+      when: discovered_profile_timeout.matched > 0
+      ansible.builtin.replace:
+        path: "{{ item.path }}"
+        regexp: ^(?#)declare
+        replace: declare -xr TMOUT={{ az2023_profile_timeout_seconds }}
+      loop: "{{ discovered_profile_timeout.files }}"
+      loop_control:
+        label: "{{ item }}"
+
+    - name: MEDIUM | AZLX-23-002396 | PATCH | Amazon Linux 2023 must automatically exit interactive command shell user sessions after 15 minutes of inactivity.
+      when: discovered_profile_timeout.matched > 0
+      ansible.builtin.lineinfile:
+        path: /etc/security/pwquality.conf
+        regexp: ^(?#)declare
+        line: declare -xr TMOUT={{ az2023_profile_timeout_seconds }}
+        state: present

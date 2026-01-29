@@ -1,0 +1,376 @@
+---
+
+- name: MEDIUM | AZLX-23-002500 | PATCH | Amazon Linux 2023 must ensure a sticky bit be set on all public directories.
+  when: az2023stig_002500
+  tags:
+    - azlx-23-002500
+    - CAT2
+    - SV-274164r1120480_rule
+    - V-274164
+    - SRG-OS-000138-GPOS-00069
+    - CCI-001090
+    - NIST800-53R4_SC-4
+    - permissions
+  block:
+    - name: MEDIUM | AZLX-23-002500 | AUDIT | Amazon Linux 2023 must ensure a sticky bit be set on all public directories.
+      ansible.builtin.shell: df --local -P | awk {'if (NR!=1) print $6'} | xargs -I '{}' find '{}' -xdev -type d -perm -0002 -a ! -perm -1000 2>/dev/null
+      changed_when: false
+      failed_when: discovered_public_dirs_stickybit.rc not in [ 0, 1 ]
+      register: discovered_public_dirs_stickybit
+
+    - name: MEDIUM | AZLX-23-002500 | PATCH | Amazon Linux 2023 must ensure a sticky bit be set on all public directories.
+      when: discovered_public_dirs_stickybit.stdout | length > 0
+      ansible.builtin.file:
+        path: "{{ item }}"
+        mode: +t
+      loop: "{{ discovered_public_dirs_stickybit.stdout_lines }}"
+
+- name: MEDIUM | AZLX-23-002505 | PATCH | Amazon Linux 2023 must ensure all world-writable directories be owned by root, sys, bin, or an application user.
+  when: az2023stig_002505
+  tags:
+    - azlx-23-002505
+    - CAT2
+    - SV-274165r1120483_rule
+    - V-274165
+    - SRG-OS-000138-GPOS-00069
+    - CCI-001090
+    - NIST800-53R4_SC-4
+    - permissions
+  block:
+    - name: MEDIUM | AZLX-23-002505 | AUDIT | Amazon Linux 2023 must ensure all world-writable directories be owned by root, sys, bin, or an application user.
+      ansible.builtin.shell: find / -xdev -type d -perm -0002 ! -user root ! -uid +999 -exec ls -ld {} +
+      changed_when: false
+      failed_when: discovered_public_dirs.rc not in [ 0, 1 ]
+      register: discovered_public_dirs
+
+    - name: MEDIUM | AZLX-23-002505 | PATCH | Amazon Linux 2023 must ensure all world-writable directories be owned by root, sys, bin, or an application user.
+      when: discovered_public_dirs.stdout | length > 0
+      ansible.builtin.file:
+        path: "{{ item }}"
+        owner: root
+        group: root
+      loop: "{{ discovered_public_dirs.stdout_lines }}"
+
+- name: MEDIUM | AZLX-23-002510 | PATCH | Amazon Linux 2023 must terminate idle user sessions.
+  when: az2023stig_002510
+  tags:
+    - azlx-23-002510
+    - CAT2
+    - SV-274166r1120486_rule
+    - V-274166
+    - SRG-OS-000163-GPOS-00072
+    - CCI-001133
+    - NIST800-53R4_SC-10
+    - permissions
+  block:
+    - name: MEDIUM | AZLX-23-002510 | PATCH | Amazon Linux 2023 must terminate idle user sessions.
+      ansible.builtin.shell: grep -E "\bStopIdleSessionSec\s*=\s*\d*" /etc/systemd/logind.conf
+      changed_when: false
+      failed_when: discovered_logind_conf_stopsessionidle.rc not in [ 0, 1 ]
+      register: discovered_logind_conf_stopsessionidle
+
+    - name: MEDIUM | AZLX-23-002510 | PATCH | Amazon Linux 2023 must terminate idle user sessions.
+      when: discovered_logind_conf_stopsessionidle.stdout | length == 0
+      ansible.builtin.lineinfile:
+        path: /etc/systemd/logind.conf
+        regexp: ^(#|)StopIdleSessionSec\s*=\s*\d*
+        line: "StopIdleSessionSec={{ az2023stig_logind_conf_stopsessionidle }}"
+        insertafter: '^#?StopIdleSessionSec'
+        backrefs: true
+        state: present
+
+- name: MEDIUM | AZLX-23-002515 | PATCH | Amazon Linux 2023 must enable auditing of processes that start prior to the audit daemon.
+  when: az2023stig_002515
+  tags:
+    - azlx-23-002515
+    - CAT2
+    - SV-274167r1120489_rule
+    - V-274167
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000473-GPOS-00218
+    - SRG-OS-000254-GPOS-00095
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-000172
+    - CCI-001464
+    - CCI-002884
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_AU-14
+    - NIST800-53R4_MA-4
+    - auditd
+  block:
+    - name: MEDIUM | AZLX-23-002515 | PATCH | Amazon Linux 2023 must enable auditing of processes that start prior to the audit daemon.
+      ansible.builtin.command: grep "GRUB_CMDLINE_LINUX=" /etc/default/grub
+      changed_when: false
+      failed_when: discovered_auditd_grub_cmdline_linux.rc not in [ 0, 1 ]
+      register: discovered_auditd_grub_cmdline_linux
+
+    - name: MEDIUM | AZLX-23-002515 | PATCH | Amazon Linux 2023 must enable auditing of processes that start prior to the audit daemon.
+      when: discovered_auditd_grub_cmdline_linux.stdout | length == 0
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX='
+        line: 'GRUB_CMDLINE_LINUX="{{ discovered_auditd_grub_cmdline_linux.stdout }} audit=1"'
+        insertafter: '^GRUB_CMDLINE_LINUX='
+        state: present
+      notify: Update grub
+
+- name: MEDIUM | AZLX-23-002520 | PATCH | Amazon Linux 2023 must allocate an audit_backlog_limit of sufficient size to capture processes that start prior to the audit daemon.
+  when: az2023stig_002520
+  tags:
+    - azlx-23-002520
+    - CAT2
+    - SV-274168r1120492_rule
+    - V-274168
+    - SRG-OS-000254-GPOS-00095
+    - SRG-OS-000341-GPOS-00132
+    - CCI-001464
+    - CCI-001849
+    - NIST800-53R4_AU-4
+    - NIST800-53R4_AU-14
+    - auditd
+    - grub
+  block:
+    - name: MEDIUM | AZLX-23-002520 | PATCH | Amazon Linux 2023 must allocate an audit_backlog_limit of sufficient size to capture processes that start prior to the audit daemon.
+      ansible.builtin.command: grep "GRUB_CMDLINE_LINUX=" /etc/default/grub
+      changed_when: false
+      failed_when: discovered_auditd_grub_cmdline_linux.rc not in [ 0, 1 ]
+      register: discovered_auditd_grub_cmdline_linux
+
+    - name: MEDIUM | AZLX-23-002520 | PATCH | Amazon Linux 2023 must allocate an audit_backlog_limit of sufficient size to capture processes that start prior to the audit daemon.
+      when: discovered_auditd_grub_cmdline_linux.stdout | length == 0
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX='
+        line: 'GRUB_CMDLINE_LINUX="{{ discovered_auditd_grub_cmdline_linux.stdout }} audit_backlog_limit={{ az2023stig_audit_backlog_limit }}"'
+        insertafter: '^GRUB_CMDLINE_LINUX='
+        state: present
+      notify: Update grub
+
+- name: MEDIUM | AZLX-23-002535 | PATCH | Amazon Linux 2023 must enable discretionary access control on hardlinks.
+  when: az2023stig_002535
+  tags:
+    - azlx-23-002535
+    - CAT2
+    - SV-274169r1120495_rule
+    - V-274169
+    - SRG-OS-000312-GPOS-00123
+    - SRG-OS-000324-GPOS-00125
+    - CCI-002165
+    - CCI-002235
+    - NIST800-53R4_AC-3
+    - NIST800-53R4_AC-6
+    - sysctl
+  ansible.posix.sysctl:
+    name: fs.protected_hardlinks
+    value: 1
+    state: present
+    reload: "{{ az2023stig_sysctl_reload }}"
+    sysctl_set: true
+    sysctl_file: "{{ az2023stig_sysctl_file }}"
+
+- name: MEDIUM | AZLX-23-002540 | PATCH | Amazon Linux 2023 must enable discretionary access control on symlinks.
+  when: az2023stig_002540
+  tags:
+    - azlx-23-002540
+    - CAT2
+    - SV-274170r1120498_rule
+    - V-274170
+    - SRG-OS-000312-GPOS-00123
+    - SRG-OS-000324-GPOS-00125
+    - CCI-002165
+    - CCI-002235
+    - NIST800-53R4_AC-3
+    - NIST800-53R4_AC-6
+    - sysctl
+  ansible.posix.sysctl:
+    name: fs.protected_symlinks
+    value: 1
+    state: present
+    reload: "{{ az2023stig_sysctl_reload }}"
+    sysctl_set: true
+    sysctl_file: "{{ az2023stig_sysctl_file }}"
+
+- name: MEDIUM | AZLX-23-002555 | PATCH | Amazon Linux 2023 debug-shell systemd service must be disabled.
+  when: az2023stig_002555
+  tags:
+    - azlx-23-002555
+    - CAT2
+    - SV-274173r1120507_rule
+    - V-274173
+    - SRG-OS-000324-GPOS-00125
+    - CCI-002235
+    - NIST800-53R4_AC-6
+    - systemd
+  ansible.builtin.systemd:
+    name: debug-shell.service
+    enabled: false
+    masked: true
+    state: stopped
+  notify: Systemd daemon reload
+
+- name: MEDIUM | AZLX-23-002560 | PATCH | Amazon Linux 2023 chrony must be configured with a maximum interval of 24 hours between requests sent to a USNO server or a time server designated for the appropriate DOD network.
+  when: az2023stig_002560
+  tags:
+    - azlx-23-002560
+    - CAT2
+    - SV-274174r1120510_rule
+    - V-274174
+    - SRG-OS-000355-GPOS-00143
+    - NIST800-53R4_NA
+    - chrony
+  ansible.builtin.template:
+    src: etc/chrony.conf.j2
+    dest: /etc/chrony.conf
+    mode: 'u-x,go-wx'
+    owner: root
+    group: root
+  notify: Restart chrony
+
+- name: MEDIUM | AZLX-23-002565 | PATCH | Amazon Linux 2023 must synchronize internal information system clocks to the authoritative time source at least every 24 hours.
+  when: az2023stig_002565
+  tags:
+    - azlx-23-002565
+    - CAT2
+    - SV-274175r1120659_rule
+    - V-274175
+    - SRG-OS-000356-GPOS-00144
+    - SRG-OS-000785-GPOS-00250
+    - SRG-OS-000359-GPOS-00146
+    - CCI-001890
+    - NIST800-53R4_AU-8
+    - chrony
+  ansible.builtin.template:
+    src: etc/chrony.conf.j2
+    dest: /etc/chrony.conf
+    mode: 'u-x,go-wx'
+    owner: root
+    group: root
+  notify: Restart chrony
+
+- name: MEDIUM | AZLX-23-002570 | PATCH | Amazon Linux 2023 must routinely check the baseline configuration for unauthorized changes and notify the system administrator when anomalies in the operation of any security functions are discovered.
+  when: az2023stig_002570
+  tags:
+    - azlx-23-002570
+    - CAT2
+    - SV-274176r1120655_rule
+    - V-274176
+    - SRG-OS-000363-GPOS-00150
+    - CCI-001744
+    - NIST800-53R4_CM-3
+    - aide
+  ansible.builtin.cron:
+    name: Run AIDE integrity check
+    cron_file: "{{ az2023stig_aide_cron_file }}"
+    user: root
+    minute: "{{ az2023stig_aide_cron_minute | default('0') }}"
+    hour: "{{ az2023stig_aide_cron_hour | default('5') }}"
+    day: "{{ az2023stig_aide_cron_day | default('*') }}"
+    month: "{{ az2023stig_aide_cron_month | default('*') }}"
+    job: "{{ az2023stig_aide_cron_job }} {{ az2023stig_aide_send_email }}"
+
+- name: MEDIUM | AZLX-23-002575 | PATCH | Amazon Linux 2023 must prevent the loading of a new kernel for later execution.
+  when: az2023stig_002575
+  tags:
+    - azlx-23-002575
+    - CAT2
+    - SV-274177r1120519_rule
+    - V-274177
+    - SRG-OS-000366-GPOS-00153
+    - NIST800-53R4_NA
+    - sysctl
+  ansible.posix.sysctl:
+    name: kernel.kexec_load_disabled
+    value: 1
+    state: present
+    reload: "{{ az2023stig_sysctl_reload }}"
+    sysctl_set: true
+    sysctl_file: "{{ az2023stig_sysctl_file }}"
+
+- name: MEDIUM | AZLX-23-002580 | PATCH | Amazon Linux 2023 must prevent files with the setuid and setgid bit set from being executed on the /boot/efi directory.
+  when:
+    - az2023stig_002580
+    - item.mount == '/boot/efi'
+  tags:
+    - azlx-23-002580
+    - CAT2
+    - SV-274178r1120522_rule
+    - V-274178
+    - SRG-OS-000368-GPOS-00154
+    - CCI-001764
+    - NIST800-53R4_CM-7
+    - mounts
+  ansible.posix.mount:
+    path: "/boot/efi"
+    state: mounted
+    src: "{{ item.device }}"
+    fstype: "{{ item.fstype }}"
+    opts: "defaults,nosuid"
+  loop: "{{ ansible_facts.mounts }}"
+  notify: Remount /boot/efi
+
+- name: MEDIUM | AZLX-23-002585 | PATCH | Amazon Linux 2023 must mount /dev/shm with the nodev option.
+  when:
+    - az2023stig_002585
+    - item.mount == '/dev/shm'
+  tags:
+    - azlx-23-002585
+    - CAT2
+    - SV-274179r1120525_rule
+    - V-274179
+    - SRG-OS-000368-GPOS-00154
+    - CCI-001764
+    - NIST800-53R4_CM-7
+    - mounts
+  ansible.posix.mount:
+    path: "/dev/shm"
+    state: mounted
+    src: "{{ item.device }}"
+    fstype: "{{ item.fstype }}"
+    opts: "defaults,nodev"
+  loop: "{{ ansible_facts.mounts }}"
+  notify: Remount /dev/shm
+
+- name: MEDIUM | AZLX-23-002590 | PATCH | Amazon Linux 2023 must mount /dev/shm with the nosuid option.
+  when:
+    - az2023stig_002590
+    - item.mount == '/dev/shm'
+  tags:
+    - azlx-23-002590
+    - CAT2
+    - SV-274180r1120528_rule
+    - V-274180
+    - SRG-OS-000368-GPOS-00154
+    - CCI-001764
+    - NIST800-53R4_CM-7
+    - mounts
+  ansible.posix.mount:
+    path: "/dev/shm"
+    state: mounted
+    src: "{{ item.device }}"
+    fstype: "{{ item.fstype }}"
+    opts: "defaults,nosuid"
+  loop: "{{ ansible_facts.mounts }}"
+  notify: Remount /dev/shm
+
+- name: MEDIUM | AZLX-23-002595 | PATCH | Amazon Linux 2023 must ensure the pcscd service is active.
+  when: az2023stig_002595
+  tags:
+    - azlx-23-002595
+    - CAT2
+    - SV-274181r1120531_rule
+    - V-274181
+    - SRG-OS-000375-GPOS-00160
+    - NIST800-53R4_Na
+    - pcscd
+  ansible.builtin.systemd:
+    name: pcscd
+    enabled: true
+    state: started

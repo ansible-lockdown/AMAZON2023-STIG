@@ -1,0 +1,53 @@
+# STIG requirement for AMAZON2023
+# Set via Ansible-Lockdown - https://github.com/ansible-lockdown
+# Maintained and sponsored by {{ company_title }}
+
+server {{ az2023stig_chrony_server }} {{ az2023stig_chrony_server_options }}
+
+# This directive specify the location of the file containing ID/key pairs for
+# NTP authentication.
+keyfile /etc/chrony/chrony.keys
+
+# Set runtime command key.  Note that if you change the key (not the
+# password) to anything other than 1 you will need to edit
+# /etc/ppp/ip-up.d/chrony, /etc/ppp/ip-down.d/chrony, /etc/init.d/chrony
+# and /etc/cron.weekly/chrony as these scripts use it to get the password.
+
+#commandkey 1
+
+# This directive specify the file into which chronyd will store the rate
+# information.
+driftfile /var/lib/chrony/chrony.drift
+
+# Uncomment the following line to turn logging on.
+#log tracking measurements statistics
+
+# Log files location.
+logdir /var/log/chrony
+
+# Stop bad estimates upsetting machine clock.
+maxupdateskew 100.0
+
+# This directive enables kernel synchronisation (every 11 minutes) of the
+# real-time clock. Note that it can’t be used along with the 'rtcfile' directive.
+rtcsync
+
+# Dump measurements when daemon exits.
+dumponexit
+
+# Specify directory for dumping measurements.
+
+dumpdir /var/lib/chrony
+
+# This directive tells chrony to regulate the real-time clock and tells it
+# Where to store related data.  It may not work on some newer motherboards
+# that use the HPET real-time clock.  It requires enhanced real-time support in the kernel.  I've commented it out because with certain combinations of motherboard and kernel it is reported to cause lockups.
+
+# rtcfile /var/lib/chrony/chrony.rtc
+
+# If the last line of this file reads 'rtconutc' chrony will assume that
+# the CMOS clock is on UTC (GMT).  If it reads '# rtconutc' or is absent
+# chrony will assume local time.  The line (if any) was written by the
+# chrony postinst based on what it found in /etc/default/rcS.  You may
+# change it if necessary.
+rtconutc

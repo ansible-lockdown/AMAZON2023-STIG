@@ -1,0 +1,5 @@
+---
+
+- name: Import CAT 3 controls 0020xx
+  ansible.builtin.import_tasks:
+    file: az2023stig-002xxx.yml

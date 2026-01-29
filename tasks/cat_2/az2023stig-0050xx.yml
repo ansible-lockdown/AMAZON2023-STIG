@@ -1,0 +1,23 @@
+---
+
+- name: MEDIUM | AZLX-23-005000 | PATCH | Amazon Linux 2023 audit system must protect logon user identifiers (UIDs) from unauthorized change.
+  when: az2023stig_005000
+  tags:
+    - azlx-23-005000
+    - CAT2
+    - SV-274187r1120715_rule
+    - V-274187
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000475-GPOS-00220
+    - SRG-OS-000057-GPOS-00027
+    - SRG-OS-000058-GPOS-00028
+    - SRG-OS-000059-GPOS-00029
+    - CCI-000172
+    - CCI-000162
+    - CCI-000163
+    - CCI-000164
+    - NIST800-53R4_AU-9
+    - NIST800-53R4_AU-12
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true

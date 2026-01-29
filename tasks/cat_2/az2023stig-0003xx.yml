@@ -1,0 +1,61 @@
+---
+
+- name: MEDIUM | AZLX-23-000305 | PATCH | Amazon Linux 2023 must not have the sendmail package installed.
+  when: az2023stig_000305
+  tags:
+    - azlx-23-000305
+    - CAT2
+    - SV-274008r1120012_rule
+    - V-274008
+    - SRG-OS-000095-GPOS-00049
+    - NIST800-53R4_CM-7
+    - CCI-000381
+    - sendmail
+  ansible.builtin.package:
+    name: sendmail
+    state: absent
+
+- name: MEDIUM | AZLX-23-000310 | PATCH | Amazon Linux 2023 must not have the nfs-utils package installed
+  when: az2023stig_000310
+  tags:
+    - azlx-23-000310
+    - CAT2
+    - SV-274009r1120015_rule
+    - V-274009
+    - SRG-OS-000095-GPOS-00049
+    - CCI-000381
+    - NIST800-53R4_CM-7
+    - nfs
+  ansible.builtin.package:
+    name: nfs-utils
+    state: absent
+
+- name: MEDIUM | AZLX-23-000315 | PATCH | Amazon Linux 2023 must not have the telnet-server package installed.
+  when: az2023stig_000315
+  tags:
+    - azlx-23-000315
+    - CAT2
+    - SV-274010r1120018_rule
+    - V-274010
+    - SRG-OS-000095-GPOS-00049
+    - CCI-000381
+    - NIST800-53R4_CM-7
+    - telnet
+  ansible.builtin.package:
+    name: telnet-server
+    state: absent
+
+- name: MEDIUM | AZLX-23-000320 | PATCH | Amazon Linux 2023 must not have the gssproxy package installed.
+  when: az2023stig_000320
+  tags:
+    - azlx-23-000320
+    - CAT2
+    - SV-274010r1120018_rule
+    - V-274010
+    - SRG-OS-000095-GPOS-00049
+    - CCI-000381
+    - NIST800-53R4_CM-7
+    - gssproxy
+  ansible.builtin.package:
+    name: gssproxy
+    state: absent

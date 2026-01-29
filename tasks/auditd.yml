@@ -1,0 +1,37 @@
+---
+
+- name: POST | AUDITD | Ensure use of privileged commands is collected
+  ansible.builtin.shell: |
+    {%- set egrep_exclude = "(asdfmnop|{{ az2023stig_priv_command_excluded_mounts | join('|') }})" -%}
+    for i in $(df | grep '^/dev' | grep -Ev '{{ egrep_exclude }}' | awk '{ print $NF }'); do
+      find $i -xdev -type f -perm /6000 2>/dev/null;
+    done
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  register: discovered_privileged_commands
+
+- name: POST | AUDITD | Auditd_immutable_check
+  ansible.builtin.command: grep -cE "(-e 2|--loginuid-immutable)" /etc/audit/audit.rules
+  changed_when: false
+  failed_when: discovered_auditd_immutable_check.rc not in [ 0, 1 ]
+  register: discovered_auditd_immutable_check
+
+- name: POST | AUDITD | Audit_immutable_fact
+  when:
+    - discovered_auditd_immutable_check.stdout == '1'
+  ansible.builtin.debug:
+    msg: "Reboot required for auditd to apply new rules as immutable set"
+  changed_when: false
+  failed_when: false
+  notify: Reboot required
+
+- name: POST | AUDITD | Apply auditd template will only required rules will be added
+  when: update_audit_template
+  ansible.builtin.template:
+    src: etc/audit/rules.d/99_stig_rules.j2
+    dest: /etc/audit/rules.d/stig.rules
+    owner: root
+    group: root
+    mode: 'u-x,go-wx,o-r'
+  notify: Restart auditd

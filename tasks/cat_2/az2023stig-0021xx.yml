@@ -1,0 +1,546 @@
+---
+
+- name: MEDIUM | AZLX-23-002100 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/gshadow.
+  when: az2023stig_002100
+  tags:
+    - azlx-23-002100
+    - CAT2
+    - SV-274084r1120240_rule
+    - V-274084
+    - SRG-OS-000004-GPOS-00004
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000304-GPOS-00121
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000470-GPOS-00214
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000239-GPOS-00089
+    - SRG-OS-000240-GPOS-00090
+    - SRG-OS-000241-GPOS-00091
+    - SRG-OS-000303-GPOS-00120
+    - SRG-OS-000466-GPOS-00210
+    - SRG-OS-000476-GPOS-00221
+    - CCI-000018
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-000015
+    - CCI-002884
+    - CCI-000172
+    - CCI-001403
+    - CCI-001404
+    - CCI-001405
+    - CCI-002130
+    - NIST800-53R4_AC-2
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002105 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/opasswd.
+  when: az2023stig_002100
+  tags:
+    - azlx-23-002100
+    - CAT2
+    - SV-274085r1120243_rule
+    - V-274085
+    - SRG-OS-000004-GPOS-00004
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000304-GPOS-00121
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000470-GPOS-00214
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000239-GPOS-00089
+    - SRG-OS-000240-GPOS-00090
+    - SRG-OS-000241-GPOS-00091
+    - SRG-OS-000303-GPOS-00120
+    - SRG-OS-000466-GPOS-00210
+    - SRG-OS-000476-GPOS-00221
+    - CCI-000018
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-000015
+    - CCI-002884
+    - CCI-000172
+    - CCI-001403
+    - CCI-001404
+    - CCI-001405
+    - CCI-002130
+    - NIST800-53R4_AC-2
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002110 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/opasswd.
+  when: az2023stig_002110
+  tags:
+    - azlx-23-002110
+    - CAT2
+    - SV-274086r1120246_rule
+    - V-274086
+    - SRG-OS-000004-GPOS-00004
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000304-GPOS-00121
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000470-GPOS-00214
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000239-GPOS-00089
+    - SRG-OS-000240-GPOS-00090
+    - SRG-OS-000241-GPOS-00091
+    - SRG-OS-000303-GPOS-00120
+    - SRG-OS-000466-GPOS-00210
+    - SRG-OS-000476-GPOS-00221
+    - CCI-000018
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-000015
+    - CCI-002884
+    - CCI-000172
+    - CCI-001403
+    - CCI-001404
+    - CCI-001405
+    - CCI-002130
+    - NIST800-53R4_AC-2
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002115 | PATCH | Amazon Linux 2023 must audit all uses of the chmod, fchmod, and fchmodat system calls.
+  when: az2023stig_002115
+  tags:
+    - azlx-23-002115
+    - CAT2
+    - SV-274087r1120249_rule
+    - V-274087
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000064-GPOS-00033
+    - SRG-OS-000466-GPOS-00210
+    - SRG-OS-000458-GPOS-00203
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-002884
+    - CCI-000172
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002120 | PATCH | Amazon Linux 2023 must audit all uses of the chown, fchown, fchownat, and lchown system calls
+  when: az2023stig_002120
+  tags:
+    - azlx-23-002120
+    - CAT2
+    - SV-274088r1120252_rule
+    - V-274088
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000064-GPOS-00033
+    - SRG-OS-000466-GPOS-00210
+    - SRG-OS-000458-GPOS-00203
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-002884
+    - CCI-000172
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002125 | PATCH | Amazon Linux 2023 must audit all uses of the chown, fchown, fchownat, and lchown system calls
+  when: az2023stig_002125
+  tags:
+    - azlx-23-002125
+    - CAT2
+    - SV-274089r1120255_rule
+    - V-274089
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000064-GPOS-00033
+    - SRG-OS-000466-GPOS-00210
+    - SRG-OS-000458-GPOS-00203
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-002884
+    - CCI-000172
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002130 | PATCH | Amazon Linux 2023 must audit all uses of the truncate, ftruncate, creat, open, openat, and open_by_handle_at system calls.
+  when: az2023stig_002130
+  tags:
+    - azlx-23-002130
+    - CAT2
+    - SV-274090r1120258_rule
+    - V-274090
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000064-GPOS-00033
+    - SRG-OS-000466-GPOS-00210
+    - SRG-OS-000458-GPOS-00203
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-002884
+    - CCI-000172
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002135 | PATCH | Amazon Linux 2023 must audit all uses of the init_module and finit_module system calls.
+  when: az2023stig_002135
+  tags:
+    - azlx-23-002135
+    - CAT2
+    - SV-274091r1120261_rule
+    - V-274091
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000064-GPOS-00033
+    - SRG-OS-000466-GPOS-00210
+    - SRG-OS-000458-GPOS-00203
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-002884
+    - CCI-000172
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002140 | PATCH | Amazon Linux 2023 must audit all uses of the create_module system call.
+  when: az2023stig_002140
+  tags:
+    - azlx-23-002140
+    - CAT2
+    - SV-274092r1120264_rule
+    - V-274092
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000064-GPOS-00033
+    - SRG-OS-000466-GPOS-00210
+    - SRG-OS-000458-GPOS-00203
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-002884
+    - CCI-000172
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002145 | PATCH | Amazon Linux 2023 must audit all uses of the kmod command.
+  when: az2023stig_002145
+  tags:
+    - azlx-23-002145
+    - CAT2
+    - SV-274093r1120267_rule
+    - V-274093
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000064-GPOS-00033
+    - SRG-OS-000466-GPOS-00210
+    - SRG-OS-000458-GPOS-00203
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-002884
+    - CCI-000172
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002150 | PATCH | Amazon Linux 2023 must audit all uses of the rename, unlink, rmdir, renameat, and unlinkat system calls.
+  when: az2023stig_002150
+  tags:
+    - azlx-23-002150
+    - CAT2
+    - SV-274094r1120270_rule
+    - V-274094
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000466-GPOS-00210
+    - SRG-OS-000467-GPOS-00211
+    - SRG-OS-000468-GPOS-00212
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-002884
+    - CCI-000172
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002150 | PATCH | Amazon Linux 2023 must audit all uses of the rename, unlink, rmdir, renameat, and unlinkat system calls.
+  when: az2023stig_002150
+  tags:
+    - azlx-23-002150
+    - CAT2
+    - SV-274094r1120270_rule
+    - V-274094
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000466-GPOS-00210
+    - SRG-OS-000467-GPOS-00211
+    - SRG-OS-000468-GPOS-00212
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-002884
+    - CCI-000172
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002155 | PATCH | Amazon Linux 2023 must audit all uses of the chcon command.
+  when: az2023stig_002155
+  tags:
+    - azlx-23-002155
+    - CAT2
+    - SV-274095r1120273_rule
+    - V-274095
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000468-GPOS-00212
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000463-GPOS-00207
+    - SRG-OS-000465-GPOS-00209
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-002884
+    - CCI-000172
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002160 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /var/log/faillock
+  when: az2023stig_002160
+  tags:
+    - azlx-23-002160
+    - CAT2
+    - SV-274096r1120276_rule
+    - V-274096
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000468-GPOS-00212
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000463-GPOS-00207
+    - SRG-OS-000465-GPOS-00209
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-002884
+    - CCI-000172
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002165 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /var/log/lastlog.
+  when: az2023stig_002165
+  tags:
+    - azlx-23-002165
+    - CAT2
+    - SV-274097r1120279_rule
+    - V-274097
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000473-GPOS-00218
+    - SRG-OS-000470-GPOS-00214
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-002884
+    - CCI-000172
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002175 | PATCH | Amazon Linux 2023 must audit all uses of the init command.
+  when: az2023stig_002175
+  tags:
+    - azlx-23-002175
+    - CAT2
+    - SV-274098r1120282_rule
+    - V-274098
+    - SRG-OS-000477-GPOS-00222
+    - CCI-000172
+    - NIST800-53R4_AU-12
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002180 | PATCH | Amazon Linux 2023 must audit all uses of the reboot command.
+  when: az2023stig_002180
+  tags:
+    - azlx-23-002180
+    - CAT2
+    - SV-274099r1120285_rule
+    - V-274099
+    - SRG-OS-000477-GPOS-00222
+    - CCI-000172
+    - NIST800-53R4_AU-12
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002185 | PATCH | Amazon Linux 2023 must audit all uses of the shutdown command.
+  when: az2023stig_002185
+  tags:
+    - azlx-23-002185
+    - CAT2
+    - SV-274100r1120288_rule
+    - V-274100
+    - SRG-OS-000477-GPOS-00222
+    - CCI-000172
+    - NIST800-53R4_AU-12
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002190 | PATCH | Amazon Linux 2023 audit tools must have a mode of "0755" or less permissive.
+  when:
+    - az2023stig_002190
+    - az2023stig_disruption_high
+  tags:
+    - azlx-23-002190
+    - CAT2
+    - SV-274101r1120291_rule
+    - V-274101
+    - SRG-OS-000256-GPOS-00097
+    - CCI-001493
+    - NIST800-53R4_AU-9
+    - permissions
+    - auditd
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: file
+    mode: 'go-w'
+  failed_when: discovered_audit_tools.state not in '[ file, absent ]'
+  register: discovered_audit_tools
+  loop: "{{ az2023stig_audit_tools }}"
+
+- name: MEDIUM | AZLX-23-002195 | PATCH | Amazon Linux 2023 audit tools must be owned by root.
+  when:
+    - az2023stig_002195
+    - az2023stig_disruption_high
+  tags:
+    - azlx-23-002195
+    - CAT2
+    - SV-274102r1120294_rule
+    - V-274102
+    - SRG-OS-000256-GPOS-00097
+    - CCI-001493
+    - NIST800-53R4_AU-9
+    - permissions
+    - auditd
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: file
+    owner: root
+    mode: 'go-w'
+  failed_when: discovered_audit_tools.state not in '[ file, absent ]'
+  register: discovered_audit_tools
+  loop: "{{ az2023stig_audit_tools }}"

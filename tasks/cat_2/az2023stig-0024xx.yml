@@ -1,0 +1,515 @@
+---
+
+- name: MEDIUM | AZLX-23-002400 | PATCH | Amazon Linux 2023 must enforce 24 hours/1 day as the minimum password lifetime.
+  when: az2023stig_002400
+  tags:
+    - azlx-23-002400
+    - CAT2
+    - SV-274143r1120417_rule
+    - V-274143
+    - SRG-OS-000075-GPOS-00043
+    - NIST800-53R4_NA
+    - login
+  ansible.builtin.lineinfile:
+    path: /etc/login.defs
+    regexp: ^PASS_MIN_DAYS (-\d|0)
+    line: PASS_MIN_DAYS {{ az2023stig_min_days_login }}
+
+- name: MEDIUM | AZLX-23-002405 | PATCH | Amazon Linux 2023 must enforce a delay of at least four seconds between logon prompts following a failed logon attempt.
+  when: az2023stig_002405
+  tags:
+    - azlx-23-002405
+    - CAT2
+    - SV-274144r1120420_rule
+    - V-274144
+    - SRG-OS-000480-GPOS-00226
+    - CCI-000366
+    - NIST800-53R4_CM-6
+    - login
+  ansible.builtin.lineinfile:
+    path: /etc/login.defs
+    regexp: ^FAIL_DELAY (-\d|[0-3])
+    line: FAIL_DELAY {{ az2023stig_fail_delay_login }}
+
+- name: MEDIUM | AZLX-23-002410 | PATCH | Amazon Linux 2023 must define default permissions for all authenticated users in such a way that the user can only read and modify their own files.
+  when: az2023stig_002410
+  tags:
+    - azlx-23-002410
+    - CAT2
+    - SV-274145r1120423_rule
+    - V-274145
+    - SRG-OS-000480-GPOS-00228
+    - SRG-OS-000480-GPOS-00230
+    - CCI-000366
+    - NIST800-53R4_CM-6
+    - login
+  ansible.builtin.lineinfile:
+    path: /etc/login.defs
+    regexp: ^UMASK (?!{{ az2023stig_umask_login }})
+    line: UMASK {{ az2023stig_umask_login }}
+
+- name: MEDIUM | AZLX-23-002415 | AUDIT | Amazon Linux 2023 must automatically remove or disable temporary user accounts after 72 hours.
+  when: az2023stig_002415
+  tags:
+    - azlx-23-002415
+    - CAT2
+    - SV-274146r1120426_rule
+    - V-274146
+    - SRG-OS-000002-GPOS-00002
+    - CCI-000016
+    - NIST800-53R4_AC-2
+    - login
+  vars:
+    warn_control_id: "MEDIUM | AZLX-23-002415"
+  block:
+    - name: MEDIUM | AZLX-23-002415 | AUDIT | Amazon Linux 2023 must automatically remove or disable temporary user accounts after 72 hours.
+      ansible.builtin.debug:
+        msg: "WARNING!! - Please check for any temporary account ensure they are still valid"
+
+    - name: MEDIUM | AZLX-23-002415 | AUDIT | Amazon Linux 2023 must automatically remove or disable temporary user accounts after 72 hours.
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: MEDIUM | AZLX-23-002420 | PATCH | Amazon Linux 2023 must automatically lock an account when three unsuccessful logon attempts occur.
+  when: az2023stig_002420
+  tags:
+    - azlx-23-002420
+    - CAT2
+    - SV-274147r1120429_rule
+    - V-274147
+    - SRG-OS-000021-GPOS-00005
+    - CCI-000044
+    - NIST800-53R4_AC-7
+    - pam
+  block:
+    - name: MEDIUM | AZLX-23-002420 | PATCH | Amazon Linux 2023 must automatically lock an account when three unsuccessful logon attempts occur.
+      ansible.builtin.lineinfile:
+        path: /etc/pam.d/password-auth
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        insertafter: '{{ item.after | default(omit) }}'
+        insertbefore: '{{ item.before | default(omit) }}'
+      loop:
+        - { regexp: '^auth\s+(required|requisite|sufficient)\s+pam_faillock.so\s*preauth', line: 'auth        required      pam_faillock.so preauth dir={{ az2023stig_pam_faillock_dir }} silent audit deny={{ az2023stig_pam_faillock_attempts }} even_deny_root fail_interval={{ az2023stig_pam_faillock_interval }} unlock_time={{ az2023stig_pam_faillock_unlock_time }}', before: '^auth.*pam_unix.so' }
+        - { regexp: '^auth\s+(required|requisite|sufficient)\s+pam_faillock.so\s*authfail .*unlock_time=.*', line: 'auth        required      pam_faillock.so authfail dir={{ az2023stig_pam_faillock_dir }} unlock_time={{ az2023stig_pam_faillock_unlock_time }}', before: '^auth.*pam_deny.so' }
+        - { regexp: '^account\s+(required|requisite|sufficient)\s+pam_faillock.so', line: 'account     required      pam_faillock.so', before: '^account.*pam_unix.so' }
+      notify: Reboot required
+
+    - name: MEDIUM | AZLX-23-002420 | PATCH | Amazon Linux 2023 must automatically lock an account when three unsuccessful logon attempts occur.
+      ansible.builtin.lineinfile:
+        path: /etc/pam.d/system-auth
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        insertafter: '{{ item.after | default(omit) }}'
+        insertbefore: '{{ item.before | default(omit) }}'
+      loop:
+        - { regexp: '^auth\s+(required|requisite|sufficient)\s+pam_faillock.so\s*preauth', line: 'auth        required      pam_faillock.so preauth dir={{ az2023stig_pam_faillock_dir }} silent audit deny={{ az2023stig_pam_faillock_attempts }} even_deny_root fail_interval={{ az2023stig_pam_faillock_interval }} unlock_time={{ az2023stig_pam_faillock_unlock_time }}', before: '^auth.*pam_unix.so' }
+        - { regexp: '^auth\s+(required|requisite|sufficient)\s+pam_faillock.so\s*authfail .*unlock_time=.*', line: 'auth        required      pam_faillock.so authfail dir={{ az2023stig_pam_faillock_dir }} unlock_time={{ az2023stig_pam_faillock_unlock_time }}', before: '^auth.*pam_deny.so' }
+        - { regexp: '^account\s+(required|requisite|sufficient)\s+pam_faillock.so', line: 'account     required       pam_faillock.so', before: '^account.*pam_unix.so' }
+      notify: Reboot required
+
+- name: MEDIUM | AZLX-23-002425 | PATCH | Amazon Linux 2023 must be able to enforce a 60-day maximum password lifetime restriction.
+  when: az2023stig_002425
+  tags:
+    - azlx-23-002425
+    - CAT2
+    - SV-274148r1120432_rule
+    - V-274148
+    - SRG-OS-000076-GPOS-00044
+    - NIST800-53R4_NA
+    - pam
+  vars:
+    warn_control_id: "MEDIUM | AZLX-23-002425"
+  block:
+    - name: MEDIUM | AZLX-23-002425 | PATCH | Amazon Linux 2023 must be able to enforce a 60-day maximum password lifetime restriction.
+      ansible.builtin.lineinfile:
+        path: /etc/login.defs
+        regexp: ^(#?)PASS_MAX_DAYS
+        line: 'PASS_MAX_DAYS {{ az2023stig_pass_max_days }}'
+        insertafter: '# Password aging controls'
+
+    - name: MEDIUM | AZLX-23-002425 | AUDIT | Amazon Linux 2023 must be able to enforce a 60-day maximum password lifetime restriction.
+      ansible.builtin.shell: "awk -F: '(/^[^:]+:[^!*]/ && ($5>{{ az2023stig_pass_max_days }} || $5 == -1)){print $1}' /etc/shadow"
+      changed_when: false
+      failed_when: false
+      register: discovered_passwd_max_days
+
+    - name: MEDIUM | AZLX-23-002425 | AUDIT | Amazon Linux 2023 must be able to enforce a 60-day maximum password lifetime restriction.
+      when:
+        - discovered_passwd_max_days.stdout is defined
+        - discovered_passwd_max_days.stdout | length > 0
+      ansible.builtin.debug:
+        msg: "Warning!! Your ansible user found to be not compliant with maxdays - Manual intervention required"
+
+    - name: MEDIUM | AZLX-23-002425 | AUDIT | Amazon Linux 2023 must be able to enforce a 60-day maximum password lifetime restriction.
+      when:
+        - discovered_passwd_max_days.stdout is defined
+        - discovered_passwd_max_days.stdout | length > 0
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: MEDIUM | AZLX-23-002430 | PATCH | Amazon Linux 2023 must disable account identifiers (individuals, groups, roles, and devices) after 35 days of inactivity.
+  when: az2023stig_002430
+  tags:
+    - azlx-23-002430
+    - CAT2
+    - SV-274149r1120435_rule
+    - V-274149
+    - SRG-OS-000118-GPOS-00060
+    - SRG-OS-000590-GPOS-00110
+    - NIST800-53R4_NA
+    - pam
+  ansible.builtin.lineinfile:
+    path: /etc/default/useradd
+    regexp: ^INACTIVE\s*=\s*\d*
+    line: 'INACTIVE = {{ az2023stig_pass_inactive_days }}'
+
+- name: MEDIUM | AZLX-23-002435 | PATCH | Amazon Linux 2023 must automatically expire temporary accounts within 72 hours.
+  when: az2023stig_002435
+  tags:
+    - azlx-23-002435
+    - CAT2
+    - SV-274150r1120438_rule
+    - V-274150
+    - SRG-OS-000123-GPOS-00064
+    - CCI-001682
+    - NIST800-53R4_AC-2
+    - pam
+  vars:
+    warn_control_id: "MEDIUM | AZLX-23-002435"
+  block:
+    - name: MEDIUM | AZLX-23-002435 | AUDIT | Amazon Linux 2023 must automatically remove or disable temporary user accounts after 72 hours.
+      ansible.builtin.debug:
+        msg: "WARNING!! - Please check for any temporary account ensure they are still valid"
+
+    - name: MEDIUM | AZLX-23-002435 | AUDIT | Amazon Linux 2023 must automatically remove or disable temporary user accounts after 72 hours.
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: MEDIUM | AZLX-23-002440 | PATCH | Amazon Linux 2023 must restrict the use of the "su" command.
+  when: az2023stig_002440
+  tags:
+    - azlx-23-002440
+    - CAT2
+    - SV-274151r1120441_rule
+    - V-274151
+    - SRG-OS-000312-GPOS-00123
+    - CCI-001682
+    - NIST800-53R4_AC-2
+    - pam
+  block:
+    - name: MEDIUM | AZLX-23-002440 | PATCH | Amazon Linux 2023 must restrict the use of the "su" command.
+      ansible.builtin.group:
+        name: wheel
+        state: present
+
+    - name: MEDIUM | AZLX-23-002440 | PATCH | Amazon Linux 2023 must restrict the use of the "su" command.
+      ansible.builtin.lineinfile:
+        path: /etc/pam.d/su
+        regexp: ^#auth required pam_wheel.so use_uid
+        line: auth required pam_wheel.so use_uid
+
+- name: MEDIUM | AZLX-23-002445 | PATCH | Amazon Linux 2023 must enable the SELinux targeted policy.
+  when:
+    - az2023stig_002445
+    - az2023stig_disruption_high
+  tags:
+    - azlx-23-002445
+    - CAT2
+    - SV-274152r1120738_rule
+    - V-274152
+    - SRG-OS-000445-GPOS-00199
+    - CCI-002696
+    - NIST800-53R4_SI-6
+    - selinux
+  ansible.posix.selinux:
+    policy: "{{ az2023stig_selinux_policy }}"
+    state: "{{ az2023stig_selinux_mode }}"
+  notify: Reboot required
+
+- name: MEDIUM | AZLX-23-002445 | PATCH | Amazon Linux 2023 must enable the SELinux targeted policy.
+  when:
+    - az2023stig_002445
+    - az2023stig_disruption_high
+  tags:
+    - azlx-23-002445
+    - CAT2
+    - SV-274152r1120738_rule
+    - V-274152
+    - SRG-OS-000445-GPOS-00199
+    - CCI-002696
+    - NIST800-53R4_SI-6
+    - selinux
+  ansible.posix.selinux:
+    policy: "{{ az2023stig_selinux_policy }}"
+    state: "{{ az2023stig_selinux_mode }}"
+  notify: Reboot required
+
+- name: MEDIUM | AZLX-23-002455 | PATCH | Amazon Linux 2023 must automatically lock an account when three unsuccessful logon attempts occur.
+  when: az2023stig_002455
+  tags:
+    - azlx-23-002455
+    - CAT2
+    - SV-274154r1120450_rule
+    - V-274154
+    - SRG-OS-000329-GPOS-00128
+    - CCI-002238
+    - NIST800-53R4_AC-7
+    - pam
+  ansible.builtin.lineinfile:
+    path: /etc/security/faillock.conf
+    regexp: ^(#?)deny\s*=\s*(?!3\d*)
+    line: deny = {{ az2023stig_pam_faillock_attempts }}
+
+- name: MEDIUM | AZLX-23-002460 | PATCH | Amazon Linux 2023 must automatically lock the root account until the root account is released by an administrator when three unsuccessful logon attempts occur during a 15-minute time period.
+  when: az2023stig_002460
+  tags:
+    - azlx-23-002460
+    - CAT2
+    - SV-274155r1120453_rule
+    - V-274155
+    - SRG-OS-000329-GPOS-00128
+    - CCI-002238
+    - NIST800-53R4_AC-7
+    - pam
+  ansible.builtin.lineinfile:
+    path: /etc/security/faillock.conf
+    regexp: ^(#?)even_deny_root
+    line: even_deny_root
+
+- name: MEDIUM | AZLX-23-002465 | PATCH | Amazon Linux 2023 must automatically lock an account until the locked account is released by an administrator when three unsuccessful logon attempts in 15 minutes occur.
+  when: az2023stig_002465
+  tags:
+    - azlx-23-002465
+    - CAT2
+    - SV-274156r1120456_rule
+    - V-274156
+    - SRG-OS-000329-GPOS-00128
+    - CCI-002238
+    - NIST800-53R4_AC-7
+    - pam
+  ansible.builtin.lineinfile:
+    path: /etc/security/faillock.conf
+    regexp: ^(#?)fail_interval\s*=\s*
+    line: fail_interval = {{ az2023stig_pam_faillock_interval }}
+
+- name: MEDIUM | AZLX-23-002470 | PATCH | Amazon Linux 2023 must maintain an account lock until the locked account is released by an administrator.
+  when: az2023stig_002470
+  tags:
+    - azlx-23-002470
+    - CAT2
+    - SV-274157r1120459_rule
+    - V-274157
+    - SRG-OS-000329-GPOS-00128
+    - CCI-002238
+    - NIST800-53R4_AC-7
+    - pam
+  ansible.builtin.lineinfile:
+    path: /etc/security/faillock.conf
+    regexp: ^(#?)unlock_time\s*=\s*
+    line: unlock_time = {{ az2023stig_pam_faillock_unlock_time }}
+
+- name: MEDIUM | AZLX-23-002475 | AUDIT | Amazon Linux 2023 must be configured to prohibit or restrict the use of functions, ports, protocols, and/or services, as defined in the Ports, Protocols, and Services Management Category Assurance List (PPSM CAL) and vulnerability assessments.
+  when: az2023stig_002475
+  tags:
+    - azlx-23-002475
+    - CAT2
+    - SV-274158r1120462_rule
+    - V-274158
+    - SRG-OS-000096-GPOS-00050
+    - SRG-OS-000297-GPOS-00115
+    - CCI-000382
+    - CCI-002314
+    - NIST800-53R4_CM-7
+    - NIST800-53R4_AC-17
+    - firewall
+  vars:
+    warn_control_id: "MEDIUM | AZLX-23-002475"
+  block:
+    - name: MEDIUM | AZLX-23-002475 | AUDIT | Amazon Linux 2023 must be configured to prohibit or restrict the use of functions, ports, protocols, and/or services, as defined in the Ports, Protocols, and Services Management Category Assurance List (PPSM CAL) and vulnerability assessments.
+      ansible.builtin.command: firewall-cmd --list-all
+      changed_when: false
+      register: discovered_firewall_state
+
+    - name: MEDIUM | AZLX-23-002475 | AUDIT | Amazon Linux 2023 must be configured to prohibit or restrict the use of functions, ports, protocols, and/or services, as defined in the Ports, Protocols, and Services Management Category Assurance List (PPSM CAL) and vulnerability assessments.
+      when: discovered_firewall_state.stdout_lines is defined
+      ansible.builtin.debug:
+        msg: |
+          Warning!! The following output is what firewalld is accepting on service ports to {{ ansible_hostname }}.
+          {{ discovered_firewall_state.stdout_lines }}
+
+    - name: MEDIUM | AZLX-23-002475 | AUDIT | Amazon Linux 2023 must be configured to prohibit or restrict the use of functions, ports, protocols, and/or services, as defined in the Ports, Protocols, and Services Management Category Assurance List (PPSM CAL) and vulnerability assessments.
+      when: discovered_firewall_state.stdout_lines is defined
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: MEDIUM | AZLX-23-002480 | PATCH | Amazon Linux 2023 must insure all interactive users have a primary group that exists.
+  when: az2023stig_002480
+  tags:
+    - azlx-23-002480
+    - CAT2
+    - SV-274159r1120465_rule
+    - V-274159
+    - SRG-OS-000104-GPOS-00051
+    - SRG-OS-000121-GPOS-00062
+    - SRG-OS-000042-GPOS-00020
+    - CCI-000764
+    - CCI-000804
+    - CCI-000135
+    - NIST800-53R4_IA-2
+    - NIST800-53R4_IA-8
+    - NIST800-53R4_AU-3
+    - login
+  vars:
+    warn_control_id: "MEDIUM | AZLX-23-002480"
+  block:
+    - name: MEDIUM | AZLX-23-002480 | AUDIT | Amazon Linux 2023 must insure all interactive users have a primary group that exists.
+      ansible.builtin.command: pwck -qr
+      changed_when: false
+      register: discovered_pwck_state
+
+    - name: MEDIUM | AZLX-23-002480 | AUDIT | Amazon Linux 2023 must insure all interactive users have a primary group that exists.
+      when:
+        - discovered_pwck_state.stdout_lines is defined
+        - discovered_pwck_state.stdout_lines | length > 0
+      ansible.builtin.debug:
+        msg: |
+          Warning!! Not all interactive users have a primary group that exists.
+          {{ discovered_pwck_state.stdout_lines }}
+
+    - name: MEDIUM | AZLX-23-002480 | AUDIT | Amazon Linux 2023 must insure all interactive users have a primary group that exists.
+      when:
+        - discovered_pwck_state.stdout_lines is defined
+        - discovered_pwck_state.stdout_lines | length > 0
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: MEDIUM | AZLX-23-002485 | AUDIT | Amazon Linux 2023 must insure all interactive users have a unique user ID (UIDs).
+  when: az2023stig_002485
+  tags:
+    - azlx-23-002485
+    - CAT2
+    - SV-274160r1120468_rule
+    - V-274160
+    - SRG-OS-000104-GPOS-00051
+    - SRG-OS-000121-GPOS-00062
+    - SRG-OS-000042-GPOS-00020
+    - CCI-000764
+    - CCI-000804
+    - CCI-000135
+    - NIST800-53R4_IA-2
+    - NIST800-53R4_IA-8
+    - NIST800-53R4_AU-3
+    - login
+  vars:
+    warn_control_id: "MEDIUM | AZLX-23-002485"
+  block:
+    - name: MEDIUM | AZLX-23-002485 | AUDIT | Amazon Linux 2023 must insure all interactive users have a unique user ID (UIDs).
+      ansible.builtin.command: awk -F ":" 'list[$3]++{print $1, $3}' /etc/passwd
+      changed_when: false
+      register: discovered_unique_uid
+
+    - name: MEDIUM | AZLX-23-002485 | AUDIT | Amazon Linux 2023 must insure all interactive users have a unique user ID (UIDs).
+      when:
+        - discovered_unique_uid.stdout_lines is defined
+        - discovered_unique_uid.stdout_lines | length > 0
+      ansible.builtin.debug:
+        msg: |
+          Warning!! Not all interactive users have a unique user ID (UIDs).
+          {{ discovered_unique_uid.stdout_lines }}
+
+    - name: MEDIUM | AZLX-23-002485 | AUDIT | Amazon Linux 2023 must insure all interactive users have a unique user ID (UIDs).
+      when:
+        - discovered_unique_uid.stdout_lines is defined
+        - discovered_unique_uid.stdout_lines | length > 0
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: MEDIUM | AZLX-23-002489 | PATCH | Amazon Linux 2023 must ensure the password complexity module is enabled in the password-auth file.
+  when: az2023stig_002489
+  tags:
+    - azlx-23-002489
+    - CAT2
+    - SV-274161r1120471_rule
+    - V-274161
+    - SRG-OS-000069-GPOS-00037
+    - CCI-000192
+    - CCI-000193
+    - NIST800-53R4_IA-5
+    - pamd
+  vars:
+    warn_control_id: "MEDIUM | AZLX-23-002489"
+  block:
+    - name: MEDIUM | AZLX-23-002489 | AUDIT | Amazon Linux 2023 must ensure the password complexity module is enabled in the password-auth file.
+      ansible.builtin.shell: grep "password.*pam_pwquality.so" /etc/pam.d/password-auth
+      changed_when: false
+      failed_when: discovered_pwquality_password_auth_status.rc not in [ 0, 1 ]
+      register: discovered_pwquality_password_auth_status
+
+    - name: MEDIUM | AZLX-23-002489 | AUDIT | Amazon Linux 2023 must ensure the password complexity module is enabled in the password-auth file.
+      when: discovered_pwquality_password_auth_status.stdout | length == 0
+      ansible.builtin.lineinfile:
+        path: /etc/pam.d/password-auth
+        regexp: '^(password\s+)(required|requisite)(\s+pam_pwquality.so.*)\sretry=\d(.*)'
+        line: '"\1required\3 retry={{ az2023stig_pam_retry }}\4"'
+        insertafter: '^password'
+        backrefs: true
+
+- name: MEDIUM | AZLX-23-002490 | PATCH | Amazon Linux 2023 password-auth must be configured to use a sufficient number of hashing rounds.
+  when: az2023stig_002490
+  tags:
+    - azlx-23-002490
+    - CAT2
+    - SV-274162r1120474_rule
+    - V-274162
+    - SRG-OS-000073-GPOS-00041
+    - SRG-OS-000120-GPOS-00061
+    - CCI-000803
+    - NIST800-53R4_IA-7
+    - NIST800-53R4_IA-5
+    - pamd
+  block:
+    - name: MEDIUM | AZLX-23-002490 | AUDIT | Amazon Linux 2023 password-auth must be configured to use a sufficient number of hashing rounds.
+      ansible.builtin.shell: grep "password.*pam_unix.so" /etc/pam.d/password-auth
+      changed_when: false
+      failed_when: discovered_pwquality_password_auth_status.rc not in [ 0, 1 ]
+      register: discovered_pwquality_password_auth_status
+
+    - name: MEDIUM | AZLX-23-002490 | PATCH | Amazon Linux 2023 password-auth must be configured to use a sufficient number of hashing rounds.
+      when: discovered_pwquality_password_auth_status.stdout | length == 0
+      ansible.builtin.lineinfile:
+        path: /etc/pam.d/password-auth
+        regexp: '^(password\s+)(required|requisite)(\s+pam_unix.so.*)\s(.*)'
+        line: '"\1required\3 sha512 rounds={{ az2023stig_pam_rounds }}\4"'
+        insertafter: '^password'
+        backrefs: true
+        state: present
+
+- name: MEDIUM | AZLX-23-002495 | PATCH | Amazon Linux 2023 system-auth must be configured to use a sufficient number of hashing rounds.
+  when: az2023stig_002495
+  tags:
+    - azlx-23-002495
+    - CAT2
+    - SV-274163r1120477_rule
+    - V-274163
+    - SRG-OS-000073-GPOS-00041
+    - SRG-OS-000120-GPOS-00061
+    - CCI-000803
+    - NIST800-53R4_IA-7
+    - pamd
+  block:
+    - name: MEDIUM | AZLX-23-002495 | AUDIT | Amazon Linux 2023 system-auth must be configured to use a sufficient number of hashing rounds.
+      ansible.builtin.shell: grep "password.*pam_unix.so" /etc/pam.d/system-auth
+      changed_when: false
+      failed_when: discovered_pwquality_system_auth_status.rc not in [ 0, 1 ]
+      register: discovered_pwquality_system_auth_status
+
+    - name: MEDIUM | AZLX-23-002495 | PATCH | Amazon Linux 2023 system-auth must be configured to use a sufficient number of hashing rounds.
+      when: discovered_pwquality_system_auth_status.stdout | length == 0
+      ansible.builtin.lineinfile:
+        path: /etc/pam.d/system-auth
+        regexp: '^(password\s+)(required|requisite)(\s+pam_unix.so.*)\s(.*)'
+        line: '"\1required\3 sha512 rounds={{ az2023stig_pam_rounds }}\4"'
+        insertafter: '^password'
+        backrefs: true
+        state: present

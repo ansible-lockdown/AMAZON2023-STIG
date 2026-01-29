@@ -1,0 +1,106 @@
+---
+
+# Chrony is configured via amazon will insert its own config file to /run/chrony.d/ntp-pool.sources as a link to /usr/share/chrony/ntp-pool.sources
+# In order for the correct ntp services to be used, we need to remove the link and restart chronyd
+
+- name: If chronyd source file exists, restart chronyd
+  when:
+  - prelim_chronyd_source_status.stat.exists
+  - prelim_chronyd_source_status.stat.lnk_target == "/usr/share/chrony/ntp-pool.sources"
+  ansible.builtin.systemd:
+    name: chronyd
+    state: stopped
+  register: chronyd_stopped
+  listen: Restart chrony
+
+- name: If Chronyd source file exists remove it
+  when: chronyd_stopped.changed
+  ansible.builtin.file:
+    path: /run/chrony/ntp-pool.sources
+    state: absent
+  listen: Restart chrony
+
+- name: Add file to /run/chrony.d/.configured to prevent re-configuration
+  ansible.builtin.file:
+    path: /run/chrony.d/.configured
+    state: touch
+    owner: root
+    group: root
+    mode: 'u-x,go-wx'
+  listen: Restart chrony
+
+- name: Restart chrony daemon
+  ansible.builtin.systemd:
+    name: chronyd
+    state: restarted
+  listen: Restart chrony
+
+- name: Restart ssh
+  ansible.builtin.systemd:
+    name: sshd
+    state: restarted
+
+- name: Restart rsyslog
+  ansible.builtin.systemd:
+    name: rsyslog
+    state: restarted
+
+- name: Restart firewalld
+  ansible.builtin.systemd:
+    name: firewalld
+    state: restarted
+
+- name: Check for sssd config
+  when: "'sssd' in ansible_facts.packages"
+  ansible.builtin.stat:
+    path: /etc/sssd/sssd.conf
+  register: sssd_config_stat
+  listen: Restart sssd
+
+- name: Restart sssd
+  when: "'sssd' in ansible_facts.packages and sssd_config_stat.stat.exists"
+  ansible.builtin.systemd:
+    name: sssd
+    state: restarted
+  listen: Restart sssd
+
+- name: Update grub
+  ansible.builtin.command: grub2-mkconfig -o /boot/grub2/grub.cfg
+  changed_when: true
+  failed_when: false
+  notify: Reboot required
+
+- name: Systemd daemon reload
+  ansible.builtin.systemd:
+    daemon_reload: true
+  notify: Reboot required
+
+- name: Remount /boot/efi
+  ansible.posix.mount:
+    path: "/boot/efi"
+    state: remounted
+
+- name: Remount /dev/shm
+  ansible.posix.mount:
+    path: "/dev/shm"
+    state: remounted
+
+- name: Restart journald
+  ansible.builtin.systemd:
+    name: systemd-journald
+    state: restarted
+
+- name: Restart systemd-journal-upload
+  ansible.builtin.systemd:
+    name: systemd-journal-upload
+    state: restarted
+
+- name: Restart auditd
+  ansible.builtin.command: /sbin/service auditd restart  # noqa command-instead-of-module
+  changed_when: true
+  failed_when: false
+  notify: Reboot required
+
+- name: Reboot required
+  ansible.builtin.set_fact:
+    reboot_required: true

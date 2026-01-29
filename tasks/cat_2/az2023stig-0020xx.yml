@@ -1,0 +1,425 @@
+---
+
+- name: MEDIUM | AZLX-23-002000 | PATCH | Amazon Linux 2023 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system.
+  when: az2023stig_002000
+  tags:
+    - azlx-23-002000
+    - CAT2
+    - SV-274065r1120699_rule
+    - V-274065
+    - SRG-OS-000023-GPOS-00006
+    - CCI-000048
+    - NIST800-53R4_AC-8
+  ansible.builtin.template:
+    src: etc/issue.net.j2
+    dest: /etc/issue.net
+    group: root
+    mode: 'go-wx'
+    owner: root
+
+- name: MEDIUM | AZLX-23-002005 | PATCH | Amazon Linux 2023 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access to the system via a SSH logon.
+  when: az2023stig_002005
+  tags:
+    - azlx-23-002005
+    - CAT2
+    - SV-274066r1120186_rule
+    - V-274066
+    - SRG-OS-000228-GPOS-00088
+    - CCI-001384
+    - CCI-001385
+    - CCI-001386
+    - CCI-001387
+    - CCI-001388
+    - NIST800-53R4_AC-8
+    - ssh
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: ^(#?)Banner
+    line: Banner /etc/issue.net
+    validate: sshd -t -f %s
+  notify: Restart ssh
+
+- name: MEDIUM | AZLX-23-002015 | PATCH | Amazon Linux 2023 must allocate audit record storage capacity to store at least one week's worth of audit records, when audit records are not immediately sent to a central audit record storage facility.
+  when: az2023stig_002015
+  tags:
+    - azlx-23-002015
+    - CAT2
+    - SV-274067r1120653_rule
+    - V-274067
+    - SRG-OS-000341-GPOS-00132
+    - CCI-001849
+    - NIST800-53R4_AU-4
+    - auditd
+  vars:
+    warn_control_id: "MEDIUM | AZLX-23-002015"
+  block:
+    - name: MEDIUM | AZLX-23-002015 | AUDIT | Amazon Linux 2023 must allocate audit record storage capacity to store at least one week's worth of audit records, when audit records are not immediately sent to a central audit record storage facility.
+      ansible.builtin.shell: grep ^log_file /etc/audit/auditd.conf | awk '{ print $NF }'
+      changed_when: false
+      register: discovered_auditd_logfile
+
+    - name: MEDIUM | AZLX-23-002015 | AUDIT | Amazon Linux 2023 must allocate audit record storage capacity to store at least one week's worth of audit records, when audit records are not immediately sent to a central audit record storage facility.
+      when: az2023stig_audit_log_filesystem in ansible_facts.mounts | map(attribute='mount') | list
+      ansible.builtin.set_fact:
+        audit_filesystem_space_left: "{{ (ansible_facts.mounts | selectattr('mount', 'equalto', az2023stig_audit_log_filesystem) | list | first).size_available / 1024 / 1024 | int }}"
+
+    - name: MEDIUM | AZLX-23-002015 | AUDIT | Amazon Linux 2023 must allocate audit record storage capacity to store at least one week's worth of audit records, when audit records are not immediately sent to a central audit record storage facility.
+      when: audit_filesystem_space_left is defined
+      ansible.builtin.debug:
+        msg:
+          - "WARNING!! Below is the path and size of the partition for the audit logs."
+          - "Please make sure there is enough disk space for 1 week of logs"
+          - "Mount: {{ az2023stig_audit_log_filesystem }}"
+          - "Logfile: {{ discovered_auditd_logfile.stdout }}"
+          - "Disk Space remaining: {{ audit_filesystem_space_left }}MB"
+
+    - name: MEDIUM | AZLX-23-002015 | AUDIT | Amazon Linux 2023 must allocate audit record storage capacity to store at least one week's worth of audit records, when audit records are not immediately sent to a central audit record storage facility.
+      when: audit_filesystem_space_left is not defined
+      ansible.builtin.debug:
+        msg:
+          - "WARNING!! The audit log filesystem is not mounted."
+          - "Please make sure the audit log filesystem is mounted."
+
+    - name: MEDIUM | AZLX-23-002015 | AUDIT | Amazon Linux 2023 must allocate audit record storage capacity to store at least one week's worth of audit records, when audit records are not immediately sent to a central audit record storage facility.
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: MEDIUM | AZLX-23-002025 | PATCH | Amazon Linux 2023 must label all off-loaded audit logs before sending them to the central log server.
+  when: az2023stig_002025
+  tags:
+    - azlx-23-002025
+    - CAT2
+    - SV-274069r1120195_rule
+    - V-274069
+    - SRG-OS-000342-GPOS-00133
+    - CCI-001851
+    - NIST800-53R4_AU-4
+    - auditd
+  ansible.builtin.lineinfile:
+    path: /etc/audit/auditd.conf
+    regexp: ^(#?)name_format\s*=\s*(?!{{ az2023stig_auditd_name_format }})
+    line: name_format = {{ az2023stig_auditd_name_format }}
+
+- name: MEDIUM | AZLX-23-002030 | PATCH | Amazon Linux 2023 must take appropriate action when the internal event queue is full.
+  when: az2023stig_002030
+  tags:
+    - azlx-23-002030
+    - CAT2
+    - SV-274070r1120198_rule
+    - V-274070
+    - SRG-OS-000342-GPOS-00133
+    - CCI-001851
+    - NIST800-53R4_AU-4
+    - auditd
+  ansible.builtin.lineinfile:
+    path: /etc/audit/auditd.conf
+    regexp: ^(#?)overflow_action\s*=\s*(?!{{ az2023stig_auditd_overflow_action }}).*
+    line: overflow_action = {{ az2023stig_auditd_overflow_action }}
+
+- name: MEDIUM | AZLX-23-002035 | PATCH | Amazon Linux 2023 must take action when allocated audit record storage volume reaches 75 percent of the repository maximum audit record storage capacity.
+  when: az2023stig_002035
+  tags:
+    - azlx-23-002035
+    - CAT2
+    - SV-274071r1120201_rule
+    - V-274071
+    - SRG-OS-000343-GPOS-00134
+    - CCI-001851
+    - NIST800-53R4_AU-5
+    - auditd
+  ansible.builtin.lineinfile:
+    path: /etc/audit/auditd.conf
+    regexp: ^(#?)space_left\s*=\s*(?!{{ az2023stig_auditd_space_left }})\d*%
+    line: space_left = {{ az2023stig_auditd_space_left }}
+
+- name: MEDIUM | AZLX-23-002040 | PATCH | Amazon Linux 2023 must notify the system administrator (SA) and information system security officer (ISSO) (at a minimum) when allocated audit record storage volume 75 percent utilization.
+  when: az2023stig_002040
+  tags:
+    - azlx-23-002040
+    - CAT2
+    - SV-274072r1120204_rule
+    - V-274072
+    - SRG-OS-000343-GPOS-00134
+    - CCI-001851
+    - NIST800-53R4_AU-5
+    - auditd
+  ansible.builtin.lineinfile:
+    path: /etc/audit/auditd.conf
+    regexp: ^(#?)space_left_action\s*=\s*{{ az2023stig_auditd_space_left_action }}.*
+    line: space_left_action = {{ az2023stig_auditd_space_left_action }}
+
+- name: MEDIUM | AZLX-23-002045 | PATCH | Amazon Linux 2023 must take action when allocated audit record storage volume reaches 95 percent of the audit record storage capacity.
+  when: az2023stig_002045
+  tags:
+    - azlx-23-002045
+    - CAT2
+    - SV-274073r1120207_rule
+    - V-274073
+    - SRG-OS-000343-GPOS-00134
+    - CCI-001851
+    - NIST800-53R4_AU-5
+    - auditd
+  ansible.builtin.lineinfile:
+    path: /etc/audit/auditd.conf
+    regexp: ^(#?)admin_space_left\s*=\s*{{ az2023stig_auditd_admin_space_left }}.*
+    line: admin_space_left = {{ az2023stig_auditd_admin_space_left }}
+
+- name: MEDIUM | AZLX-23-002050 | PATCH | Amazon Linux 2023 must take action when allocated audit record storage volume reaches 95 percent of the repository maximum audit record storage capacity.
+  when: az2023stig_002050
+  tags:
+    - azlx-23-002050
+    - CAT2
+    - SV-274074r1120210_rule
+    - V-274074
+    - SRG-OS-000343-GPOS-00134
+    - CCI-001855
+    - NIST800-53R4_AU-5
+    - auditd
+  ansible.builtin.lineinfile:
+    path: /etc/audit/auditd.conf
+    regexp: ^(#?)admin_space_left_action\s*=\s*{{ az2023stig_auditd_admin_space_left_action }}.*
+    line: admin_space_left_action = {{ az2023stig_auditd_admin_space_left_action }}
+
+- name: MEDIUM | AZLX-23-002055 | PATCH | Amazon Linux 2023 must immediately notify the system administrator (SA) and information system security officer (ISSO), at a minimum, of an audit processing failure event.
+  when: az2023stig_002055
+  tags:
+    - azlx-23-002055
+    - CAT2
+    - SV-274075r1120700_rule
+    - V-274075
+    - SRG-OS-000343-GPOS-00134
+    - CCI-001855
+    - NIST800-53R4_AU-5
+    - auditd
+  ansible.builtin.lineinfile:
+    path: /etc/audit/auditd.conf
+    regexp: ^(#?)action_mail_acct\s*=\s*{{ az2023stig_auditd_action_mail_acct }}.*
+    line: action_mail_acct = {{ az2023stig_auditd_action_mail_acct }}
+
+- name: MEDIUM | AZLX-23-002060 | PATCH | Amazon Linux 2023 must be configured to off-load audit records onto a different system from the system being audited via syslog.
+  when: az2023stig_002060
+  tags:
+    - azlx-23-002060
+    - CAT2
+    - SV-274076r1120216_rule
+    - V-274076
+    - SRG-OS-000479-GPOS-00224
+    - CCI-001852
+    - NIST800-53R4_AU-4
+    - syslog
+  ansible.builtin.lineinfile:
+    path: /etc/audit/plugins.d/syslog.conf
+    regexp: ^(#?)active\s*=\s*>*
+    line: active = yes
+
+- name: MEDIUM | AZLX-23-002065 | PATCH | Amazon Linux 2023 must authenticate the remote logging server for off-loading audit logs via rsyslog.
+  when: az2023stig_002065
+  tags:
+    - azlx-23-002065
+    - CAT2
+    - SV-274077r1120219_rule
+    - V-274077
+    - SRG-OS-000479-GPOS-00224
+    - CCI-001851
+    - NIST800-53R4_AU-4
+    - syslog
+  ansible.builtin.lineinfile:
+    path: "{{ az2023stig_rsyslog_offload_conf_file | default('/etc/rsyslog.conf') }}"
+    regexp: ^(#?)\$ActionSendStreamDriverAuthMode.*
+    line: '$ActionSendStreamDriverAuthMode x509/name'
+
+- name: MEDIUM | AZLX-23-002070 | PATCH | Amazon Linux 2023 must encrypt the transfer of audit records off-loaded onto a different system or media from the system being audited via rsyslog.
+  when: az2023stig_002070
+  tags:
+    - azlx-23-002070
+    - CAT2
+    - SV-274078r1120222_rule
+    - V-274078
+    - SRG-OS-000479-GPOS-00224
+    - CCI-001851
+    - NIST800-53R4_AU-4
+    - syslog
+  ansible.builtin.lineinfile:
+    path: "{{ az2023stig_rsyslog_offload_conf_file | default('/etc/rsyslog.conf') }}"
+    regexp: ^(#?)\$ActionSendStreamDriverMode .*
+    line: '$ActionSendStreamDriverMode 1'
+
+- name: MEDIUM | AZLX-23-002075 | PATCH | Amazon Linux 2023 must encrypt via the gtls driver the transfer of audit records off-loaded onto a different system or media from the system being audited via rsyslog.
+  when: az2023stig_002075
+  tags:
+    - azlx-23-002075
+    - CAT2
+    - SV-274079r1120724_rule
+    - V-274079
+    - SRG-OS-000479-GPOS-00224
+    - CCI-001851
+    - NIST800-53R4_AU-4
+    - syslog
+  ansible.builtin.lineinfile:
+    path: "{{ az2023stig_rsyslog_offload_conf_file | default('/etc/rsyslog.conf') }}"
+    regexp: ^(#?)\$ActionSendStreamDriverMode .*
+    line: '$ActionSendStreamDriverMode 1'
+
+- name: MEDIUM | AZLX-23-002085 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/sudoers.
+  when: az2023stig_002085
+  tags:
+    - azlx-23-002085
+    - CAT2
+    - SV-274081r1120231_rule
+    - V-274081
+    - SRG-OS-000004-GPOS-00004
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000304-GPOS-00121
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000470-GPOS-00214
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000239-GPOS-00089
+    - SRG-OS-000240-GPOS-00090
+    - SRG-OS-000241-GPOS-00091
+    - SRG-OS-000303-GPOS-00120
+    - SRG-OS-000466-GPOS-00210
+    - SRG-OS-000476-GPOS-00221
+    - CCI-000018
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-000015
+    - CCI-002884
+    - CCI-000172
+    - CCI-001403
+    - CCI-001404
+    - CCI-001405
+    - CCI-002130
+    - NIST800-53R4_AC-2
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002090 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/sudoers.
+  when: az2023stig_002090
+  tags:
+    - azlx-23-002090
+    - CAT2
+    - SV-274082r1120234_rule
+    - V-274082
+    - SRG-OS-000004-GPOS-00004
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000304-GPOS-00121
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000470-GPOS-00214
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000239-GPOS-00089
+    - SRG-OS-000240-GPOS-00090
+    - SRG-OS-000241-GPOS-00091
+    - SRG-OS-000303-GPOS-00120
+    - SRG-OS-000466-GPOS-00210
+    - SRG-OS-000476-GPOS-00221
+    - CCI-000018
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-000015
+    - CCI-002884
+    - CCI-000172
+    - CCI-001403
+    - CCI-001404
+    - CCI-001405
+    - CCI-002130
+    - NIST800-53R4_AC-2
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002095 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/group.
+  when: az2023stig_002095
+  tags:
+    - azlx-23-002095
+    - CAT2
+    - SV-274083r1120237_rule
+    - V-274083
+    - SRG-OS-000004-GPOS-00004
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000304-GPOS-00121
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000470-GPOS-00214
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000239-GPOS-00089
+    - SRG-OS-000240-GPOS-00090
+    - SRG-OS-000241-GPOS-00091
+    - SRG-OS-000303-GPOS-00120
+    - SRG-OS-000466-GPOS-00210
+    - SRG-OS-000476-GPOS-00221
+    - CCI-000018
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-000015
+    - CCI-002884
+    - CCI-000172
+    - CCI-001403
+    - CCI-001404
+    - CCI-001405
+    - CCI-002130
+    - NIST800-53R4_AC-2
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true
+
+- name: MEDIUM | AZLX-23-002100 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/gshadow.
+  when: az2023stig_002100
+  tags:
+    - azlx-23-002100
+    - CAT2
+    - SV-274084r1120240_rule
+    - V-274084
+    - SRG-OS-000004-GPOS-00004
+    - SRG-OS-000037-GPOS-00015
+    - SRG-OS-000042-GPOS-00020
+    - SRG-OS-000062-GPOS-00031
+    - SRG-OS-000304-GPOS-00121
+    - SRG-OS-000392-GPOS-00172
+    - SRG-OS-000462-GPOS-00206
+    - SRG-OS-000470-GPOS-00214
+    - SRG-OS-000471-GPOS-00215
+    - SRG-OS-000239-GPOS-00089
+    - SRG-OS-000240-GPOS-00090
+    - SRG-OS-000241-GPOS-00091
+    - SRG-OS-000303-GPOS-00120
+    - SRG-OS-000466-GPOS-00210
+    - SRG-OS-000476-GPOS-00221
+    - CCI-000018
+    - CCI-000130
+    - CCI-000135
+    - CCI-000169
+    - CCI-000015
+    - CCI-002884
+    - CCI-000172
+    - CCI-001403
+    - CCI-001404
+    - CCI-001405
+    - CCI-002130
+    - NIST800-53R4_AC-2
+    - NIST800-53R4_AU-3
+    - NIST800-53R4_AU-12
+    - NIST800-53R4_MA-4
+    - auditd
+  ansible.builtin.set_fact:
+    update_audit_template: true

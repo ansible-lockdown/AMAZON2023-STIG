@@ -1,0 +1,85 @@
+# STIG requirement for AMAZON2023
+# Set via Ansible-Lockdown - https://github.com/ansible-lockdown
+# Maintained and sponsored by {{ company_title }}
+
+{% if az2023stig_002085 %}
+-w /etc/sudoers -p wa -k identity
+{% endif %}
+{% if az2023stig_002090 %}
+-w /etc/sudoers.d/ -p wa -k identity
+{% endif %}
+{% if az2023stig_002095 %}
+-w /etc/group -p wa -k identity
+{% endif %}
+{% if az2023stig_002100 %}
+-w /etc/gshadow -p wa -k identity
+{% endif %}
+{% if az2023stig_002105 %}
+-w /etc/security/opasswd -p wa -k identity
+{% endif %}
+{% if az2023stig_002110 %}
+-a always,exit -F arch=b64 -S execve -C uid!=euid -F euid=0 -k execpriv
+-a always,exit -F arch=b64 -S execve -C gid!=egid -F egid=0 -k execpriv
+{% endif %}
+{% if az2023stig_002115 %}
+-a always,exit -F arch=b64 -S chmod,fchmod,fchmodat -F auid>=1000 -F auid!=unset -k perm_mod
+{% endif %}
+{% if az2023stig_002120 %}
+-a always,exit -F arch=b64 -S chown,fchown,fchownat,lchown -F auid>=1000 -F auid!=unset -k perm_mod
+{% endif %}
+{% if az2023stig_002125 %}
+-a always,exit -F arch=b64 -S setxattr,fsetxattr,lsetxattr,removexattr,fremovexattr,lremovexattr -F auid>=1000 -F auid!=unset -k perm_mod
+-a always,exit -F arch=b64 -S setxattr,fsetxattr,lsetxattr,removexattr,fremovexattr,lremovexattr -F auid=0 -k perm_mod
+{% endif %}
+{% if az2023stig_002130 %}
+-a always,exit -F arch=b64 -S truncate,ftruncate,creat,open,openat,open_by_handle_at -F exit=-EPERM -F auid>=1000 -F auid!=unset -k perm_access
+-a always,exit -F arch=b64 -S truncate,ftruncate,creat,open,openat,open_by_handle_at -F exit=-EACCES -F auid>=1000 -F auid!=unset -k perm_access
+{% endif %}
+{% if az2023stig_002135 %}
+-a always,exit -F arch=b64 -S init_module,finit_module -F auid>=1000 -F auid!=unset -k module_chng
+{% endif %}
+{% if az2023stig_002140 %}
+-a always,exit -F arch=b64 -S create_module -F auid>=1000 -F auid!=unset -k module-change
+{% endif %}
+{% if az2023stig_002145 %}
+-a always,exit -F path=/usr/bin/kmod -F perm=x -F auid>=1000 -F auid!=unset -k modules
+{% endif %}
+{% if az2023stig_002150 %}
+-a always,exit -F arch=b64 -S rename,unlink,rmdir,renameat,unlinkat -F auid>=1000 -F auid!=unset -k delete
+{% endif %}
+{% if az2023stig_002155 %}
+-a always,exit -F path=/usr/bin/chcon -F perm=x -F auid>=1000 -F auid!=unset -k perm_mod
+{% endif %}
+{% if az2023stig_002160 %}
+-w /var/log/faillock -p wa -k logins
+{% endif %}
+{% if az2023stig_002165 %}
+-w /var/log/lastlog -p wa -k logins
+{% endif %}
+{% if az2023stig_002175 %}
+-a always,exit -F path=/usr/sbin/init -F perm=x -F auid>=1000 -F auid!=unset -k privileged-init
+{% endif %}
+{% if az2023stig_002180 %}
+-a always,exit -F path=/usr/sbin/reboot -F perm=x -F auid>=1000 -F auid!=unset -k privileged-reboot
+{% endif %}
+{% if az2023stig_002185 %}
+-a always,exit -F path=/usr/sbin/shutdown -F perm=x -F auid>=1000 -F auid!=unset -k privileged-shutdown
+{% endif %}
+{% if az2023stig_002205 %}
+-w /etc/passwd -p wa -k identity
+{% endif %}
+{% if az2023stig_002210 %}
+-a always,exit -F path=/usr/bin/chage -F perm=x -F auid>=1000 -F auid!=unset -k privileged-chage
+{% endif %}
+{% if az2023stig_002245 %}
+-a always,exit -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=unset -k priv_cmd
+{% endif %}
+{% if az2023stig_002250 and not az2023stig_002205 %}
+-w /etc/passwd -p wa -k identity
+{% endif %}
+{% if az2023stig_002255 %}
+-w /etc/shadow -p wa -k identity
+{% endif %}
+{% if az2023stig_005000 %}
+--loginuid-immutable
+{% endif %}

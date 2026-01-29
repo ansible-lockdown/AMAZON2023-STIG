@@ -1,0 +1,19 @@
+---
+
+- name: HIGH | AZLX-23-000300 | PATCH | Amazon Linux 2023 must not have the vsftpd package installed.
+  when: az2023stig_000300
+  tags:
+    - azlx-23-000300
+    - CAT1
+    - SV-274007r1120009_rule
+    - V-274007
+    - SRG-OS-000074-GPOS-00042
+    - SRG-OS-000095-GPOS-00049
+    - NIST800-53R4_IA-5
+    - NIST800-53R4_CM-7
+    - CCI-000197
+    - CCI-000381
+    - vsftp
+  ansible.builtin.package:
+    name: vsftpd
+    state: absent

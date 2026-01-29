@@ -1,0 +1,109 @@
+---
+
+- name: HIGH | AZLX-23-000100 | AUDIT | Amazon Linux 2023 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection.
+  when: az2023stig_000100
+  tags:
+    - azlx-23-000100
+    - SV-273994r1119970_rule
+    - V-273994
+    - SRG-OS-000185-GPOS-00079
+    - SRG-OS-000404-GPOS-00183
+    - SRG-OS-000405-GPOS-00184
+    - CCI-001199
+    - CCI-002475
+    - CCI-002476
+    - NIST800-53R4_SC-28
+    - encrypt
+    - filesystem
+  vars:
+    warn_control_id: "HIGH | AZLX-23-000100"
+  block:
+    - name: HIGH | AZLX-23-000100 | AUDIT | Amazon Linux 2023 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection.
+      ansible.builtin.command: blkid
+      changed_when: false
+      failed_when: false
+      register: discovered_partition_layout
+
+    - name: HIGH | AZLX-23-000100 | WARN | Amazon Linux 2023 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection.
+      ansible.builtin.debug:
+        msg:
+          - WARNING!! Below is the partition layout. Please run the "blkid" command to confirm every persistent disk partition has an entry for TYPE=crypto_LUKS.
+          - If partitions other than pseudo file systems (such as /proc or /sys or tmpfs) this is a finding
+          - "{{ discovered_partition_layout.stdout_lines }}"
+
+    - name: HIGH | AZLX-23-000100 | WARN | Amazon Linux 2023 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection.
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: HIGH | AZLX-23-000115 | PATCH | Amazon Linux 2023 must check the GPG signature of locally installed software packages before installation.
+  when: az2023stig_000115
+  tags:
+    - azlx-23-000115
+    - SV-273996r1119976_rule
+    - V-273996
+    - SRG-OS-000366-GPOS-00153
+    - NIST800-53R4_NA
+    - dnf
+  community.general.ini_file:
+    path: /etc/dnf/dnf.conf
+    option: localpkg_gpgcheck
+    value: 1
+    section: main
+    exclusive: true
+    mode: 'go-wx'
+
+- name: HIGH | AZLX-23-000120 | PATCH | Amazon Linux 2023 must check the GPG signature of software packages originating from external software repositories before installation.
+  when: az2023stig_000120
+  tags:
+    - azlx-23-000120
+    - SV-273997r1119979_rule
+    - V-273997
+    - SRG-OS-000366-GPOS-00153
+    - NIST800-53R4_NA
+    - dnf
+  community.general.ini_file:
+    path: /etc/dnf/dnf.conf
+    option: gpgcheck
+    value: 1
+    section: main
+    exclusive: true
+    mode: 'go-wx'
+
+- name: HIGH | AZLX-23-000125 | PATCH | Amazon Linux 2023 must have GPG signature verification enabled for all software repositories.
+  when: az2023stig_000125
+  tags:
+    - azlx-23-000125
+    - SV-273998r1119982_rule
+    - V-273998
+    - SRG-OS-000366-GPOS-00153
+    - NIST800-53R4_NA
+    - dnf
+  block:
+    - name: HIGH | AZLX-23-000125 | AUDIT | Amazon Linux 2023 must have GPG signature verification enabled for all software repositories.
+      ansible.builtin.find:
+        paths: /etc/yum.repos.d/
+        patterns: '*.repo'
+        contains: (#?)gpgcheck\s*=\s*0
+      register: discovered_gpgcheck_repos
+
+    - name: HIGH | AZLX-23-000125 | PATCH | Amazon Linux 2023 must have GPG signature verification enabled for all software repositories.
+      ansible.builtin.replace:
+        path: "{{ item.path }}"
+        regexp: (#?)gpgcheck
+        replace: gpgcheck=1
+      loop: "{{ discovered_gpgcheck_repos.files }}"
+
+- name: HIGH | AZLX-23-000130 | PATCH | Amazon Linux 2023 must be a vendor-supported release.
+  when:
+    - az2023stig_000130
+    - (ansible_facts.distribution != 'Amazon' or ansible_facts.distribution_major_version is version_compare('2023', '!='))
+  tags:
+    - azlx-23-000130
+    - SV-273999r1119985_rule
+    - V-273999
+    - SRG-OS-000439-GPOS-00195
+    - NIST800-53R4_SI-2
+    - CCI-002605
+    - OS
+  ansible.builtin.fail:
+    msg: This System in not part of the supported OS group for Amazon 2023

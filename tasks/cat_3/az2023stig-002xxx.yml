@@ -1,0 +1,66 @@
+---
+
+- name: LOW | AZLX-23-002020 | PATCH | Amazon Linux 2023 must use a separate file system for the system audit data path.
+  when:
+    - az2023stig_002020
+    - ansible_mounts | selectattr('mount', 'match', '^/var/log/audit$') | list | length == 0
+  tags:
+    - azlx-23-002020
+    - CAT3
+    - SV-274068r1120192_rul
+    - V-274068
+    - SRG-OS-000341-GPOS-00132
+    - CCI-001849
+    - NIST800-53R4_AU-9
+    - auditd
+  vars:
+    warn_control_id: "LOW | AZLX-23-002020"
+  block:
+    - name: LOW | AZLX-23-002020 | WARN | Amazon Linux 2023 must use a separate file system for the system audit data path.
+      ansible.builtin.debug:
+        msg: "WARNING!! /var/log/audit directory is not a separate filesystem"
+
+    - name: LOW | AZLX-23-002020 | WARN | Amazon Linux 2023 must use a separate file system for the system audit data path.
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
+
+- name: LOW | AZLX-23-002080 | PATCH | Amazon Linux 2023 must be configured to off-load audit records onto a different system from the system being audited via syslog.
+  when: az2023stig_002080
+  tags:
+    - azlx-23-002080
+    - CAT3
+    - SV-274080r1120228_rule
+    - V-274080
+    - SRG-OS-000342-GPOS-00133
+    - CCI-001851
+    - NIST800-53R4_AU-4
+    - syslog
+    - systemd-journal-upload
+  ansible.builtin.template:
+    src: etc/systemd/journal-upload.conf.j2
+    dest: /etc/systemd/journal-upload.conf
+    mode: 'u-x,go-rwx'
+    owner: root
+    group: root
+  notify: Restart systemd-journal-upload
+
+- name: LOW | AZLX-23-002395 | PATCH | Amazon Linux 2023 must limit the number of concurrent sessions to ten for all accounts and/or account types.
+  when: az2023stig_002395
+  tags:
+    - azlx-23-002395
+    - CAT3
+    - SV-274141r1120411_rule
+    - V-274141
+    - SRG-OS-000027-GPOS-00008
+    - CCI-000054
+    - NIST800-53R4_AC-10
+    - login
+  ansible.builtin.lineinfile:
+    path: /etc/security/limits.conf
+    regexp: '^\*\s+hard\s+maxlogins'
+    line: '*                hard    maxlogins       {{ az2023stig_maxlogins }}'
+    insertbefore: '^# End of file'
+    create: true
+    owner: root
+    group: root
+    mode: 'u-x,go-wx'

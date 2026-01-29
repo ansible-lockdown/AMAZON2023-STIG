@@ -1,0 +1,49 @@
+---
+
+- name: Import CAT 2 controls 0001xx
+  ansible.builtin.import_tasks:
+    file: az2023stig-0001xx.yml
+
+- name: Import CAT 2 controls 0002xx
+  ansible.builtin.import_tasks:
+    file: az2023stig-0002xx.yml
+
+- name: Import CAT 2 controls 0003xx
+  ansible.builtin.import_tasks:
+    file: az2023stig-0003xx.yml
+
+- name: Import CAT 2 controls 001xxx
+  ansible.builtin.import_tasks:
+    file: az2023stig-001xxx.yml
+
+- name: Import CAT 2 controls 0020xx
+  ansible.builtin.import_tasks:
+    file: az2023stig-0020xx.yml
+
+- name: Import CAT 2 controls 0021xx
+  ansible.builtin.import_tasks:
+    file: az2023stig-0021xx.yml
+
+- name: Import CAT 2 controls 0022xx
+  ansible.builtin.import_tasks:
+    file: az2023stig-0022xx.yml
+
+- name: Import CAT 2 controls 0023xx
+  ansible.builtin.import_tasks:
+    file: az2023stig-0023xx.yml
+
+- name: Import CAT 2 controls 0024xx
+  ansible.builtin.import_tasks:
+    file: az2023stig-0024xx.yml
+
+- name: Import CAT 2 controls 0025xx
+  ansible.builtin.import_tasks:
+    file: az2023stig-0025xx.yml
+
+- name: Import CAT 2 controls 0026xx
+  ansible.builtin.import_tasks:
+    file: az2023stig-0026xx.yml
+
+- name: Import CAT 2 controls 0050xx
+  ansible.builtin.import_tasks:
+    file: az2023stig-0050xx.yml

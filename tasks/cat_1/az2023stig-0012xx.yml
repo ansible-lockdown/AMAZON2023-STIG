@@ -1,0 +1,117 @@
+---
+
+- name: HIGH | AZLX-23-001225 | PATCH | Amazon Linux 2023 must force a frequent session key renegotiation for SSH connections to the server.
+  when: az2023stig_001225
+  tags:
+    - azlx-23-001225
+    - CAT1
+    - SV-274046r1120126_rule
+    - V-274046
+    - SRG-OS-000423-GPOS-00187
+    - SRG-OS-000033-GPOS-00014
+    - SRG-OS-000424-GPOS-00188
+    - NIST800-53R4_SC-8
+    - NIST800-53_AC-17
+    - CCI-002418
+    - CCI-000068
+    - CCI-002421
+    - ssh
+  block:
+    - name: HIGH | AZLX-23-001225 | AUDIT | Amazon Linux 2023 must force a frequent session key renegotiation for SSH connections to the server.
+      ansible.builtin.find:
+        paths: /etc/sshd_config.d/
+        contains: ^RekeyLimit (?!1G 1h).*
+      register: discovered_ssh_rekey
+
+    - name: HIGH | AZLX-23-001225 | PATCH | Amazon Linux 2023 must force a frequent session key renegotiation for SSH connections to the server.
+      ansible.builtin.replace:
+        path: "{{ item.path }}"
+        regexp: (^RekeyLimit.*)
+        replace: '#\1'
+        validate: sshd -t -f %s
+      loop: "{{ discovered_ssh_rekey.files }}"
+      notify: Restart ssh
+
+    - name: HIGH | AZLX-23-001225 | PATCH | Amazon Linux 2023 must force a frequent session key renegotiation for SSH connections to the server.
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: ^RekeyLimit (?!1G 1h)
+        line: RekeyLimit 1G 1h
+        validate: sshd -t -f %s
+      notify: Restart ssh
+
+- name: HIGH | AZLX-23-001255 | PATCH | Amazon Linux 2023 must enable the Pluggable Authentication Module (PAM) interface for SSHD.
+  when: az2023stig_001255
+  tags:
+    - azlx-23-001255
+    - CAT1
+    - SV-274052r1120144_rule
+    - V-274052
+    - SRG-OS-000125-GPOS-00065
+    - NIST800-53R4_MA-4
+    - CCI-000877
+    - ssh
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: (?i)^(#?)UsePAM (no|false|off)
+    line: UsePAM yes
+    validate: sshd -t -f %s
+    state: present
+  notify: Restart ssh
+
+- name: HIGH | AZLX-23-001275 | PATCH | Amazon Linux 2023 must implement DOD-approved encryption to protect the confidentiality of remote access sessions.
+  when: az2023stig_001275
+  tags:
+    - azlx-23-001275
+    - CAT1
+    - SV-274056r1120156_rule
+    - V-274056
+    - SRG-OS-000033-GPOS-00014
+    - NIST800-53R4_AC-17
+    - CCI-000068
+    - ssh
+  ansible.builtin.lineinfile:
+    path: /etc/crypto-policies/back-ends/opensshserver.config
+    regexp: ^Ciphers .*
+    line: Ciphers {{ az2023stig_dod_ciphers | join(',') }}
+  notify: Reboot required
+
+- name: HIGH | AZLX-23-001280 | PATCH | Amazon Linux 2023 must enable FIPS mode.
+  when:
+    - az2023stig_001280
+    - not ansible_facts.fips
+    - az2023stig_disruption_high
+  tags:
+    - azlx-23-001280
+    - CAT1
+    - SV-274057r1120159_rule
+    - V-274057
+    - SRG-OS-000033-GPOS-00014
+    - SRG-OS-000125-GPOS-00065
+    - SRG-OS-000396-GPOS-00176
+    - SRG-OS-000423-GPOS-00187
+    - SRG-OS-000478-GPOS-00223
+    - NIST800-53R4_AC-17
+    - NIST800-53R4_MA-4
+    - NIST800-53R4_SC-13
+    - CCI-000068
+    - CCI-000877
+    - CCI-002450
+    - CCI-002418
+  block:
+    - name: HIGH | AZLX-23-001280 | AUDIT | Amazon Linux 2023 must enable FIPS mode.
+      ansible.builtin.command: fips-mode-setup --check
+      changed_when: false
+      failed_when: discovered_fips_state.rc not in [0, 1]
+      register: discovered_fips_state
+
+    - name: HIGH | AZLX-23-001280 | PATCH | Amazon Linux 2023 must enable FIPS mode.
+      when: "'FIPS mode is disabled.' in discovered_fips_state.stdout"
+      ansible.builtin.command: echo "FIPS mode is not enabled."
+      changed_when: true
+      failed_when: false
+
+    - name: HIGH | AZLX-23-001280 | PATCH | Amazon Linux 2023 must enable FIPS mode.
+      when: "'FIPS mode is not enabled.' in discovered_fips_state.stdout"
+      ansible.builtin.set_fact:
+        fips_required: true

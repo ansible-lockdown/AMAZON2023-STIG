@@ -1,0 +1,21 @@
+---
+
+- name: Import CAT 1 controls 0001xx
+  ansible.builtin.import_tasks:
+    file: az2023stig-0001xx.yml
+
+- name: Import CAT 1 controls 003xx
+  ansible.builtin.import_tasks:
+    file: az2023stig-0003xx.yml
+
+- name: Import CAT 1 controls 0011xx
+  ansible.builtin.import_tasks:
+    file: az2023stig-0011xx.yml
+
+- name: Import CAT 1 controls 0012xx
+  ansible.builtin.import_tasks:
+    file: az2023stig-0012xx.yml
+
+- name: Import CAT 1 controls 0024xx
+  ansible.builtin.import_tasks:
+    file: az2023stig-0024xx.yml

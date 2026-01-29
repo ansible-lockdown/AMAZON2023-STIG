@@ -1,0 +1,20 @@
+---
+
+- name: HIGH | AZLX-23-002450 | PATCH | Amazon Linux 2023 must use a Linux Security Module configured to enforce limits on system services.
+  when:
+    - az2023stig_002450
+    - az2023stig_disruption_high
+  tags:
+    - azlx-23-002450
+    - CAT1
+    - SV-274153r1120713_rule
+    - V-274153
+    - SRG-OS-000134-GPOS-00068
+    - SRG-OS-000445-GPOS-00199
+    - NIST800-53R4_SC-3
+    - NIST800-53R4_SI-6
+    - CCI-001084
+    - CCI-002696
+  ansible.posix.selinux:
+    policy: targeted
+    state: enforcing
