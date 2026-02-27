@@ -174,7 +174,7 @@
     name: audit
     state: present
 
-- name: MEDIUM | AZLX-23-001030 | PATCH |  Amazon Linux 2023 must produce audit records containing information to establish what type of events occurred.
+- name: MEDIUM | AZLX-23-001030 | PATCH | Amazon Linux 2023 must produce audit records containing information to establish what type of events occurred.
   when: az2023stig_001030
   tags:
     - azlx-23-001030
@@ -261,7 +261,7 @@
   tags:
     - azlx-23-001040
     - CAT2
-    - SV-274020r1120048_rule
+    - SV-274020r1155173_rule
     - V-274020
     - SRG-OS-000051-GPOS-00024
     - SRG-OS-000479-GPOS-00224
@@ -833,7 +833,7 @@
   tags:
     - azlx-23-001240
     - CAT2
-    - SV-274049r1120135_rule
+    - SV-274049r1120747_rule
     - V-274049
     - SRG-OS-000109-GPOS-00056
     - NIST800-53R4_NA

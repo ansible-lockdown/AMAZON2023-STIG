@@ -518,8 +518,8 @@
     path: "{{ item }}"
     state: file
     mode: 'go-w'
-  failed_when: discovered_audit_tools.state not in '[ file, absent ]'
-  register: discovered_audit_tools
+  failed_when: discovered_audit_tools_file_perms.state not in '[ file, absent ]'
+  register: discovered_audit_tools_file_perms
   loop: "{{ az2023stig_audit_tools }}"
 
 - name: MEDIUM | AZLX-23-002195 | PATCH | Amazon Linux 2023 audit tools must be owned by root.
@@ -541,6 +541,6 @@
     state: file
     owner: root
     mode: 'go-w'
-  failed_when: discovered_audit_tools.state not in '[ file, absent ]'
-  register: discovered_audit_tools
+  failed_when: discovered_audit_tools_owner.state not in '[ file, absent ]'
+  register: discovered_audit_tools_owner
   loop: "{{ az2023stig_audit_tools }}"

@@ -2,7 +2,7 @@
 
 ## Configure a AMAZON2023 based system to be complaint with Disa STIG
 
-This role is based on AMAZON2023 DISA STIG: [Version 1, Rel 1 released on 14 Jul 2025](https://dl.dod.cyber.mil/wp-content/uploads/stigs/U_Amazon_Linux_2023_V1R1_STIG.zip).
+This role is based on AMAZON2023 DISA STIG: [Version 1, Rel 2 released on 05 Jan 2026](https://dl.dod.cyber.mil/wp-content/uploads/stigs/U_Amazon_Linux_2023_V1R2_STIG.zip).
 
 ## Initial Release from STIG, still many items that not quite aligned in the documentation
 
@@ -143,7 +143,7 @@ testhost                   : ok=293  changed=107  unreachable=0    failed=0    s
 - system_is_container
 
 This is set to false by defaults/main.yml
-If discovered it is a container type or ansible_connection == docker it will convert to run to with with true.
+If discovered it is a container type or ansible_connection == docker it will convert to run with true.
 Some controls will skip is this is true as they are not applicable at all. Others runs a subset of controls found in vars/is_container.yml based on a vendor supplied un altered image.
 
 **NON altered vendor image.**

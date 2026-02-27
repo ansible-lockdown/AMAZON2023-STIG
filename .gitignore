@@ -40,9 +40,13 @@ travis.env
 benchparse/
 *xccdf.xml
 *.retry
+*.pdf
+*history.md
+*plan.md
+*qa_report*
 
 # GitHub Action/Workflow files
 .github/
 
-# ansible-lint cache
+# ansible-lint
 .ansible/

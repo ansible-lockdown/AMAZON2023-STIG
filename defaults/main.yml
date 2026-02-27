@@ -1,7 +1,7 @@
 ---
 
 ## metadata for Audit benchmark
-benchmark_version: 'v1.0.0'
+benchmark_version: 'v1.2.0'
 
 ## Benchmark name used by auditing control role
 # The audit variable found at the base
@@ -212,7 +212,7 @@ az2023stig_001265: true
 az2023stig_001270: true
 az2023stig_001285: true
 az2023stig_001290: true
-az2023stig_001295: TESTTEST
+az2023stig_001295: true
 az2023stig_001300: true
 az2023stig_001305: true
 az2023stig_001310: true
@@ -363,7 +363,7 @@ az2023stig_sysctl_file_kernel: /etc/sysctl.d/99_stig_kernel.conf
 
 # 001xxx sudo variables
 # Ability to enable some users to keep the NOPASSWD option
-# This is dependant on how you have setup sudoers
+# This is dependent on how you have setup sudoers
 # This will skip any matching user and leave the NOPASSWD for escalation
 az2023stig_sudoers_exclude_nopasswd_list:
   - vagrant
@@ -469,6 +469,9 @@ az2023stig_logon_banner: |
 # Ability to easily turn off auditd updates to file
 az2023stig_auditd_required: true
 
+# Mount points to exclude from privileged command audit searches
+az2023stig_priv_command_excluded_mounts: []
+
 # 002015
 az2023stig_audit_log_filesystem: /var/log/audit
 
@@ -548,12 +551,16 @@ az2023stig_pass_inactive_days: 30
 az2023stig_selinux_policy: targeted
 az2023stig_selinux_mode: enforcing
 
+## 002489
+# PAM password quality retry count
+az2023stig_pam_retry: 3
+
 ## 002490
 # Must be 10000 or greater
 az2023stig_pam_rounds: 10000
 
 # 002510
-az2023stig_logind_conf_stopsessionidle: 0
+az2023stig_logind_conf_stopsessionidle: 600
 # 002520
 az2023stig_audit_backlog_limit: 8192
 

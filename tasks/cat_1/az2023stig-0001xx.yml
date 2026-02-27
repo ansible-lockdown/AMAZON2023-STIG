@@ -99,7 +99,7 @@
     - (ansible_facts.distribution != 'Amazon' or ansible_facts.distribution_major_version is version_compare('2023', '!='))
   tags:
     - azlx-23-000130
-    - SV-273999r1119985_rule
+    - SV-273999r1155171_rule
     - V-273999
     - SRG-OS-000439-GPOS-00195
     - NIST800-53R4_SI-2

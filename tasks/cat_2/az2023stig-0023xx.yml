@@ -5,7 +5,7 @@
   tags:
     - azlx-23-002300
     - CAT2
-    - SV-274123r1120357_rule
+    - SV-274123r1155167_rule
     - V-274123
     - SRG-OS-000259-GPOS-00100
     - CCI-001499
@@ -13,16 +13,16 @@
     - permissions
   block:
     - name: MEDIUM | AZLX-23-002300 | AUDIT | Amazon Linux 2023 library files must be group-owned by root or a system account.
-      ansible.builtin.shell: find /lib /lib64 /usr/lib /usr/lib64 ! -group root -type f
+      ansible.builtin.shell: find /lib /lib64 /usr/lib /usr/lib64 -type f -name '*.so*' ! -group root
       changed_when: false
-      failed_when: discovered_lib_files_group.rc not in [ 0, 1]
-      register: discovered_lib_files_group
+      failed_when: discovered_lib_files_group_owner.rc not in [ 0, 1]
+      register: discovered_lib_files_group_owner
 
     - name: MEDIUM | AZLX-23-002300 | PATCH | Amazon Linux 2023 library files must be group-owned by root or a system account.
       ansible.builtin.file:
         path: "{{ item }}"
         group: root
-      loop: "{{ discovered_lib_files_group.stdout_lines }}"
+      loop: "{{ discovered_lib_files_group_owner.stdout_lines }}"
 
 - name: MEDIUM | AZLX-23-002305 | PATCH | Amazon Linux 2023 library directories must be owned by root.
   when: az2023stig_002305
