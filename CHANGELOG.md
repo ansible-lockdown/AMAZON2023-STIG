@@ -1,6 +1,6 @@
 # Changelog - Private-AMAZON2023-STIG
 
-## [v1.2.0] - 2026-02-26
+## [v1.2.0] - 2026-02-27
 
 ### Based on DISA STIG Amazon Linux 2023 V1R2 - 05 January 2026
 
@@ -33,6 +33,11 @@
 - Added missing default for `az2023stig_priv_command_excluded_mounts` (referenced in auditd.yml but undefined)
 - Renamed handler register `chronyd_stopped` -> `discovered_chronyd_stopped` (naming convention)
 - Renamed handler register `sssd_config_stat` -> `discovered_sssd_config_stat` (naming convention)
+- AZLX-23-000135: Fixed Rule_ID SV-273996r1119976_rule -> SV-274000r1119991_rule and Vul_ID V-273996 -> V-274000
+- AZLX-23-002475: Fixed Rule_ID SV-274158r1120462_rule -> SV-274158r1120727_rule
+- AZLX-23-002020: Fixed typo in Rule_ID tag `SV-274068r1120192_rul` -> `SV-274068r1120192_rule`
+- AZLX-23-001090: Fixed when condition from `az2023stig_001050` to `az2023stig_001090` and tag from `azlx-23-001050` to `azlx-23-001090`
+- AZLX-23-002105: Fixed when condition from `az2023stig_002100` to `az2023stig_002105` and tag from `azlx-23-002100` to `azlx-23-002105`
 
 #### Metadata
 

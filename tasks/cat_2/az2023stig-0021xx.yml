@@ -42,9 +42,9 @@
     update_audit_template: true
 
 - name: MEDIUM | AZLX-23-002105 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/opasswd.
-  when: az2023stig_002100
+  when: az2023stig_002105
   tags:
-    - azlx-23-002100
+    - azlx-23-002105
     - CAT2
     - SV-274085r1120243_rule
     - V-274085

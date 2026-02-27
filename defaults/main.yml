@@ -584,7 +584,7 @@ az2023stig_pam_faillock_interval: 900
 az2023stig_pam_faillock_unlock_time: 0
 
 # 002080 syslog journal-upload variables
-az2023stig_syslog_remote_log_server: 192.168.2.100
+az2023stig_syslog_remote_log_server: syslog+tcp://127.0.0.1:514
 az2023stig_syslog_serverkeyfile: /etc/ssl/private/syslog.pem
 az2023stig_syslog_servercertificatefile: /etc/ssl/certs/syslog.pem
 az2023stig_syslog_trustedcertificatefile: /etc/ssl/ca/trusted.pem

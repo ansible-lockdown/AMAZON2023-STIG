@@ -490,9 +490,9 @@
     enabled: true
 
 - name: MEDIUM | AZLX-23-001090 | PATCH | Amazon Linux 2023 must manage excess capacity, bandwidth, or other redundancy to limit the effects of information flooding types of denial-of-service (DoS) attacks.
-  when: az2023stig_001050
+  when: az2023stig_001090
   tags:
-    - azlx-23-001050
+    - azlx-23-001090
     - CAT2
     - SV-274030r1120078_rule
     - V-274030
