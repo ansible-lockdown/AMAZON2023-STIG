@@ -1037,6 +1037,7 @@
         src: "{{ item.path }}"
         dest: "/etc/crypto-policies/back-ends/{{ item.path | basename | regex_replace('\\.txt$', '.config') }}"
         state: link
+        force: true
       loop: "{{ azlx_23_001285_fips_policies.files }}"
       loop_control:
         label: "{{ item.path | basename }}"
