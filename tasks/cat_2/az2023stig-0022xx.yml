@@ -409,16 +409,24 @@
     - NIST800-53R4_SI-11
     - auditd
   block:
-    - name: MEDIUM | AZLX-23-002265 | AUDIT | Amazon Linux 2023 must produce audit records containing information to establish the identity of any individual or process associated with the event.
-      ansible.builtin.shell: grep log_group /etc/audit/auditd.conf | awk '{ print $NF }'
-      changed_when: false
-      failed_when: discovered_auditd_log_group.rc not in [ 0, 1]
-      register: discovered_auditd_log_group
+    - name: MEDIUM | AZLX-23-002265 | PATCH | Set log_group in auditd.conf
+      ansible.builtin.lineinfile:
+        path: /etc/audit/auditd.conf
+        regexp: '^(#)?log_group\s*='
+        line: "log_group = {{ az2023stig_auditd_log_group | default('root') }}"
+      notify: Restart auditd
 
-    - name: MEDIUM | AZLX-23-002265 | PATCH | Amazon Linux 2023 must produce audit records containing information to establish the identity of any individual or process associated with the event.
+    - name: MEDIUM | AZLX-23-002265 | PATCH | Set audit log directory group ownership
       ansible.builtin.file:
-        path: "{{ discovered_auditd_log_group.stdout }}"
-        group: "{{ discovered_auditd_log_group.stdout | default('root') }}"
+        path: /var/log/audit
+        group: "{{ az2023stig_auditd_log_group | default('root') }}"
+        mode: '0750'
+
+    - name: MEDIUM | AZLX-23-002265 | PATCH | Set audit log file group ownership
+      ansible.builtin.file:
+        path: /var/log/audit/audit.log
+        group: "{{ az2023stig_auditd_log_group | default('root') }}"
+        mode: '0600'
 
 - name: MEDIUM | AZLX-23-002270 | PATCH | Amazon Linux 2023 must ensure the audit log directory be owned by root to prevent unauthorized read access.
   when: az2023stig_002270
