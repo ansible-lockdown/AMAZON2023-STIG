@@ -520,9 +520,9 @@
     - CCI-001744
     - NIST800-53R4_CM-3
     - s-nail
-  ansible.builtin.dnf:
-    name: s-nail
-    state: present
+  ansible.builtin.command: dnf install -y s-nail
+  changed_when: false
+  failed_when: false
 
 - name: MEDIUM | AZLX-23-001105 | PATCH | Amazon Linux 2023 must have the libreswan package installed.
   when: az2023stig_001105
