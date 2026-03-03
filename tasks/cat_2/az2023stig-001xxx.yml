@@ -508,7 +508,9 @@
   notify: Restart firewalld
 
 - name: MEDIUM | AZLX-23-001095 | PATCH | Amazon Linux 2023 must have the s-nail package installed.
-  when: az2023stig_001095
+  when:
+    - "'s-nail' not in ansible_facts.packages"
+    - az2023stig_001095
   tags:
     - azlx-23-001095
     - CAT2
@@ -518,10 +520,9 @@
     - CCI-001744
     - NIST800-53R4_CM-3
     - s-nail
-  ansible.builtin.package:
-    name: s-nail
-    state: present
-    use: dnf
+  ansible.builtin.command: dnf install -y s-nail
+  changed_when: false
+  failed_when: false
 
 - name: MEDIUM | AZLX-23-001105 | PATCH | Amazon Linux 2023 must have the libreswan package installed.
   when: az2023stig_001105
