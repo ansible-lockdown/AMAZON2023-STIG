@@ -18,6 +18,7 @@
 
 #### Content Changes
 
+- AZLX-23-001085: Update logic with terany, systemd state and enabled status.
 - AZLX-23-002290: Updated find command to target `*.so*` files with `-perm /022` (was incorrectly checking group ownership). Fixed CCI from CCI-0001499 to CCI-001499.
 - AZLX-23-002295: Changed from checking library **directories** to library **files** (`*.so*`) per V1R2 update. Updated title, audit command, and register variable. Fixed CCI from CCI-0001499 to CCI-001499.
 - AZLX-23-002300: Updated find command to target `*.so*` files specifically.

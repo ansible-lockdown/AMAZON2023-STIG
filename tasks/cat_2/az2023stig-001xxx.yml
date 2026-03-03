@@ -425,9 +425,17 @@
     - NIST800-53R4_CM-6
     - NIST800-53R4_AC-2
     - firewall
-  ansible.builtin.package:
-    name: firewalld
-    state: present
+  block:
+    - name: MEDIUM | AZLX-23-001075 | PATCH | Amazon Linux 2023 must have the firewalld package installed.
+      ansible.builtin.package:
+        name: firewalld
+        state: present
+
+    - name: MEDIUM | AZLX-23-001075 | PATCH | Amazon Linux 2023 must have the firewalld package installed. | enabled and started
+      ansible.builtin.systemd:
+        name: firewalld
+        state: started
+        enabled: true
 
 # To add rules prior to starting firewall
 - name: MEDIUM | AZLX-23-001085 | PATCH | Amazon Linux 2023 must be configured to disable nonessential capabilities.
@@ -443,7 +451,7 @@
   block:
     - name: MEDIUM | AZLX-23-001085 | PATCH | Amazon Linux 2023 must be configured to disable nonessential capabilities. | services
       ansible.posix.firewalld:
-        service: "{{ item }}"
+        service: "{{ (item == (item | regex_search('^[a-z]+$'))) | bool | ternary(item, omit) }}"
         state: enabled
         permanent: true
         immediate: true
@@ -453,7 +461,7 @@
     - name: MEDIUM | AZLX-23-001085 | PATCH | Amazon Linux 2023 must be configured to disable nonessential capabilities. | ports
       when: az2023_firewalld_ports is defined
       ansible.posix.firewalld:
-        port: "{{ item.port }}/{{ item.protocol | default(omit) }}"
+        port: "{{ (item == (item | regex_search('^[0-9]+/[a-z]+$'))) | bool | ternary(item, omit) }}"
         state: enabled
         permanent: true
         immediate: true
@@ -461,6 +469,7 @@
       loop: "{{ az2023_firewalld_ports }}"
       loop_control:
         label: "{{ item.port }}"
+      notify: Restart firewalld
 
 - name: MEDIUM | AZLX-23-001080 | PATCH | Amazon Linux 2023 must have the firewalld package installed.
   when: az2023stig_001080
