@@ -425,17 +425,36 @@
     - NIST800-53R4_CM-6
     - NIST800-53R4_AC-2
     - firewall
-  block:
-    - name: MEDIUM | AZLX-23-001075 | PATCH | Amazon Linux 2023 must have the firewalld package installed.
-      ansible.builtin.package:
-        name: firewalld
-        state: present
+  ansible.builtin.package:
+    name: firewalld
+    state: present
 
-    - name: MEDIUM | AZLX-23-001075 | PATCH | Amazon Linux 2023 must have the firewalld package installed. | enabled and started
-      ansible.builtin.systemd:
-        name: firewalld
-        state: started
-        enabled: true
+- name: MEDIUM | AZLX-23-001080 | PATCH | Amazon Linux 2023 must have the firewalld package installed.
+  when: az2023stig_001080
+  tags:
+    - azlx-23-001080
+    - CAT2
+    - SV-274028r1120072_rule
+    - V-274028
+    - SRG-OS-000096-GPOS-00050
+    - SRG-OS-000297-GPOS-00115
+    - SRG-OS-000298-GPOS-00116
+    - SRG-OS-000480-GPOS-00232
+    - SRG-OS-000304-GPOS-00121
+    - CCI-000382
+    - CCI-002314
+    - CCI-002322
+    - CCI-000366
+    - CCI-000015
+    - NIST800-53R4_CM-7
+    - NIST800-53R4_AC-17
+    - NIST800-53R4_CM-6
+    - NIST800-53R4_AC-2
+    - firewall
+  ansible.builtin.systemd:
+    name: firewalld
+    state: started
+    enabled: true
 
 # To add rules prior to starting firewall
 - name: MEDIUM | AZLX-23-001085 | PATCH | Amazon Linux 2023 must be configured to disable nonessential capabilities.
@@ -471,33 +490,6 @@
         label: "{{ item.port }}"
       notify: Restart firewalld
 
-- name: MEDIUM | AZLX-23-001080 | PATCH | Amazon Linux 2023 must have the firewalld package installed.
-  when: az2023stig_001080
-  tags:
-    - azlx-23-001080
-    - CAT2
-    - SV-274028r1120072_rule
-    - V-274028
-    - SRG-OS-000096-GPOS-00050
-    - SRG-OS-000297-GPOS-00115
-    - SRG-OS-000298-GPOS-00116
-    - SRG-OS-000480-GPOS-00232
-    - SRG-OS-000304-GPOS-00121
-    - CCI-000382
-    - CCI-002314
-    - CCI-002322
-    - CCI-000366
-    - CCI-000015
-    - NIST800-53R4_CM-7
-    - NIST800-53R4_AC-17
-    - NIST800-53R4_CM-6
-    - NIST800-53R4_AC-2
-    - firewall
-  ansible.builtin.systemd:
-    name: firewalld
-    state: started
-    enabled: true
-
 - name: MEDIUM | AZLX-23-001090 | PATCH | Amazon Linux 2023 must manage excess capacity, bandwidth, or other redundancy to limit the effects of information flooding types of denial-of-service (DoS) attacks.
   when: az2023stig_001090
   tags:
@@ -529,6 +521,7 @@
   ansible.builtin.package:
     name: s-nail
     state: present
+    use: dnf
 
 - name: MEDIUM | AZLX-23-001105 | PATCH | Amazon Linux 2023 must have the libreswan package installed.
   when: az2023stig_001105
