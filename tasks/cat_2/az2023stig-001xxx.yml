@@ -755,7 +755,7 @@
       ansible.builtin.replace:
         path: "{{ item.path }}"
         regexp: (?i)^(#?)KerberosAuthentication yes
-        replace:
+        replace: ''
         validate: sshd -t -f %s
       loop: "{{ prelim_sshd_config_files.files }}"
       loop_control:
@@ -826,11 +826,9 @@
       ansible.builtin.replace:
         path: "{{ item.path }}"
         regexp: (?i)^(#?)PermitEmptyPasswords yes
-        replace:
+        replace: ''
         validate: sshd -t -f %s
       loop: "{{ prelim_sshd_config_files.files }}"
-      loop_control:
-        label: "{{ item.path }}"
       notify: Restart ssh
 
 - name: MEDIUM | AZLX-23-001240 | PATCH | Amazon Linux 2023 must not permit direct logons to the root account using remote access via SSH.
@@ -930,8 +928,6 @@
         replace: ''
         validate: sshd -t -f %s
       loop: "{{ prelim_sshd_config_files.files }}"
-      loop_control:
-        label: "{{ item.path }}"
       notify: Restart ssh
 
 - name: MEDIUM | AZLX-23-001260 | PATCH | Amazon Linux 2023 must implement DOD-approved encryption in the OpenSSL package.
