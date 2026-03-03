@@ -1025,23 +1025,21 @@
     - NIST800-53R4_SC-8
     - crypto
     - fips
-  ansible.builtin.file:
-    src: "/usr/share/crypto-policies/FIPS/{{ item }}.txt"
-    dest: "/etc/crypto-policies/back-ends/{{ item }}.config"
-    state: link
-  loop:
-    - bind
-    - gnutls
-    - java
-    - javasystem
-    - krb5
-    - libreswan
-    - libssh
-    - openssh
-    - opensshserver
-    - openssl
-    - openssl_fips
-    - opensslcnf
+  block:
+    - name: MEDIUM | AZLX-23-001285 | AUDIT | Find available FIPS crypto policy files
+      ansible.builtin.find:
+        paths: /usr/share/crypto-policies/FIPS
+        patterns: "*.txt"
+      register: azlx_23_001285_fips_policies
+
+    - name: MEDIUM | AZLX-23-001285 | PATCH | Amazon Linux 2023 crypto policy must not be overridden.
+      ansible.builtin.file:
+        src: "{{ item.path }}"
+        dest: "/etc/crypto-policies/back-ends/{{ item.path | basename | regex_replace('\\.txt$', '.config') }}"
+        state: link
+      loop: "{{ azlx_23_001285_fips_policies.files }}"
+      loop_control:
+        label: "{{ item.path | basename }}"
 
 - name: MEDIUM | AZLX-23-001290 | PATCH | Amazon Linux 2023 must enable certificate-based smart card authentication.
   when:
