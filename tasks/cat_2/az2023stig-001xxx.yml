@@ -11,7 +11,7 @@
     - CCI-002235
     - NIST800-53R4_AC-6
     - sudo
-  ansible.builtin.package:
+  ansible.builtin.dnf:
     name: sudo
     state: present
 
@@ -170,7 +170,7 @@
     - NIST800-53R4_AU-14
     - NIST800-53R4_MA-4
     - auditd
-  ansible.builtin.package:
+  ansible.builtin.dnf:
     name: audit
     state: present
 
@@ -252,7 +252,7 @@
     - CCI-001851
     - NIST800-53R4_AU-4
     - auditd
-  ansible.builtin.package:
+  ansible.builtin.dnf:
     name: audispd-plugins
     state: present
 
@@ -272,7 +272,7 @@
     - syslog
   block:
     - name: MEDIUM | AZLX-23-001040 | PATCH | Amazon Linux 2023 must have the rsyslog package installed. | installed
-      ansible.builtin.package:
+      ansible.builtin.dnf:
         name: rsyslog
         state: present
 
@@ -308,7 +308,7 @@
     - SRG-OS-000355-GPOS-00143
     - NIST800-53R4_NA
     - chrony
-  ansible.builtin.package:
+  ansible.builtin.dnf:
     name: chrony
     state: present
 
@@ -344,7 +344,7 @@
     - NIST800-53R4_SI-6
     - NIST800-53R4_AU-8
     - aide
-  ansible.builtin.package:
+  ansible.builtin.dnf:
     name: chrony
     state: present
 
@@ -425,7 +425,7 @@
     - NIST800-53R4_CM-6
     - NIST800-53R4_AC-2
     - firewall
-  ansible.builtin.package:
+  ansible.builtin.dnf:
     name: firewalld
     state: present
 
@@ -520,9 +520,9 @@
     - CCI-001744
     - NIST800-53R4_CM-3
     - s-nail
-  ansible.builtin.command: dnf install -y s-nail
-  changed_when: false
-  failed_when: false
+  ansible.builtin.dnf:
+    name: s-nail
+    state: present
 
 - name: MEDIUM | AZLX-23-001105 | PATCH | Amazon Linux 2023 must have the libreswan package installed.
   when: az2023stig_001105
@@ -535,7 +535,7 @@
     - CCI-000803
     - NIST800-53R4_IA-7
     - libreswan
-  ansible.builtin.package:
+  ansible.builtin.dnf:
     name: libreswan
     state: present
 
@@ -550,7 +550,7 @@
     - CCI-001804
     - NIST800-53R4_SC-3
     - policycoreutils
-  ansible.builtin.package:
+  ansible.builtin.dnf:
     name: policycoreutils
     state: present
 
@@ -565,7 +565,7 @@
     - NIST800-53R4_NA
     - pcsc-lite
     - multiauth
-  ansible.builtin.package:
+  ansible.builtin.dnf:
     name: pcsc-lite
     state: present
 
@@ -580,7 +580,7 @@
     - CCI-000803
     - NIST800-53R4_IA-7
     - syslog
-  ansible.builtin.package:
+  ansible.builtin.dnf:
     name: rsyslog-openssl
     state: present
 
@@ -595,7 +595,7 @@
     - CCI-001953
     - NIST800-53R4_IA-2
     - opensc
-  ansible.builtin.package:
+  ansible.builtin.dnf:
     name: opensc
     state: present
 
@@ -613,7 +613,7 @@
     - NIST800-53R4_IA-2
     - openssl-pkcs11
     - multiauth
-  ansible.builtin.package:
+  ansible.builtin.dnf:
     name: openssl-pkcs11
     state: present
 
@@ -636,7 +636,7 @@
     - NIST800-53R4_MA-4
     - NIST800-53R4_SC-8
     - crypto
-  ansible.builtin.package:
+  ansible.builtin.dnf:
     name: crypto-policies
     state: present
 
@@ -662,7 +662,7 @@
 
     - name: MEDIUM | AZLX-23-001200 | PATCH | Amazon Linux 2023 SSH server must be configured to use systemwide crypto policies.
       when: discovered_sshd_include.rc == 1
-      ansible.builtin.package:
+      ansible.builtin.dnf:
         name: openssh-server
         state: present
 

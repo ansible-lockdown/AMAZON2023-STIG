@@ -40,7 +40,7 @@
     - not system_is_container
     - az2023stig_001065
   tags: always
-  ansible.builtin.package:
+  ansible.builtin.dnf:
     name: cronie
     state: present
 
@@ -49,7 +49,7 @@
     - not system_is_container
     - az2023stig_001070
   tags: always
-  ansible.builtin.package:
+  ansible.builtin.dnf:
     name: aide
     state: present
 
@@ -76,7 +76,7 @@
       az2023stig_002620
     - az2023stig_disruption_high
   tags: always
-  ansible.builtin.package:
+  ansible.builtin.dnf:
     name:
       - sssd
       - sssd-common
@@ -94,6 +94,6 @@
 - name: Install systemd-journal-upload package
   when: az2023stig_002080
   tags: always
-  ansible.builtin.package:
+  ansible.builtin.dnf:
     name: systemd-journal-remote
     state: present
