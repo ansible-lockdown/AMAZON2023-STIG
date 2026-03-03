@@ -525,7 +525,9 @@
   failed_when: false
 
 - name: MEDIUM | AZLX-23-001105 | PATCH | Amazon Linux 2023 must have the libreswan package installed.
-  when: az2023stig_001105
+  when:
+    - az2023stig_001105
+    - "'libreswan' not in ansible_facts.packages"
   tags:
     - azlx-23-001105
     - CAT2
@@ -535,9 +537,9 @@
     - CCI-000803
     - NIST800-53R4_IA-7
     - libreswan
-  ansible.builtin.dnf:
-    name: libreswan
-    state: present
+  ansible.builtin.command: dnf install -y libreswan
+  changed_when: false
+  failed_when: false
 
 - name: MEDIUM | AZLX-23-001110 | PATCH | Amazon Linux 2023 must have the policycoreutils package installed.
   when: az2023stig_001110
