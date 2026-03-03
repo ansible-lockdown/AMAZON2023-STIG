@@ -509,6 +509,9 @@ az2023stig_auditd_disk_full_action: SYSLOG
 # The expected format is "ENRICHED" currently no other options are supported by STIG
 az2023stig_audit_conf_log_format: ENRICHED
 
+# 002265 - auditd log group
+az2023stig_audit_conf_log_group: root
+
 az2023stig_audit_tools:
   - /sbin/auditctl
   - /sbin/aureport
