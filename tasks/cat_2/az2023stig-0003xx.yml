@@ -11,7 +11,7 @@
     - NIST800-53R4_CM-7
     - CCI-000381
     - sendmail
-  ansible.builtin.dnf:
+  ansible.builtin.package:
     name: sendmail
     state: absent
 
@@ -26,7 +26,7 @@
     - CCI-000381
     - NIST800-53R4_CM-7
     - nfs
-  ansible.builtin.dnf:
+  ansible.builtin.package:
     name: nfs-utils
     state: absent
 
@@ -41,7 +41,7 @@
     - CCI-000381
     - NIST800-53R4_CM-7
     - telnet
-  ansible.builtin.dnf:
+  ansible.builtin.package:
     name: telnet-server
     state: absent
 
@@ -56,6 +56,6 @@
     - CCI-000381
     - NIST800-53R4_CM-7
     - gssproxy
-  ansible.builtin.dnf:
+  ansible.builtin.package:
     name: gssproxy
     state: absent

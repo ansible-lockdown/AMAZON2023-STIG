@@ -21,7 +21,7 @@
     - CCI-002420
     - CCI-002422
     - ssh
-  ansible.builtin.dnf:
+  ansible.builtin.package:
     name: openssh-server
     state: present
 
