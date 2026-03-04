@@ -508,9 +508,7 @@
   notify: Restart firewalld
 
 - name: MEDIUM | AZLX-23-001095 | PATCH | Amazon Linux 2023 must have the s-nail package installed.
-  when:
-    - "'s-nail' not in ansible_facts.packages"
-    - az2023stig_001095
+  when: az2023stig_001095
   tags:
     - azlx-23-001095
     - CAT2
@@ -520,14 +518,12 @@
     - CCI-001744
     - NIST800-53R4_CM-3
     - s-nail
-  ansible.builtin.command: dnf install -y s-nail
-  changed_when: false
-  failed_when: false
+  ansible.builtin.package:
+    name: s-nail
+    state: present
 
 - name: MEDIUM | AZLX-23-001105 | PATCH | Amazon Linux 2023 must have the libreswan package installed.
-  when:
-    - az2023stig_001105
-    - "'libreswan' not in ansible_facts.packages"
+  when: az2023stig_001105
   tags:
     - azlx-23-001105
     - CAT2
@@ -537,9 +533,9 @@
     - CCI-000803
     - NIST800-53R4_IA-7
     - libreswan
-  ansible.builtin.command: dnf install -y libreswan
-  changed_when: false
-  failed_when: false
+  ansible.builtin.package:
+    name: libreswan
+    state: present
 
 - name: MEDIUM | AZLX-23-001110 | PATCH | Amazon Linux 2023 must have the policycoreutils package installed.
   when: az2023stig_001110
@@ -1026,11 +1022,12 @@
     - crypto
     - fips
   block:
-    - name: MEDIUM | AZLX-23-001285 | AUDIT | Find available FIPS crypto policy files
+    - name: MEDIUM | AZLX-23-001285 | AUDIT | Amazon Linux 2023 crypto policy must not be overridden.
       ansible.builtin.find:
         paths: /usr/share/crypto-policies/FIPS
         patterns: "*.txt"
-      register: azlx_23_001285_fips_policies
+        excludes: "nss.txt"
+      register: discovered_fips_policies_files
 
     - name: MEDIUM | AZLX-23-001285 | PATCH | Amazon Linux 2023 crypto policy must not be overridden.
       ansible.builtin.file:
@@ -1038,7 +1035,7 @@
         dest: "/etc/crypto-policies/back-ends/{{ item.path | basename | regex_replace('\\.txt$', '.config') }}"
         state: link
         force: true
-      loop: "{{ azlx_23_001285_fips_policies.files }}"
+      loop: "{{ discovered_fips_policies_files.files }}"
       loop_control:
         label: "{{ item.path | basename }}"
 

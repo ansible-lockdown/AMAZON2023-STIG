@@ -397,7 +397,7 @@
     regexp: ^(#?)\s*log_format\s*=
     line: log_format = {{ az2023stig_audit_conf_log_format }}
 
-- name: MEDIUM | AZLX-23-002265 | PATCH | Amazon Linux 2023 must produce audit records containing information to establish the identity of any individual or process associated with the event.
+- name: MEDIUM | AZLX-23-002265 | PATCH | Amazon Linux 2023 audit logs must be group-owned by root or by a restricted logging group to prevent unauthorized read access.
   when: az2023stig_002265
   tags:
     - azlx-23-002265
@@ -409,24 +409,24 @@
     - NIST800-53R4_SI-11
     - auditd
   block:
-    - name: MEDIUM | AZLX-23-002265 | PATCH | Set log_group in auditd.conf
+    - name: MEDIUM | AZLX-23-002265 | PATCH | Amazon Linux 2023 audit logs must be group-owned by root or by a restricted logging group to prevent unauthorized read access. | log_group
       ansible.builtin.lineinfile:
         path: /etc/audit/auditd.conf
         regexp: '^(#)?log_group\s*='
         line: "log_group = {{ az2023stig_auditd_log_group | default('root') }}"
       notify: Restart auditd
 
-    - name: MEDIUM | AZLX-23-002265 | PATCH | Set audit log directory group ownership
+    - name: MEDIUM | AZLX-23-002265 | PATCH | Amazon Linux 2023 audit logs must be group-owned by root or by a restricted logging group to prevent unauthorized read access. | audit log directory
       ansible.builtin.file:
         path: /var/log/audit
         group: "{{ az2023stig_auditd_log_group | default('root') }}"
-        mode: '0750'
+        mode: 'u-x,g-wx,o-rwx'
 
-    - name: MEDIUM | AZLX-23-002265 | PATCH | Set audit log file group ownership
+    - name: MEDIUM | AZLX-23-002265 | PATCH | Amazon Linux 2023 audit logs must be group-owned by root or by a restricted logging group to prevent unauthorized read access. | audit.log
       ansible.builtin.file:
         path: /var/log/audit/audit.log
         group: "{{ az2023stig_auditd_log_group | default('root') }}"
-        mode: '0600'
+        mode: 'u-x,g-wx,o-rwx'
 
 - name: MEDIUM | AZLX-23-002270 | PATCH | Amazon Linux 2023 must ensure the audit log directory be owned by root to prevent unauthorized read access.
   when: az2023stig_002270
