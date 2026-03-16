@@ -122,7 +122,7 @@ jobs:
         id: apply
         env:
           OSVAR: ${{ vars.OSVAR }}
-          TF_VAR_ansible_version: ${{ vars.ANSIBLE_VERSION }}
+          TF_VAR_ansible_version: ${{ vars.ANSIBLE_RUNNER_VERSION }}
           TF_VAR_benchmark_type: ${{ vars.BENCHMARK_TYPE }}
           TF_VAR_privsubnet_id: ${{ secrets.AWS_PRIVSUBNET_ID }}
           TF_VAR_vpc_secgrp_id: ${{ secrets.AWS_VPC_SECGRP_ID }}
