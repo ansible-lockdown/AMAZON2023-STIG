@@ -303,6 +303,7 @@
   when: az2023stig_001050
   tags:
     - azlx-23-001050
+    - CAT2
     - SV-274022r1120054_rule
     - V-274022
     - SRG-OS-000355-GPOS-00143
@@ -794,7 +795,7 @@
         label: "{{ item.path }}"
       notify: Restart ssh
 
-- name: MEDIUM | AZLX-23-001235| PATCH | Amazon Linux 2023 SSHD must not allow blank passwords.
+- name: MEDIUM | AZLX-23-001235 | PATCH | Amazon Linux 2023 SSHD must not allow blank passwords.
   when: az2023stig_001235
   tags:
     - azlx-23-001235
@@ -1060,19 +1061,27 @@
   register: discovered_sssd_pam_cert_auth
   notify: Restart sssd
 
-# - name: MEDIUM | AZLX-23-001295 | PATCH | Amazon Linux 2023 must map the authenticated identity to the user or group account for PKI-based authentication.
-#   when:
-#     - az2023stig_001295
-#     - az2023stig_disruption_high
-#   tags:
-#     - azlx-23-001295
-#     - CAT2
-#     - SV-274060r1120168_rule
-#     - V-274060
-#     - SRG-OS-000068-GPOS-00036
-#     - CCI-000187
-#     - NIST800_53R4_IA-2
-#     - sssd
+- name: MEDIUM | AZLX-23-001295 | AUDIT | Amazon Linux 2023 must map the authenticated identity to the user or group account for PKI-based authentication.
+  when: az2023stig_001295
+  tags:
+    - azlx-23-001295
+    - CAT2
+    - SV-274060r1120168_rule
+    - V-274060
+    - SRG-OS-000068-GPOS-00036
+    - CCI-000187
+    - NIST800_53R4_IA-2
+    - sssd
+  block:
+    - name: MEDIUM | AZLX-23-001295 | AUDIT | Amazon Linux 2023 must map the authenticated identity to the user or group account for PKI-based authentication.
+      ansible.builtin.debug:
+        msg: "WARNING!! This control requires manual configuration of SSSD certificate mapping to map authenticated PKI identities to user or group accounts."
+
+    - name: MEDIUM | AZLX-23-001295 | AUDIT | Amazon Linux 2023 must map the authenticated identity to the user or group account for PKI-based authentication.
+      vars:
+        warn_control_id: "MEDIUM | AZLX-23-001295"
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
 
 - name: MEDIUM | AZLX-23-001300 | PATCH | Amazon Linux 2023 must implement certificate status checking for multifactor authentication.
   when:
@@ -1136,8 +1145,6 @@
     - NIST800_53R4_IA-5
     - NIST800_53R4_SC-23
     - sssd
-  vars:
-    warn_control_id: "MEDIUM | AZLX-23-001310"
   block:
     - name: MEDIUM | AZLX-23-001310 | AUDIT | Amazon Linux 2023, for PKI-based authentication, must validate certificates by constructing a certification path (which includes status information) to an accepted trust anchor.
       ansible.builtin.command: openssl x509 -text -in /etc/sssd/pki/sssd_auth_ca_db.pem
@@ -1155,6 +1162,8 @@
           - "WARNING!! DOD root CA details not found in file /etc/sssd/pki/sssd_auth_ca_db.pem"
 
     - name: MEDIUM | AZLX-23-001310 | AUDIT | Amazon Linux 2023, for PKI-based authentication, must validate certificates by constructing a certification path (which includes status information) to an accepted trust anchor.
+      vars:
+        warn_control_id: "MEDIUM | AZLX-23-001310"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -1171,8 +1180,6 @@
     - CCI-000186
     - NIST800_53R4_IA-5
     - sssd
-  vars:
-    warn_control_id: "MEDIUM | AZLX-23-001315"
   block:
     - name: MEDIUM | AZLX-23-001315 | AUDIT | Amazon Linux 2023, for PKI-based authentication, must enforce authorized access to the corresponding private key.
       ansible.builtin.find:
@@ -1197,5 +1204,7 @@
             msg: "WARNING!! Private key found without a password"
 
         - name: MEDIUM | AZLX-23-001315 | AUDIT | Amazon Linux 2023, for PKI-based authentication, must enforce authorized access to the corresponding private key.
+          vars:
+            warn_control_id: "MEDIUM | AZLX-23-001315"
           ansible.builtin.import_tasks:
             file: warning_facts.yml

@@ -29,14 +29,14 @@
     - SRG-OS-000420-GPOS-00186
     - CCI-002385
     - NIST800-53R4_SC-5
-  vars:
-    warn_control_id: "MEDIUM | AZLX-23-002605"
   block:
     - name: MEDIUM | AZLX-23-002605 | AUDIT | Amazon Linux 2023 must protect against or limit the effects of denial-of-service (DoS) attacks by ensuring rate-limiting measures are configured on impacted network interfaces. | discover status
       ansible.builtin.debug:
         msg: "Warning!! Please investigate rate-limiting measures for AWS EC2 for ALB"
 
     - name: MEDIUM | AZLX-23-002605 | AUDIT | Amazon Linux 2023 must protect against or limit the effects of denial-of-service (DoS) attacks by ensuring rate-limiting measures are configured on impacted network interfaces. | warn_count
+      vars:
+        warn_control_id: "MEDIUM | AZLX-23-002605"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -50,8 +50,6 @@
     - SRG-OS-000433-GPOS-00192
     - CCI-002824
     - NIST800-53R4_SI-16
-  vars:
-    warn_control_id: "MEDIUM | AZLX-23-002610"
   block:
     - name: MEDIUM | AZLX-23-002610 | PATCH | Amazon Linux 2023 must implement nonexecutable data to protect its memory from unauthorized code execution. | discover status
       ansible.builtin.command: dmesg | grep -i "execute disable"
@@ -73,6 +71,8 @@
 
     - name: MEDIUM | AZLX-23-002610 | PATCH | Amazon Linux 2023 must implement nonexecutable data to protect its memory from unauthorized code execution. | warn_count
       when: discovered_dmesg_nx_value.stdout is not defined or discovered_nx_cpuinfo_settings.stdout is not defined
+      vars:
+        warn_control_id: "MEDIUM | AZLX-23-002610"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 

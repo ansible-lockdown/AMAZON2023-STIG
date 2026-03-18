@@ -1,6 +1,6 @@
 ---
 
-- name: Post Audit | Run post_remediation {{ benchmark }} audit  # noqa name[template]
+- name: Post Audit | Run post_remediation {{ benchmark }} audit # noqa name[template]
   ansible.builtin.command: "{{ audit_conf_dir }}/run_audit.sh -v {{ audit_vars_path }} -f {{ audit_format }} -o {{ post_audit_outfile }} -g \"{{ group_names }}\""
   changed_when: true
   environment:
@@ -23,11 +23,11 @@
     - name: Post Audit | Capture audit data if json format
       ansible.builtin.shell: grep -E '"summary-line.*Count:.*Failed' "{{ post_audit_outfile }}" | cut -d'"' -f4
       changed_when: false
-      register: post_audit_summary
+      register: post_audit_json_summary
 
     - name: Post Audit | Set Fact for audit summary
       ansible.builtin.set_fact:
-        post_audit_results: "{{ post_audit_summary.stdout }}"
+        post_audit_results: "{{ post_audit_json_summary.stdout }}"
 
 - name: Post Audit | Capture audit data if documentation format
   when: audit_format == "documentation"
@@ -35,8 +35,8 @@
     - name: Post Audit | Capture audit data if documentation format
       ansible.builtin.shell: tail -2 "{{ post_audit_outfile }}"  | tac | tr '\n' ' '
       changed_when: false
-      register: post_audit_summary
+      register: post_audit_doc_summary
 
     - name: Post Audit | Set Fact for audit summary
       ansible.builtin.set_fact:
-        post_audit_results: "{{ post_audit_summary.stdout }}"
+        post_audit_results: "{{ post_audit_doc_summary.stdout }}"

@@ -14,10 +14,6 @@ az2023stig_cat1: {{ az2023stig_cat1 }}
 az2023stig_cat2: {{ az2023stig_cat2 }}
 az2023stig_cat3: {{ az2023stig_cat3 }}
 
-
-# If using sssd on host
-az2023stig_uses_sssd: {{ az2023stig_sssd_configure }}
-
 # Some tests may need to scan every filesystem or have an impact on a system
 # these may need be scheduled to minimise impact
 run_heavy_tests: {{ audit_run_heavy_tests }}

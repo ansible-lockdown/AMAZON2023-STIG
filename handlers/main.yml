@@ -85,11 +85,6 @@
     path: "/dev/shm"
     state: remounted
 
-- name: Restart journald
-  ansible.builtin.systemd:
-    name: systemd-journald
-    state: restarted
-
 - name: Restart systemd-journal-upload
   ansible.builtin.systemd:
     name: systemd-journal-upload

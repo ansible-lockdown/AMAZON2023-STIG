@@ -1,0 +1,31 @@
+---
+
+galaxy_info:
+    author: "Ansible Lockdown Team"
+    description: "Apply the Amazon 2023 STIG"
+    company: "MindPoint Group - A Tyto Athene Company"
+    license: MIT
+    role_name: amazon2023_stig
+    namespace: mindpointgroup
+    min_ansible_version: '2.12'
+    platforms:
+        - name: "Amazon Linux"
+          versions:
+              - "2023"
+    galaxy_tags:
+        - system
+        - security
+        - stig
+        - hardening
+        - benchmark
+        - compliance
+        - complianceascode
+        - disa
+        - amazonlinux
+        - ec2
+        - stig
+collections:
+    - community.general
+    - community.crypto
+    - ansible.posix
+dependencies: []

@@ -281,7 +281,6 @@ az2023stig_002290: true
 az2023stig_002295: true
 az2023stig_002300: true
 az2023stig_002305: true
-az2023stig_002310: true
 az2023stig_002315: true
 az2023stig_002320: true
 az2023stig_002325: true
@@ -346,8 +345,6 @@ az2023stig_002605: true
 az2023stig_002610: true
 az2023stig_002615: true
 az2023stig_002620: true
-az2023stig_002625: true
-az2023stig_002630: true
 
 # az2023stig-50xx
 az2023stig_005000: true
@@ -510,7 +507,7 @@ az2023stig_auditd_disk_full_action: SYSLOG
 az2023stig_audit_conf_log_format: ENRICHED
 
 # 002265 - auditd log group
-az2023stig_audit_conf_log_group: root
+az2023stig_auditd_log_group: root
 
 az2023stig_audit_tools:
   - /sbin/auditctl
@@ -533,6 +530,9 @@ az2023stig_pwquality_difok: 8
 az2023stig_pwquality_dictcheck: 1
 az2023stig_pwquality_minlen: 15
 az2023stig_pwquality_ocredit: -1
+
+# 002396 profile timeout - seconds before interactive shell session auto-exits
+az2023_profile_timeout_seconds: 600
 
 # 002395 maxlogins
 # Must be 10 or less

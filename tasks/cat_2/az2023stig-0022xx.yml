@@ -442,12 +442,12 @@
     - name: MEDIUM | AZLX-23-002270 | AUDIT | Amazon Linux 2023 must ensure the audit log directory be owned by root to prevent unauthorized read access.
       ansible.builtin.shell: grep log_file /etc/audit/auditd.conf | awk '{ print $NF }'
       changed_when: false
-      failed_when: discovered_auditd_log_file_dir_owner.rc not in [ 0, 1]
-      register: discovered_auditd_log_file_dir_owner
+      failed_when: discovered_auditd_log_file_dir_owner_002270.rc not in [ 0, 1]
+      register: discovered_auditd_log_file_dir_owner_002270
 
     - name: MEDIUM | AZLX-23-002270 | PATCH | Amazon Linux 2023 must ensure the audit log directory be owned by root to prevent unauthorized read access.
       ansible.builtin.file:
-        path: "{{ discovered_auditd_log_file_dir_owner.stdout | dirname }}"
+        path: "{{ discovered_auditd_log_file_dir_owner_002270.stdout | dirname }}"
         owner: root
 
 - name: MEDIUM | AZLX-23-002275 | PATCH | Amazon Linux 2023 audit logs file must have mode "0600" or less permissive to prevent unauthorized access to the audit log.

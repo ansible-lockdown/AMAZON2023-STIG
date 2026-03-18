@@ -347,34 +347,6 @@
   ansible.builtin.set_fact:
     update_audit_template: true
 
-- name: MEDIUM | AZLX-23-002150 | PATCH | Amazon Linux 2023 must audit all uses of the rename, unlink, rmdir, renameat, and unlinkat system calls.
-  when: az2023stig_002150
-  tags:
-    - azlx-23-002150
-    - CAT2
-    - SV-274094r1120270_rule
-    - V-274094
-    - SRG-OS-000037-GPOS-00015
-    - SRG-OS-000042-GPOS-00020
-    - SRG-OS-000062-GPOS-00031
-    - SRG-OS-000392-GPOS-00172
-    - SRG-OS-000462-GPOS-00206
-    - SRG-OS-000471-GPOS-00215
-    - SRG-OS-000466-GPOS-00210
-    - SRG-OS-000467-GPOS-00211
-    - SRG-OS-000468-GPOS-00212
-    - CCI-000130
-    - CCI-000135
-    - CCI-000169
-    - CCI-002884
-    - CCI-000172
-    - NIST800-53R4_AU-3
-    - NIST800-53R4_AU-12
-    - NIST800-53R4_MA-4
-    - auditd
-  ansible.builtin.set_fact:
-    update_audit_template: true
-
 - name: MEDIUM | AZLX-23-002155 | PATCH | Amazon Linux 2023 must audit all uses of the chcon command.
   when: az2023stig_002155
   tags:

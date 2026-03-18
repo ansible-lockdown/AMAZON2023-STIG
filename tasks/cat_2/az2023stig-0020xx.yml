@@ -50,8 +50,6 @@
     - CCI-001849
     - NIST800-53R4_AU-4
     - auditd
-  vars:
-    warn_control_id: "MEDIUM | AZLX-23-002015"
   block:
     - name: MEDIUM | AZLX-23-002015 | AUDIT | Amazon Linux 2023 must allocate audit record storage capacity to store at least one week's worth of audit records, when audit records are not immediately sent to a central audit record storage facility.
       ansible.builtin.shell: grep ^log_file /etc/audit/auditd.conf | awk '{ print $NF }'
@@ -81,6 +79,8 @@
           - "Please make sure the audit log filesystem is mounted."
 
     - name: MEDIUM | AZLX-23-002015 | AUDIT | Amazon Linux 2023 must allocate audit record storage capacity to store at least one week's worth of audit records, when audit records are not immediately sent to a central audit record storage facility.
+      vars:
+        warn_control_id: "MEDIUM | AZLX-23-002015"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -349,47 +349,6 @@
     - CAT2
     - SV-274083r1120237_rule
     - V-274083
-    - SRG-OS-000004-GPOS-00004
-    - SRG-OS-000037-GPOS-00015
-    - SRG-OS-000042-GPOS-00020
-    - SRG-OS-000062-GPOS-00031
-    - SRG-OS-000304-GPOS-00121
-    - SRG-OS-000392-GPOS-00172
-    - SRG-OS-000462-GPOS-00206
-    - SRG-OS-000470-GPOS-00214
-    - SRG-OS-000471-GPOS-00215
-    - SRG-OS-000239-GPOS-00089
-    - SRG-OS-000240-GPOS-00090
-    - SRG-OS-000241-GPOS-00091
-    - SRG-OS-000303-GPOS-00120
-    - SRG-OS-000466-GPOS-00210
-    - SRG-OS-000476-GPOS-00221
-    - CCI-000018
-    - CCI-000130
-    - CCI-000135
-    - CCI-000169
-    - CCI-000015
-    - CCI-002884
-    - CCI-000172
-    - CCI-001403
-    - CCI-001404
-    - CCI-001405
-    - CCI-002130
-    - NIST800-53R4_AC-2
-    - NIST800-53R4_AU-3
-    - NIST800-53R4_AU-12
-    - NIST800-53R4_MA-4
-    - auditd
-  ansible.builtin.set_fact:
-    update_audit_template: true
-
-- name: MEDIUM | AZLX-23-002100 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/gshadow.
-  when: az2023stig_002100
-  tags:
-    - azlx-23-002100
-    - CAT2
-    - SV-274084r1120240_rule
-    - V-274084
     - SRG-OS-000004-GPOS-00004
     - SRG-OS-000037-GPOS-00015
     - SRG-OS-000042-GPOS-00020
