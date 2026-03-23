@@ -7,20 +7,20 @@
   tags:
     - azlx-23-002020
     - CAT3
-    - SV-274068r1120192_rul
+    - SV-274068r1120192_rule
     - V-274068
     - SRG-OS-000341-GPOS-00132
     - CCI-001849
     - NIST800-53R4_AU-9
     - auditd
-  vars:
-    warn_control_id: "LOW | AZLX-23-002020"
   block:
     - name: LOW | AZLX-23-002020 | WARN | Amazon Linux 2023 must use a separate file system for the system audit data path.
       ansible.builtin.debug:
         msg: "WARNING!! /var/log/audit directory is not a separate filesystem"
 
     - name: LOW | AZLX-23-002020 | WARN | Amazon Linux 2023 must use a separate file system for the system audit data path.
+      vars:
+        warn_control_id: "LOW | AZLX-23-002020"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 

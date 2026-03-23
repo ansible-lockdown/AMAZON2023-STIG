@@ -1,7 +1,7 @@
 ---
 
 ## metadata for Audit benchmark
-benchmark_version: 'v1.0.0'
+benchmark_version: 'v1.2.0'
 
 ## Benchmark name used by auditing control role
 # The audit variable found at the base
@@ -212,7 +212,7 @@ az2023stig_001265: true
 az2023stig_001270: true
 az2023stig_001285: true
 az2023stig_001290: true
-az2023stig_001295: TESTTEST
+az2023stig_001295: true
 az2023stig_001300: true
 az2023stig_001305: true
 az2023stig_001310: true
@@ -281,7 +281,6 @@ az2023stig_002290: true
 az2023stig_002295: true
 az2023stig_002300: true
 az2023stig_002305: true
-az2023stig_002310: true
 az2023stig_002315: true
 az2023stig_002320: true
 az2023stig_002325: true
@@ -346,8 +345,6 @@ az2023stig_002605: true
 az2023stig_002610: true
 az2023stig_002615: true
 az2023stig_002620: true
-az2023stig_002625: true
-az2023stig_002630: true
 
 # az2023stig-50xx
 az2023stig_005000: true
@@ -363,7 +360,7 @@ az2023stig_sysctl_file_kernel: /etc/sysctl.d/99_stig_kernel.conf
 
 # 001xxx sudo variables
 # Ability to enable some users to keep the NOPASSWD option
-# This is dependant on how you have setup sudoers
+# This is dependent on how you have setup sudoers
 # This will skip any matching user and leave the NOPASSWD for escalation
 az2023stig_sudoers_exclude_nopasswd_list:
   - vagrant
@@ -469,6 +466,9 @@ az2023stig_logon_banner: |
 # Ability to easily turn off auditd updates to file
 az2023stig_auditd_required: true
 
+# Mount points to exclude from privileged command audit searches
+az2023stig_priv_command_excluded_mounts: []
+
 # 002015
 az2023stig_audit_log_filesystem: /var/log/audit
 
@@ -506,6 +506,9 @@ az2023stig_auditd_disk_full_action: SYSLOG
 # The expected format is "ENRICHED" currently no other options are supported by STIG
 az2023stig_audit_conf_log_format: ENRICHED
 
+# 002265 - auditd log group
+az2023stig_auditd_log_group: root
+
 az2023stig_audit_tools:
   - /sbin/auditctl
   - /sbin/aureport
@@ -528,6 +531,9 @@ az2023stig_pwquality_dictcheck: 1
 az2023stig_pwquality_minlen: 15
 az2023stig_pwquality_ocredit: -1
 
+# 002396 profile timeout - seconds before interactive shell session auto-exits
+az2023_profile_timeout_seconds: 600
+
 # 002395 maxlogins
 # Must be 10 or less
 az2023stig_maxlogins: 10
@@ -548,12 +554,16 @@ az2023stig_pass_inactive_days: 30
 az2023stig_selinux_policy: targeted
 az2023stig_selinux_mode: enforcing
 
+## 002489
+# PAM password quality retry count
+az2023stig_pam_retry: 3
+
 ## 002490
 # Must be 10000 or greater
 az2023stig_pam_rounds: 10000
 
 # 002510
-az2023stig_logind_conf_stopsessionidle: 0
+az2023stig_logind_conf_stopsessionidle: 600
 # 002520
 az2023stig_audit_backlog_limit: 8192
 
@@ -577,7 +587,7 @@ az2023stig_pam_faillock_interval: 900
 az2023stig_pam_faillock_unlock_time: 0
 
 # 002080 syslog journal-upload variables
-az2023stig_syslog_remote_log_server: 192.168.2.100
+az2023stig_syslog_remote_log_server: syslog+tcp://127.0.0.1:514
 az2023stig_syslog_serverkeyfile: /etc/ssl/private/syslog.pem
 az2023stig_syslog_servercertificatefile: /etc/ssl/certs/syslog.pem
 az2023stig_syslog_trustedcertificatefile: /etc/ssl/ca/trusted.pem

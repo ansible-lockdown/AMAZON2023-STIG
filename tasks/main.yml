@@ -16,9 +16,7 @@
     success_msg: This role is running a supported version of ansible {{ ansible_version.full }} >= {{ min_ansible_version }}
 
 - name: Setup rules if container
-  when:
-    - ansible_connection == 'docker' or
-      ansible_virtualization_type in ["docker", "lxc", "openvz", "podman", "container"]
+  when: ansible_connection == 'docker' or ansible_virtualization_type in ["docker", "lxc", "openvz", "podman", "container"]
   tags:
     - container_discovery
     - always
@@ -77,8 +75,8 @@
 - name: Add ansible file showing Benchmark and levels applied if audit details not present
   when:
     - create_benchmark_facts
-    - (post_audit_summary is defined) or
-      (ansible_local['compliance_facts']['lockdown_audit_details']['audit_summary'] is undefined and post_audit_summary is undefined)
+    - (post_audit_json_summary is defined or post_audit_doc_summary is defined) or
+      (ansible_local['compliance_facts']['lockdown_audit_details']['audit_summary'] is undefined and post_audit_json_summary is undefined and post_audit_doc_summary is undefined)
   tags:
     - always
     - benchmark

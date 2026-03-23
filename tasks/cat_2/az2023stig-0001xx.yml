@@ -11,8 +11,6 @@
     - NIST800-53R4_NA
     - encrypt
     - ssh
-  vars:
-    warn_control_id: "MEDIUM | AZLX-23-000110"
   block:
     - name: MEDIUM | AZLX-23-000110 | AUDIT | Amazon Linux 2023 must ensure cryptographic verification of vendor software packages.
       ansible.builtin.shell: "rpm -qa | grep {{ os_gpg_key_pubkey_name }}"  # noqa: command-instead-of-module
@@ -28,16 +26,16 @@
       register: discovered_os_gpg_key_check
 
     - name: MEDIUM | AZLX-23-000110 | AUDIT | Amazon Linux 2023 must ensure cryptographic verification of vendor software packages.
-      when:
-        - discovered_os_installed_pub_keys.rc == 1 or
-          discovered_os_gpg_key_check.rc == 1
+      when: discovered_os_installed_pub_keys.rc == 1 or
+            discovered_os_gpg_key_check.rc == 1
       ansible.builtin.debug:
         msg: "Warning!! Installed GPG Keys do not meet expected values or expected keys are not installed"
 
-    - name: MEDIUM | AZLX-23-000110 | AUDIT | Amazon Linux 2023 must ensure cryptographic verification of vendor software packages."
-      when:
-        - discovered_os_installed_pub_keys.rc == 1 or
-          discovered_os_gpg_key_check.rc == 1
+    - name: MEDIUM | AZLX-23-000110 | AUDIT | Amazon Linux 2023 must ensure cryptographic verification of vendor software packages.
+      when: discovered_os_installed_pub_keys.rc == 1 or
+            discovered_os_gpg_key_check.rc == 1
+      vars:
+        warn_control_id: "MEDIUM | AZLX-23-000110"
       ansible.builtin.import_tasks: warning_facts.yml
 
 - name: MEDIUM | AZLX-23-000135 | PATCH | Amazon Linux 2023 systemd-journald service must be enabled.
@@ -45,8 +43,8 @@
   tags:
     - azlx-23-000135
     - CAT2
-    - SV-273996r1119976_rule
-    - V-273996
+    - SV-274000r1119991_rule
+    - V-274000
     - SRG-OS-000366-GPOS-00153
     - NIST800-53R4_NA
     - dnf

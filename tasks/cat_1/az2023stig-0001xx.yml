@@ -4,6 +4,7 @@
   when: az2023stig_000100
   tags:
     - azlx-23-000100
+    - CAT1
     - SV-273994r1119970_rule
     - V-273994
     - SRG-OS-000185-GPOS-00079
@@ -15,8 +16,6 @@
     - NIST800-53R4_SC-28
     - encrypt
     - filesystem
-  vars:
-    warn_control_id: "HIGH | AZLX-23-000100"
   block:
     - name: HIGH | AZLX-23-000100 | AUDIT | Amazon Linux 2023 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection.
       ansible.builtin.command: blkid
@@ -32,6 +31,8 @@
           - "{{ discovered_partition_layout.stdout_lines }}"
 
     - name: HIGH | AZLX-23-000100 | WARN | Amazon Linux 2023 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection.
+      vars:
+        warn_control_id: "HIGH | AZLX-23-000100"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -39,6 +40,7 @@
   when: az2023stig_000115
   tags:
     - azlx-23-000115
+    - CAT1
     - SV-273996r1119976_rule
     - V-273996
     - SRG-OS-000366-GPOS-00153
@@ -56,6 +58,7 @@
   when: az2023stig_000120
   tags:
     - azlx-23-000120
+    - CAT1
     - SV-273997r1119979_rule
     - V-273997
     - SRG-OS-000366-GPOS-00153
@@ -73,6 +76,7 @@
   when: az2023stig_000125
   tags:
     - azlx-23-000125
+    - CAT1
     - SV-273998r1119982_rule
     - V-273998
     - SRG-OS-000366-GPOS-00153
@@ -99,7 +103,8 @@
     - (ansible_facts.distribution != 'Amazon' or ansible_facts.distribution_major_version is version_compare('2023', '!='))
   tags:
     - azlx-23-000130
-    - SV-273999r1119985_rule
+    - CAT1
+    - SV-273999r1155171_rule
     - V-273999
     - SRG-OS-000439-GPOS-00195
     - NIST800-53R4_SI-2

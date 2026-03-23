@@ -10,11 +10,11 @@
   ansible.builtin.systemd:
     name: chronyd
     state: stopped
-  register: chronyd_stopped
+  register: discovered_chronyd_stopped
   listen: Restart chrony
 
 - name: If Chronyd source file exists remove it
-  when: chronyd_stopped.changed
+  when: discovered_chronyd_stopped.changed
   ansible.builtin.file:
     path: /run/chrony/ntp-pool.sources
     state: absent
@@ -54,11 +54,11 @@
   when: "'sssd' in ansible_facts.packages"
   ansible.builtin.stat:
     path: /etc/sssd/sssd.conf
-  register: sssd_config_stat
+  register: discovered_sssd_config_stat
   listen: Restart sssd
 
 - name: Restart sssd
-  when: "'sssd' in ansible_facts.packages and sssd_config_stat.stat.exists"
+  when: "'sssd' in ansible_facts.packages and discovered_sssd_config_stat.stat.exists"
   ansible.builtin.systemd:
     name: sssd
     state: restarted
@@ -84,11 +84,6 @@
   ansible.posix.mount:
     path: "/dev/shm"
     state: remounted
-
-- name: Restart journald
-  ansible.builtin.systemd:
-    name: systemd-journald
-    state: restarted
 
 - name: Restart systemd-journal-upload
   ansible.builtin.systemd:

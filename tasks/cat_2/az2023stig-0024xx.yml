@@ -59,14 +59,14 @@
     - CCI-000016
     - NIST800-53R4_AC-2
     - login
-  vars:
-    warn_control_id: "MEDIUM | AZLX-23-002415"
   block:
     - name: MEDIUM | AZLX-23-002415 | AUDIT | Amazon Linux 2023 must automatically remove or disable temporary user accounts after 72 hours.
       ansible.builtin.debug:
         msg: "WARNING!! - Please check for any temporary account ensure they are still valid"
 
     - name: MEDIUM | AZLX-23-002415 | AUDIT | Amazon Linux 2023 must automatically remove or disable temporary user accounts after 72 hours.
+      vars:
+        warn_control_id: "MEDIUM | AZLX-23-002415"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -118,8 +118,6 @@
     - SRG-OS-000076-GPOS-00044
     - NIST800-53R4_NA
     - pam
-  vars:
-    warn_control_id: "MEDIUM | AZLX-23-002425"
   block:
     - name: MEDIUM | AZLX-23-002425 | PATCH | Amazon Linux 2023 must be able to enforce a 60-day maximum password lifetime restriction.
       ansible.builtin.lineinfile:
@@ -145,6 +143,8 @@
       when:
         - discovered_passwd_max_days.stdout is defined
         - discovered_passwd_max_days.stdout | length > 0
+      vars:
+        warn_control_id: "MEDIUM | AZLX-23-002425"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -175,14 +175,14 @@
     - CCI-001682
     - NIST800-53R4_AC-2
     - pam
-  vars:
-    warn_control_id: "MEDIUM | AZLX-23-002435"
   block:
     - name: MEDIUM | AZLX-23-002435 | AUDIT | Amazon Linux 2023 must automatically remove or disable temporary user accounts after 72 hours.
       ansible.builtin.debug:
         msg: "WARNING!! - Please check for any temporary account ensure they are still valid"
 
     - name: MEDIUM | AZLX-23-002435 | AUDIT | Amazon Linux 2023 must automatically remove or disable temporary user accounts after 72 hours.
+      vars:
+        warn_control_id: "MEDIUM | AZLX-23-002435"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -208,24 +208,6 @@
         path: /etc/pam.d/su
         regexp: ^#auth required pam_wheel.so use_uid
         line: auth required pam_wheel.so use_uid
-
-- name: MEDIUM | AZLX-23-002445 | PATCH | Amazon Linux 2023 must enable the SELinux targeted policy.
-  when:
-    - az2023stig_002445
-    - az2023stig_disruption_high
-  tags:
-    - azlx-23-002445
-    - CAT2
-    - SV-274152r1120738_rule
-    - V-274152
-    - SRG-OS-000445-GPOS-00199
-    - CCI-002696
-    - NIST800-53R4_SI-6
-    - selinux
-  ansible.posix.selinux:
-    policy: "{{ az2023stig_selinux_policy }}"
-    state: "{{ az2023stig_selinux_mode }}"
-  notify: Reboot required
 
 - name: MEDIUM | AZLX-23-002445 | PATCH | Amazon Linux 2023 must enable the SELinux targeted policy.
   when:
@@ -314,7 +296,7 @@
   tags:
     - azlx-23-002475
     - CAT2
-    - SV-274158r1120462_rule
+    - SV-274158r1120727_rule
     - V-274158
     - SRG-OS-000096-GPOS-00050
     - SRG-OS-000297-GPOS-00115
@@ -323,8 +305,6 @@
     - NIST800-53R4_CM-7
     - NIST800-53R4_AC-17
     - firewall
-  vars:
-    warn_control_id: "MEDIUM | AZLX-23-002475"
   block:
     - name: MEDIUM | AZLX-23-002475 | AUDIT | Amazon Linux 2023 must be configured to prohibit or restrict the use of functions, ports, protocols, and/or services, as defined in the Ports, Protocols, and Services Management Category Assurance List (PPSM CAL) and vulnerability assessments.
       ansible.builtin.command: firewall-cmd --list-all
@@ -340,6 +320,8 @@
 
     - name: MEDIUM | AZLX-23-002475 | AUDIT | Amazon Linux 2023 must be configured to prohibit or restrict the use of functions, ports, protocols, and/or services, as defined in the Ports, Protocols, and Services Management Category Assurance List (PPSM CAL) and vulnerability assessments.
       when: discovered_firewall_state.stdout_lines is defined
+      vars:
+        warn_control_id: "MEDIUM | AZLX-23-002475"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -360,8 +342,6 @@
     - NIST800-53R4_IA-8
     - NIST800-53R4_AU-3
     - login
-  vars:
-    warn_control_id: "MEDIUM | AZLX-23-002480"
   block:
     - name: MEDIUM | AZLX-23-002480 | AUDIT | Amazon Linux 2023 must insure all interactive users have a primary group that exists.
       ansible.builtin.command: pwck -qr
@@ -381,6 +361,8 @@
       when:
         - discovered_pwck_state.stdout_lines is defined
         - discovered_pwck_state.stdout_lines | length > 0
+      vars:
+        warn_control_id: "MEDIUM | AZLX-23-002480"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -401,8 +383,6 @@
     - NIST800-53R4_IA-8
     - NIST800-53R4_AU-3
     - login
-  vars:
-    warn_control_id: "MEDIUM | AZLX-23-002485"
   block:
     - name: MEDIUM | AZLX-23-002485 | AUDIT | Amazon Linux 2023 must insure all interactive users have a unique user ID (UIDs).
       ansible.builtin.command: awk -F ":" 'list[$3]++{print $1, $3}' /etc/passwd
@@ -422,6 +402,8 @@
       when:
         - discovered_unique_uid.stdout_lines is defined
         - discovered_unique_uid.stdout_lines | length > 0
+      vars:
+        warn_control_id: "MEDIUM | AZLX-23-002485"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -437,8 +419,6 @@
     - CCI-000193
     - NIST800-53R4_IA-5
     - pamd
-  vars:
-    warn_control_id: "MEDIUM | AZLX-23-002489"
   block:
     - name: MEDIUM | AZLX-23-002489 | AUDIT | Amazon Linux 2023 must ensure the password complexity module is enabled in the password-auth file.
       ansible.builtin.shell: grep "password.*pam_pwquality.so" /etc/pam.d/password-auth
@@ -472,11 +452,11 @@
     - name: MEDIUM | AZLX-23-002490 | AUDIT | Amazon Linux 2023 password-auth must be configured to use a sufficient number of hashing rounds.
       ansible.builtin.shell: grep "password.*pam_unix.so" /etc/pam.d/password-auth
       changed_when: false
-      failed_when: discovered_pwquality_password_auth_status.rc not in [ 0, 1 ]
-      register: discovered_pwquality_password_auth_status
+      failed_when: discovered_pam_unix_password_auth_status.rc not in [ 0, 1 ]
+      register: discovered_pam_unix_password_auth_status
 
     - name: MEDIUM | AZLX-23-002490 | PATCH | Amazon Linux 2023 password-auth must be configured to use a sufficient number of hashing rounds.
-      when: discovered_pwquality_password_auth_status.stdout | length == 0
+      when: discovered_pam_unix_password_auth_status.stdout | length == 0
       ansible.builtin.lineinfile:
         path: /etc/pam.d/password-auth
         regexp: '^(password\s+)(required|requisite)(\s+pam_unix.so.*)\s(.*)'

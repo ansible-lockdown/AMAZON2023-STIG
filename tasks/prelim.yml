@@ -1,8 +1,7 @@
 ---
 
 - name: Include audit specific variables
-  when:
-    - run_audit or audit_only or setup_audit
+  when: run_audit or audit_only or setup_audit
   tags:
     - setup_audit
     - run_audit
@@ -10,8 +9,7 @@
     file: audit.yml
 
 - name: Include pre-remediation audit tasks
-  when:
-    - run_audit or audit_only
+  when: run_audit or audit_only
   tags: run_audit
   ansible.builtin.import_tasks:
     file: pre_remediation_audit.yml
@@ -54,7 +52,13 @@
     state: present
 
 - name: "PRELIM | PATCH | Find all ssh config files."
-  when: az2023stig_001215
+  when:
+    - az2023stig_001215 or
+      az2023stig_001220 or
+      az2023stig_001225 or
+      az2023stig_001230 or
+      az2023stig_001235 or
+      az2023stig_001240
   tags: always
   ansible.builtin.find:
     paths:

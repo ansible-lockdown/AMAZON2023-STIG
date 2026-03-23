@@ -174,7 +174,7 @@
     name: audit
     state: present
 
-- name: MEDIUM | AZLX-23-001030 | PATCH |  Amazon Linux 2023 must produce audit records containing information to establish what type of events occurred.
+- name: MEDIUM | AZLX-23-001030 | PATCH | Amazon Linux 2023 must produce audit records containing information to establish what type of events occurred.
   when: az2023stig_001030
   tags:
     - azlx-23-001030
@@ -261,7 +261,7 @@
   tags:
     - azlx-23-001040
     - CAT2
-    - SV-274020r1120048_rule
+    - SV-274020r1155173_rule
     - V-274020
     - SRG-OS-000051-GPOS-00024
     - SRG-OS-000479-GPOS-00224
@@ -303,6 +303,7 @@
   when: az2023stig_001050
   tags:
     - azlx-23-001050
+    - CAT2
     - SV-274022r1120054_rule
     - V-274022
     - SRG-OS-000355-GPOS-00143
@@ -429,39 +430,6 @@
     name: firewalld
     state: present
 
-# To add rules prior to starting firewall
-- name: MEDIUM | AZLX-23-001085 | PATCH | Amazon Linux 2023 must be configured to disable nonessential capabilities.
-  when: az2023stig_001085
-  tags:
-    - azlx-23-001085
-    - CAT2
-    - SV-274029r1120075_rule
-    - V-274029
-    - SRG-OS-000095-GPOS-00049
-    - CCI-000381
-    - NIST800-53R4_CM-7
-  block:
-    - name: MEDIUM | AZLX-23-001085 | PATCH | Amazon Linux 2023 must be configured to disable nonessential capabilities. | services
-      ansible.posix.firewalld:
-        service: "{{ item }}"
-        state: enabled
-        permanent: true
-        immediate: true
-        offline: true
-      loop: "{{ az2023_firewalld_service }}"
-
-    - name: MEDIUM | AZLX-23-001085 | PATCH | Amazon Linux 2023 must be configured to disable nonessential capabilities. | ports
-      when: az2023_firewalld_ports is defined
-      ansible.posix.firewalld:
-        port: "{{ item.port }}/{{ item.protocol | default(omit) }}"
-        state: enabled
-        permanent: true
-        immediate: true
-        offline: true
-      loop: "{{ az2023_firewalld_ports }}"
-      loop_control:
-        label: "{{ item.port }}"
-
 - name: MEDIUM | AZLX-23-001080 | PATCH | Amazon Linux 2023 must have the firewalld package installed.
   when: az2023stig_001080
   tags:
@@ -489,10 +457,44 @@
     state: started
     enabled: true
 
-- name: MEDIUM | AZLX-23-001090 | PATCH | Amazon Linux 2023 must manage excess capacity, bandwidth, or other redundancy to limit the effects of information flooding types of denial-of-service (DoS) attacks.
-  when: az2023stig_001050
+# To add rules prior to starting firewall
+- name: MEDIUM | AZLX-23-001085 | PATCH | Amazon Linux 2023 must be configured to disable nonessential capabilities.
+  when: az2023stig_001085
   tags:
-    - azlx-23-001050
+    - azlx-23-001085
+    - CAT2
+    - SV-274029r1120075_rule
+    - V-274029
+    - SRG-OS-000095-GPOS-00049
+    - CCI-000381
+    - NIST800-53R4_CM-7
+  block:
+    - name: MEDIUM | AZLX-23-001085 | PATCH | Amazon Linux 2023 must be configured to disable nonessential capabilities. | services
+      ansible.posix.firewalld:
+        service: "{{ (item == (item | regex_search('^[a-z]+$'))) | bool | ternary(item, omit) }}"
+        state: enabled
+        permanent: true
+        immediate: true
+        offline: true
+      loop: "{{ az2023_firewalld_service }}"
+
+    - name: MEDIUM | AZLX-23-001085 | PATCH | Amazon Linux 2023 must be configured to disable nonessential capabilities. | ports
+      when: az2023_firewalld_ports is defined
+      ansible.posix.firewalld:
+        port: "{{ (item == (item | regex_search('^[0-9]+/[a-z]+$'))) | bool | ternary(item, omit) }}"
+        state: enabled
+        permanent: true
+        immediate: true
+        offline: true
+      loop: "{{ az2023_firewalld_ports }}"
+      loop_control:
+        label: "{{ item.port }}"
+      notify: Restart firewalld
+
+- name: MEDIUM | AZLX-23-001090 | PATCH | Amazon Linux 2023 must manage excess capacity, bandwidth, or other redundancy to limit the effects of information flooding types of denial-of-service (DoS) attacks.
+  when: az2023stig_001090
+  tags:
+    - azlx-23-001090
     - CAT2
     - SV-274030r1120078_rule
     - V-274030
@@ -750,7 +752,7 @@
       ansible.builtin.replace:
         path: "{{ item.path }}"
         regexp: (?i)^(#?)KerberosAuthentication yes
-        replace:
+        replace: ''
         validate: sshd -t -f %s
       loop: "{{ prelim_sshd_config_files.files }}"
       loop_control:
@@ -793,7 +795,7 @@
         label: "{{ item.path }}"
       notify: Restart ssh
 
-- name: MEDIUM | AZLX-23-001235| PATCH | Amazon Linux 2023 SSHD must not allow blank passwords.
+- name: MEDIUM | AZLX-23-001235 | PATCH | Amazon Linux 2023 SSHD must not allow blank passwords.
   when: az2023stig_001235
   tags:
     - azlx-23-001235
@@ -821,11 +823,9 @@
       ansible.builtin.replace:
         path: "{{ item.path }}"
         regexp: (?i)^(#?)PermitEmptyPasswords yes
-        replace:
+        replace: ''
         validate: sshd -t -f %s
       loop: "{{ prelim_sshd_config_files.files }}"
-      loop_control:
-        label: "{{ item.path }}"
       notify: Restart ssh
 
 - name: MEDIUM | AZLX-23-001240 | PATCH | Amazon Linux 2023 must not permit direct logons to the root account using remote access via SSH.
@@ -833,7 +833,7 @@
   tags:
     - azlx-23-001240
     - CAT2
-    - SV-274049r1120135_rule
+    - SV-274049r1120747_rule
     - V-274049
     - SRG-OS-000109-GPOS-00056
     - NIST800-53R4_NA
@@ -925,8 +925,6 @@
         replace: ''
         validate: sshd -t -f %s
       loop: "{{ prelim_sshd_config_files.files }}"
-      loop_control:
-        label: "{{ item.path }}"
       notify: Restart ssh
 
 - name: MEDIUM | AZLX-23-001260 | PATCH | Amazon Linux 2023 must implement DOD-approved encryption in the OpenSSL package.
@@ -1024,23 +1022,23 @@
     - NIST800-53R4_SC-8
     - crypto
     - fips
-  ansible.builtin.file:
-    src: "/usr/share/crypto-policies/FIPS/{{ item }}.txt"
-    dest: "/etc/crypto-policies/back-ends/{{ item }}.config"
-    state: link
-  loop:
-    - bind
-    - gnutls
-    - java
-    - javasystem
-    - krb5
-    - libreswan
-    - libssh
-    - openssh
-    - opensshserver
-    - openssl
-    - openssl_fips
-    - opensslcnf
+  block:
+    - name: MEDIUM | AZLX-23-001285 | AUDIT | Amazon Linux 2023 crypto policy must not be overridden.
+      ansible.builtin.find:
+        paths: /usr/share/crypto-policies/FIPS
+        patterns: "*.txt"
+        excludes: "nss.txt"
+      register: discovered_fips_policies_files
+
+    - name: MEDIUM | AZLX-23-001285 | PATCH | Amazon Linux 2023 crypto policy must not be overridden.
+      ansible.builtin.file:
+        src: "{{ item.path }}"
+        dest: "/etc/crypto-policies/back-ends/{{ item.path | basename | regex_replace('\\.txt$', '.config') }}"
+        state: link
+        force: true
+      loop: "{{ discovered_fips_policies_files.files }}"
+      loop_control:
+        label: "{{ item.path | basename }}"
 
 - name: MEDIUM | AZLX-23-001290 | PATCH | Amazon Linux 2023 must enable certificate-based smart card authentication.
   when:
@@ -1063,19 +1061,27 @@
   register: discovered_sssd_pam_cert_auth
   notify: Restart sssd
 
-# - name: MEDIUM | AZLX-23-001295 | PATCH | Amazon Linux 2023 must map the authenticated identity to the user or group account for PKI-based authentication.
-#   when:
-#     - az2023stig_001295
-#     - az2023stig_disruption_high
-#   tags:
-#     - azlx-23-001295
-#     - CAT2
-#     - SV-274060r1120168_rule
-#     - V-274060
-#     - SRG-OS-000068-GPOS-00036
-#     - CCI-000187
-#     - NIST800_53R4_IA-2
-#     - sssd
+- name: MEDIUM | AZLX-23-001295 | AUDIT | Amazon Linux 2023 must map the authenticated identity to the user or group account for PKI-based authentication.
+  when: az2023stig_001295
+  tags:
+    - azlx-23-001295
+    - CAT2
+    - SV-274060r1120168_rule
+    - V-274060
+    - SRG-OS-000068-GPOS-00036
+    - CCI-000187
+    - NIST800_53R4_IA-2
+    - sssd
+  block:
+    - name: MEDIUM | AZLX-23-001295 | AUDIT | Amazon Linux 2023 must map the authenticated identity to the user or group account for PKI-based authentication.
+      ansible.builtin.debug:
+        msg: "WARNING!! This control requires manual configuration of SSSD certificate mapping to map authenticated PKI identities to user or group accounts."
+
+    - name: MEDIUM | AZLX-23-001295 | AUDIT | Amazon Linux 2023 must map the authenticated identity to the user or group account for PKI-based authentication.
+      vars:
+        warn_control_id: "MEDIUM | AZLX-23-001295"
+      ansible.builtin.import_tasks:
+        file: warning_facts.yml
 
 - name: MEDIUM | AZLX-23-001300 | PATCH | Amazon Linux 2023 must implement certificate status checking for multifactor authentication.
   when:
@@ -1139,8 +1145,6 @@
     - NIST800_53R4_IA-5
     - NIST800_53R4_SC-23
     - sssd
-  vars:
-    warn_control_id: "MEDIUM | AZLX-23-001310"
   block:
     - name: MEDIUM | AZLX-23-001310 | AUDIT | Amazon Linux 2023, for PKI-based authentication, must validate certificates by constructing a certification path (which includes status information) to an accepted trust anchor.
       ansible.builtin.command: openssl x509 -text -in /etc/sssd/pki/sssd_auth_ca_db.pem
@@ -1158,6 +1162,8 @@
           - "WARNING!! DOD root CA details not found in file /etc/sssd/pki/sssd_auth_ca_db.pem"
 
     - name: MEDIUM | AZLX-23-001310 | AUDIT | Amazon Linux 2023, for PKI-based authentication, must validate certificates by constructing a certification path (which includes status information) to an accepted trust anchor.
+      vars:
+        warn_control_id: "MEDIUM | AZLX-23-001310"
       ansible.builtin.import_tasks:
         file: warning_facts.yml
 
@@ -1174,8 +1180,6 @@
     - CCI-000186
     - NIST800_53R4_IA-5
     - sssd
-  vars:
-    warn_control_id: "MEDIUM | AZLX-23-001315"
   block:
     - name: MEDIUM | AZLX-23-001315 | AUDIT | Amazon Linux 2023, for PKI-based authentication, must enforce authorized access to the corresponding private key.
       ansible.builtin.find:
@@ -1200,5 +1204,7 @@
             msg: "WARNING!! Private key found without a password"
 
         - name: MEDIUM | AZLX-23-001315 | AUDIT | Amazon Linux 2023, for PKI-based authentication, must enforce authorized access to the corresponding private key.
+          vars:
+            warn_control_id: "MEDIUM | AZLX-23-001315"
           ansible.builtin.import_tasks:
             file: warning_facts.yml
