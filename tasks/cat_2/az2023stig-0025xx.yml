@@ -138,38 +138,19 @@
     - auditd
     - grub
   block:
-- name: MEDIUM | AZLX-23-002520 | AUDIT | Check kernel boot args for audit_backlog_limit
-  ansible.builtin.shell: set -o pipefail && grubby --info=ALL | grep args | grep -v 'audit_backlog_limit={{ az2023stig_audit_backlog_limit }}'
-  args:
-    executable: /bin/bash
-  changed_when: false
-  failed_when: false
-  register: discovered_auditd_grub_backlog_limit
-  when: az2023stig_002520
-  tags:
-    - azlx-23-002520
-    - CAT2
-    - SV-274168r1120740_rule
-    - V-274168
-    - SRG-OS-000254-GPOS-00095
-    - CCI-001464
-    - NIST800-53R4_AU-12
+    - name: MEDIUM | AZLX-23-002520 | PATCH | Check kernel boot args for audit_backlog_limit
+      ansible.builtin.shell: set -o pipefail && grubby --info=ALL | grep args | grep -v 'audit_backlog_limit={{ az2023stig_audit_backlog_limit }}'
+      args:
+        executable: /bin/bash
+      changed_when: false
+      failed_when: false
+      register: discovered_auditd_grub_backlog_limit
 
-- name: MEDIUM | AZLX-23-002520 | PATCH | Ensure audit_backlog_limit is set for all kernels
-  when:
-    - az2023stig_002520
-    - discovered_auditd_grub_backlog_limit.stdout | length > 0
-  ansible.builtin.command: grubby --update-kernel=ALL --args=audit_backlog_limit={{ az2023stig_audit_backlog_limit }}
-  changed_when: true
-  notify: Update grub
-  tags:
-    - azlx-23-002520
-    - CAT2
-    - SV-274168r1120740_rule
-    - V-274168
-    - SRG-OS-000254-GPOS-00095
-    - CCI-001464
-    - NIST800-53R4_AU-12
+    - name: MEDIUM | AZLX-23-002520 | PATCH | Ensure audit_backlog_limit is set for all kernels
+      when: discovered_auditd_grub_backlog_limit.stdout | length > 0
+      ansible.builtin.command: grubby --update-kernel=ALL --args=audit_backlog_limit={{ az2023stig_audit_backlog_limit }}
+      changed_when: true
+      notify: Update grub
 
 - name: MEDIUM | AZLX-23-002535 | PATCH | Amazon Linux 2023 must enable discretionary access control on hardlinks.
   when: az2023stig_002535
