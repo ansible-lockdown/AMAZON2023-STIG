@@ -8,7 +8,9 @@
   register: discovered_fips_status
 
 - name: Set FIPS
-  when: not discovered_fips_status.stdout == 'FIPS'
+  when:
+    - not discovered_fips_status.stdout == 'FIPS'
+    - not system_is_container
   ansible.builtin.command: fips-mode-setup --enable
   changed_when: true
   notify: Reboot required
@@ -26,6 +28,7 @@
   ansible.builtin.meta: flush_handlers
 
 - name: Reboot system if changes require it and not skipped
+  when: reboot_required
   block:
     - name: POST | Reboot system if changes require it and not skipped
       when: not skip_reboot

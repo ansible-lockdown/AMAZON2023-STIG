@@ -1,5 +1,32 @@
 ---
 
+- name: HIGH | AZLX-23-000050 | PATCH | Amazon Linux 2023 must enable FIPS mode.
+  when:
+    - az2023stig_000050
+    - not ansible_facts['fips']
+    - az2023stig_disruption_high
+  tags:
+    - azlx-23-000050
+    - CAT1
+    - SV-283441r1192638_rule
+    - V-283441
+    - SRG-OS-000033-GPOS-00014
+    - CCI-000068
+    - NIST800-53R4_AC-17
+    - crypto
+    - fips
+  block:
+    - name: HIGH | AZLX-23-000050 | AUDIT | Amazon Linux 2023 must enable FIPS mode.
+      ansible.builtin.command: fips-mode-setup --check
+      changed_when: false
+      failed_when: false
+      register: discovered_fips_state_000050
+
+    - name: HIGH | AZLX-23-000050 | PATCH | Amazon Linux 2023 must enable FIPS mode.
+      when: "'FIPS mode is enabled' not in discovered_fips_state_000050.stdout"
+      ansible.builtin.set_fact:
+        fips_required: true
+
 - name: HIGH | AZLX-23-000100 | AUDIT | Amazon Linux 2023 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure or modification of all information that requires at rest protection.
   when: az2023stig_000100
   tags:
@@ -96,11 +123,13 @@
         regexp: (#?)gpgcheck
         replace: gpgcheck=1
       loop: "{{ discovered_gpgcheck_repos.files }}"
+      loop_control:
+        label: "{{ item.path }}"
 
 - name: HIGH | AZLX-23-000130 | PATCH | Amazon Linux 2023 must be a vendor-supported release.
   when:
     - az2023stig_000130
-    - (ansible_facts.distribution != 'Amazon' or ansible_facts.distribution_major_version is version_compare('2023', '!='))
+    - (ansible_facts.distribution != 'Amazon' or ansible_facts['distribution_major_version'] is version_compare('2023', '!='))
   tags:
     - azlx-23-000130
     - CAT1

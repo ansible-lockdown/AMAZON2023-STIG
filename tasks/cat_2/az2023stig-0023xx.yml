@@ -13,7 +13,11 @@
     - permissions
   block:
     - name: MEDIUM | AZLX-23-002300 | AUDIT | Amazon Linux 2023 library files must be group-owned by root or a system account.
-      ansible.builtin.shell: find /lib /lib64 /usr/lib /usr/lib64 -type f -name '*.so*' ! -group root
+      ansible.builtin.shell: |
+        set -o pipefail
+        find /lib /lib64 /usr/lib /usr/lib64 -type f -name '*.so*' ! -group root
+      args:
+        executable: "{{ az2023stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_lib_files_group_owner.rc not in [ 0, 1]
       register: discovered_lib_files_group_owner
@@ -23,6 +27,8 @@
         path: "{{ item }}"
         group: root
       loop: "{{ discovered_lib_files_group_owner.stdout_lines }}"
+      loop_control:
+        label: "{{ item }}"
 
 - name: MEDIUM | AZLX-23-002305 | PATCH | Amazon Linux 2023 library directories must be owned by root.
   when: az2023stig_002305
@@ -37,7 +43,11 @@
     - permissions
   block:
     - name: MEDIUM | AZLX-23-002305 | AUDIT | Amazon Linux 2023 library directories must be owned by root.
-      ansible.builtin.shell: find /lib /lib64 /usr/lib /usr/lib64 ! -user root -type d
+      ansible.builtin.shell: |
+        set -o pipefail
+        find /lib /lib64 /usr/lib /usr/lib64 ! -user root -type d
+      args:
+        executable: "{{ az2023stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_lib_dirs_owner.rc not in [ 0, 1]
       register: discovered_lib_dirs_owner
@@ -47,6 +57,8 @@
         path: "{{ item }}"
         owner: root
       loop: "{{ discovered_lib_dirs_owner.stdout_lines }}"
+      loop_control:
+        label: "{{ item }}"
 
 - name: MEDIUM | AZLX-23-002315 | PATCH | Amazon Linux 2023 must ensure the /var/log directory have mode "0755" or less permissive.
   when: az2023stig_002315
@@ -167,7 +179,11 @@
     - permissions
   block:
     - name: MEDIUM | AZLX-23-002345 | AUDIT | Amazon Linux 2023 system commands must be owned by root.
-      ansible.builtin.shell: find -L /bin /sbin /usr/bin /usr/sbin /usr/libexec /usr/local/bin /usr/local/sbin ! -user root -exec ls {} \;
+      ansible.builtin.shell: |
+        set -o pipefail
+        find -L /bin /sbin /usr/bin /usr/sbin /usr/libexec /usr/local/bin /usr/local/sbin ! -user root -exec ls {} \;
+      args:
+        executable: "{{ az2023stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_sys_commands_owner.rc not in [ 0, 1 ]
       register: discovered_sys_commands_owner
@@ -186,7 +202,7 @@
   tags:
     - azlx-23-002350
     - CAT2
-    - SV-274132r1120384_rule
+    - SV-274132r1208253_rule
     - V-274132
     - SRG-OS-000259-GPOS-00100
     - CCI-001499
@@ -194,7 +210,11 @@
     - permissions
   block:
     - name: MEDIUM | AZLX-23-002350 | AUDIT | Amazon Linux 2023 system commands must be group-owned by root or a system account.
-      ansible.builtin.shell: find -L /bin /sbin /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin ! \( -group root -o -group tty \) -exec ls -l {} \;
+      ansible.builtin.shell: |
+        set -o pipefail
+        find -L /bin /sbin /usr/bin /usr/sbin /usr/libexec /usr/local/bin /usr/local/sbin ! \( -group root -o -group tty \) -exec ls -l {} \;
+      args:
+        executable: "{{ az2023stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_sys_commands_group.rc not in [ 0, 1 ]
       register: discovered_sys_commands_group
@@ -352,7 +372,7 @@
         regexp: ^(?#)difok\s*=\s*(1-7)
         line: 'difok = {{ az2023stig_pwquality_difok }}'
 
-- name: MEDIUM | AZLX-23-002375 | PATCH | Amazon Linux 2023 must enforce a minimum 15-character password length
+- name: MEDIUM | AZLX-23-002375 | PATCH | Amazon Linux 2023 must enforce a minimum 15-character password length.
   when: az2023stig_002375
   tags:
     - azlx-23-002375
@@ -363,7 +383,7 @@
     - NIST800-53R4_NA
     - pam
   block:
-    - name: MEDIUM | AZLX-23-002375 | AUDIT | Amazon Linux 2023 must enforce a minimum 15-character password length
+    - name: MEDIUM | AZLX-23-002375 | AUDIT | Amazon Linux 2023 must enforce a minimum 15-character password length.
       ansible.builtin.find:
         paths: /etc/security/
         patterns: '*.conf'
@@ -371,7 +391,7 @@
       changed_when: false
       register: discovered_pwquality_minlen_conf
 
-    - name: MEDIUM | AZLX-23-002375 | PATCH | Amazon Linux 2023 must enforce a minimum 15-character password length
+    - name: MEDIUM | AZLX-23-002375 | PATCH | Amazon Linux 2023 must enforce a minimum 15-character password length.
       when: discovered_pwquality_minlen_conf.matched > 0
       ansible.builtin.replace:
         path: "{{ item.path }}"
@@ -381,7 +401,7 @@
       loop_control:
         label: "{{ item }}"
 
-    - name: MEDIUM | AZLX-23-002375 | PATCH | Amazon Linux 2023 must enforce a minimum 15-character password length
+    - name: MEDIUM | AZLX-23-002375 | PATCH | Amazon Linux 2023 must enforce a minimum 15-character password length.
       ansible.builtin.lineinfile:
         path: /etc/security/pwquality.conf
         regexp: ^(?#)minlen\s*=\s*(!?{{ az2023stig_pwquality_minlen }})\d*
@@ -478,12 +498,12 @@
         regexp: ^(?#)dictcheck\s*=\s*(!?1)\d*
         line: 'dictcheck = {{ az2023stig_pwquality_dictcheck }}'
 
-- name: MEDIUM | AZLX-23-002396 | PATCH | Amazon Linux 2023 must automatically exit interactive command shell user sessions after 15 minutes of inactivity.
+- name: MEDIUM | AZLX-23-002396 | PATCH | Amazon Linux 2023 must automatically exit interactive command shell user sessions after 10 minutes of inactivity.
   when: az2023stig_002396
   tags:
     - azlx-23-002396
     - CAT2
-    - SV-274142r1120414_rule
+    - SV-274142r1208254_rule
     - V-274142
     - SRG-OS-000163-GPOS-00072
     - CCI-000057
@@ -492,7 +512,7 @@
     - NIST800-53R4_SC-10
     - pam
   block:
-    - name: MEDIUM | AZLX-23-002396 | AUDIT | Amazon Linux 2023 must automatically exit interactive command shell user sessions after 15 minutes of inactivity.
+    - name: MEDIUM | AZLX-23-002396 | AUDIT | Amazon Linux 2023 must automatically exit interactive command shell user sessions after 10 minutes of inactivity.
       ansible.builtin.find:
         paths: /etc/profile /etc/profile.d/
         patterns: '*.sh'
@@ -500,20 +520,22 @@
       changed_when: false
       register: discovered_profile_timeout
 
-    - name: MEDIUM | AZLX-23-002396 | PATCH | Amazon Linux 2023 must automatically exit interactive command shell user sessions after 15 minutes of inactivity.
+    - name: MEDIUM | AZLX-23-002396 | PATCH | Amazon Linux 2023 must automatically exit interactive command shell user sessions after 10 minutes of inactivity. | fix existing
       when: discovered_profile_timeout.matched > 0
       ansible.builtin.replace:
         path: "{{ item.path }}"
         regexp: ^(?#)declare
-        replace: declare -xr TMOUT={{ az2023_profile_timeout_seconds }}
+        replace: declare -xr TMOUT={{ az2023stig_profile_timeout_seconds }}
       loop: "{{ discovered_profile_timeout.files }}"
       loop_control:
         label: "{{ item }}"
 
-    - name: MEDIUM | AZLX-23-002396 | PATCH | Amazon Linux 2023 must automatically exit interactive command shell user sessions after 15 minutes of inactivity.
-      when: discovered_profile_timeout.matched > 0
-      ansible.builtin.lineinfile:
-        path: /etc/security/pwquality.conf
-        regexp: ^(?#)declare
-        line: declare -xr TMOUT={{ az2023_profile_timeout_seconds }}
-        state: present
+    - name: MEDIUM | AZLX-23-002396 | PATCH | Amazon Linux 2023 must automatically exit interactive command shell user sessions after 10 minutes of inactivity. | create if missing
+      when: discovered_profile_timeout.matched == 0
+      ansible.builtin.copy:
+        dest: /etc/profile.d/tmout.sh
+        content: |
+          declare -xr TMOUT={{ az2023stig_profile_timeout_seconds }}
+        owner: root
+        group: root
+        mode: 'go-wx'
