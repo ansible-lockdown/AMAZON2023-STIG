@@ -1,58 +1,83 @@
 # AMAZON 2023 DISA STIG
 
-## Configure a AMAZON2023 based system to be complaint with DISA STIG
+## Configure an AMAZON2023 based system to be compliant with DISA STIG
 
-This role is based on AMAZON2023 DISA STIG: [Version 1, Rel 2 released on 05 Jan 2026](https://dl.dod.cyber.mil/wp-content/uploads/stigs/U_Amazon_Linux_2023_V1R2_STIG.zip).
-
-## Initial Release from STIG, still many items that not quite aligned in the documentation
+This role is based on AMAZON2023 DISA STIG: Version 1, Rel 4 released on 01 Jul 2026.
 
 ---
+
+## Public Repository
 
 ![Org Stars](https://img.shields.io/github/stars/ansible-lockdown?label=Org%20Stars&style=social)
-![Stars](https://img.shields.io/github/stars/ansible-lockdown/az2023-stig?label=Repo%20Stars&style=social)
-![Forks](https://img.shields.io/github/forks/ansible-lockdown/az2023-stig?style=social)
+![Stars](https://img.shields.io/github/stars/ansible-lockdown/AMAZON2023-STIG?label=Repo%20Stars&style=social)
+![Forks](https://img.shields.io/github/forks/ansible-lockdown/AMAZON2023-STIG?style=social)
 ![Followers](https://img.shields.io/github/followers/ansible-lockdown?style=social)
-[![X URL](https://img.shields.io/twitter/url/https/twitter.com/AnsibleLockdown.svg?style=social&label=Follow%20%40AnsibleLockdown)](https://twitter.com/AnsibleLockdown)
-
+[![X URL](https://img.shields.io/twitter/url/https/x.com/AnsibleLockdown.svg?style=social&label=Follow%20%40AnsibleLockdown)](https://x.com/AnsibleLockdown)
 ![Discord Badge](https://img.shields.io/discord/925818806838919229?logo=discord)
 
+![License](https://img.shields.io/github/license/ansible-lockdown/AMAZON2023-STIG?label=License)
+
+## Lint & Pre-Commit Tools
+
+![YamlLint](https://img.shields.io/badge/yamllint-Present-brightgreen?style=flat&logo=yaml&logoColor=white)
+![Ansible-Lint](https://img.shields.io/badge/ansible--lint-Present-brightgreen?style=flat&logo=ansible&logoColor=white)
+
+## Community Release Information
+
 ![Release Branch](https://img.shields.io/badge/Release%20Branch-Main-brightgreen)
-![Release Tag](https://img.shields.io/github/v/release/ansible-lockdown/AMZN2023-STIG)
-![Release Date](https://img.shields.io/github/release-date/ansible-lockdown/AMZN2023-STIG)
+![Release Tag](https://img.shields.io/github/v/tag/ansible-lockdown/AMAZON2023-STIG?label=Release%20Tag&&color=success)
+![Main Release Date](https://img.shields.io/github/release-date/ansible-lockdown/AMAZON2023-STIG?label=Release%20Date)
+![Benchmark Version Main](https://img.shields.io/endpoint?url=https://ansible-lockdown.github.io/github_linux_IaC/badges/AMAZON2023-STIG/benchmark-version-main.json)
+![Benchmark Version Devel](https://img.shields.io/endpoint?url=https://ansible-lockdown.github.io/github_linux_IaC/badges/AMAZON2023-STIG/benchmark-version-devel.json)
 
-[![Main Pipeline Status](https://github.com/ansible-lockdown/AMZN2023-STIG/actions/workflows/main_pipeline_validation.yml/badge.svg?)](https://github.com/ansible-lockdown/AMZN2023-STIG/actions/workflows/main_pipeline_validation.yml)
+[![Main Pipeline Status](https://github.com/ansible-lockdown/AMAZON2023-STIG/actions/workflows/main_pipeline_validation.yml/badge.svg?)](https://github.com/ansible-lockdown/AMAZON2023-STIG/actions/workflows/main_pipeline_validation.yml)
 
-[![Devel Pipeline Status](https://github.com/ansible-lockdown/AMZN2023-STIG/actions/workflows/devel_pipeline_validation.yml/badge.svg?)](https://github.com/ansible-lockdown/AMZN2023-STIG/actions/workflows/devel_pipeline_validation.yml)
-![Devel Commits](https://img.shields.io/github/commit-activity/m/ansible-lockdown/AMZN2023-STIG/devel?color=dark%20green&label=Devel%20Branch%20Commits)
+[![Devel Pipeline Status](https://github.com/ansible-lockdown/AMAZON2023-STIG/actions/workflows/devel_pipeline_validation.yml/badge.svg?)](https://github.com/ansible-lockdown/AMAZON2023-STIG/actions/workflows/devel_pipeline_validation.yml)
 
-![Issues Open](https://img.shields.io/github/issues-raw/ansible-lockdown/AMZN2023-STIG?label=Open%20Issues)
-![Issues Closed](https://img.shields.io/github/issues-closed-raw/ansible-lockdown/AMZN2023-STIG?label=Closed%20Issues&&color=success)
-![Pull Requests](https://img.shields.io/github/issues-pr/ansible-lockdown/AMZN2023-STIG?label=Pull%20Requests)
-[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
-
-![License](https://img.shields.io/github/license/ansible-lockdown/AMZN2023-STIG?label=License)
+![Devel Commits](https://img.shields.io/github/commit-activity/m/ansible-lockdown/AMAZON2023-STIG/devel?color=dark%20green&label=Devel%20Branch%20Commits)
+![Open Issues](https://img.shields.io/github/issues-raw/ansible-lockdown/AMAZON2023-STIG?label=Open%20Issues)
+![Closed Issues](https://img.shields.io/github/issues-closed-raw/ansible-lockdown/AMAZON2023-STIG?label=Closed%20Issues&&color=success)
+![Pull Requests](https://img.shields.io/github/issues-pr/ansible-lockdown/AMAZON2023-STIG?label=Pull%20Requests)
 
 ---
 
-## Looking for support? 🤝
+## Subscriber Release Information
 
-[Lockdown Enterprise](https://www.lockdownenterprise.com#GH_AL_AMZN2023-STIG)
+![Private Release Branch](https://img.shields.io/endpoint?url=https://ansible-lockdown.github.io/github_linux_IaC/badges/Private-AMAZON2023-STIG/release-branch.json)
+![Private Benchmark Version](https://img.shields.io/endpoint?url=https://ansible-lockdown.github.io/github_linux_IaC/badges/Private-AMAZON2023-STIG/benchmark-version.json)
 
-[Ansible support](https://www.mindpointgroup.com/cybersecurity-products/ansible-counselor#GH_AL_AMZN2023-STIG)
+[![Private Remediate Pipeline](https://img.shields.io/endpoint?url=https://ansible-lockdown.github.io/github_linux_IaC/badges/Private-AMAZON2023-STIG/remediate.json)](https://github.com/ansible-lockdown/Private-AMAZON2023-STIG/actions/workflows/main_pipeline_validation.yml)
 
-### Community 💬
+![Private Pull Requests](https://img.shields.io/endpoint?url=https://ansible-lockdown.github.io/github_linux_IaC/badges/Private-AMAZON2023-STIG/prs.json)
+![Private Closed Issues](https://img.shields.io/endpoint?url=https://ansible-lockdown.github.io/github_linux_IaC/badges/Private-AMAZON2023-STIG/issues-closed.json)
+
+---
+
+## Looking for support?
+
+[Lockdown Enterprise](https://www.lockdownenterprise.com#GH_AL_AMAZON2023-STIG)
+
+[Ansible support](https://www.mindpointgroup.com/cybersecurity-products/ansible-counselor#GH_AL_AMAZON2023-STIG)
+
+### Community
 
 On our [Discord Server](https://www.lockdownenterprise.com/discord) to ask questions, discuss features, or just chat with other Ansible-Lockdown users
 
+### Contributing
+
+Bug reports and feature requests are welcome from everyone, please raise an issue.
+
+Pull requests are accepted from approved contributors only. To be onboarded, join the [Discord Server](https://www.lockdownenterprise.com/discord) and request contributor access. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full process.
+
 ---
 
-## 🚨 Caution(s) 🚨
+## Caution(s)
 
 This role **will make changes to the system** which may have unintended consequences. This is not an auditing tool but rather a remediation tool to be used after an audit has been conducted.
 
 - Testing is the most important thing you can do.
 
-- Check Mode is not guaranteed! 🚫 The role will complete in check mode without errors, but it is not supported and should be used with caution.
+- Check Mode is not guaranteed! The role will complete in check mode without errors, but it is not supported and should be used with caution.
 
 - This role was developed against a clean install of the Operating System. If you are implementing to an existing system please review this role for any site specific changes that are needed.
 
@@ -62,7 +87,7 @@ This role **will make changes to the system** which may have unintended conseque
 
 ---
 
-## Coming From A Previous Release ⏪
+## Coming From A Previous Release
 
 STIG release always contains changes, it is highly recommended to review the new references and available variables. This have changed significantly since ansible-lockdown initial release.
 This is now compatible with python3 if it is found to be the default interpreter. This does come with pre-requisites which it configures the system accordingly.
@@ -84,7 +109,7 @@ The control found in defaults main also need to reflect this as this control the
 
 ---
 
-## Requirements ✅
+## Requirements
 
 **General:**
 
@@ -99,25 +124,25 @@ The control found in defaults main also need to reflect this as this control the
 
 **Technical Dependencies:**
 
-- Access to download or add the goss binary and content to the system if using auditing
+- Access to download or add the syver binary and content to the system if using auditing
 (other options are available on how to get the content to the system.)
 - Python3.8
-- Ansible 2.12+
+- Ansible 2.16.1+
 - python-def
 - libselinux-python
 
 ---
 
-## Auditing 🔍
+## Auditing
 
-This can be turned on or off within the defaults/main.yml file with the variable run_audit. The value is false by default, please refer to the wiki for more details. The defaults file also populates the goss checks to check only the controls that have been enabled in the ansible role.
+This can be turned on or off within the defaults/main.yml file with the variable run_audit. The value is false by default, please refer to the wiki for more details. The defaults file also populates the audit checks to check only the controls that have been enabled in the ansible role.
 
 This is a much quicker, very lightweight, checking (where possible) config compliance and live/running settings.
 
-A new form of auditing has been developed, by using a small (12MB) go binary called [goss](https://github.com/goss-org/goss) along with the relevant configurations to check. Without the need for infrastructure or other tooling.
+A new form of auditing has been developed, by using a small go binary called [syver](https://github.com/krameff/syver), the signed continuation of the krameff goss fork, along with the relevant configurations to check. Without the need for infrastructure or other tooling.
 This audit will not only check the config has the correct setting but aims to capture if it is running with that configuration also trying to remove [false positives](https://www.mindpointgroup.com/blog/is-compliance-scanning-still-relevant/) in the process.
 
-Refer to [AMZN2023-STIG-Audit](https://github.com/ansible-lockdown/AMZN2023-STIG-Audit).
+Refer to [AMAZON2023-STIG-Audit](https://github.com/ansible-lockdown/AMAZON2023-STIG-Audit).
 
 ## Example Audit Summary
 
@@ -139,19 +164,19 @@ PLAY RECAP *********************************************************************
 default                    : ok=270  changed=23   unreachable=0    failed=0    skipped=140  rescued=0    ignored=0
 ```
 
-## Documentation 📖
+## Documentation
 
 - [Read The Docs](https://ansible-lockdown.readthedocs.io/en/latest/)
-- [Getting Started](https://www.lockdownenterprise.com/docs/getting-started-with-lockdown#GH_AL_AMZN2023-STIG)
-- [Customizing Roles](https://www.lockdownenterprise.com/docs/customizing-lockdown-enterprise#GH_AL_AMZN2023-STIG)
-- [Per-Host Configuration](https://www.lockdownenterprise.com/docs/per-host-lockdown-enterprise-configuration#GH_AL_AMZN2023-STIG)
-- [Getting the Most Out of the Role](https://www.lockdownenterprise.com/docs/get-the-most-out-of-lockdown-enterprise#GH_AL_AMZN2023-STIG)
+- [Getting Started](https://www.lockdownenterprise.com/docs/getting-started-with-lockdown#GH_AL_AMAZON2023-STIG)
+- [Customizing Roles](https://www.lockdownenterprise.com/docs/customizing-lockdown-enterprise#GH_AL_AMAZON2023-STIG)
+- [Per-Host Configuration](https://www.lockdownenterprise.com/docs/per-host-lockdown-enterprise-configuration#GH_AL_AMAZON2023-STIG)
+- [Getting the Most Out of the Role](https://www.lockdownenterprise.com/docs/get-the-most-out-of-lockdown-enterprise#GH_AL_AMAZON2023-STIG)
 
 ## Role Variables
 
 This role is designed that the end user should not have to edit the tasks themselves. All customizing should be done via the defaults/main.yml file or with extra vars within the project, job, workflow, etc.
 
-## Tags 🏷️
+## Tags
 
 There are many tags available for added control precision. Each control has its own set of tags noting what level, what OS element it relates to, whether it's a patch or audit, and the rule number. Additionally, NIST references follow a specific conversion format for consistency and clarity.
 
@@ -183,16 +208,13 @@ tags:
     - login
 ```
 
-## Community Contribution 🧑‍🤝‍🧑
+## Community Contribution
 
-We encourage you (the community) to contribute to this role. Please read the rules below.
+Pull requests are accepted from approved contributors only, and issues are welcome from everyone.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the onboarding process, the rules, and the commit signing
+requirements (GPG signature and Signed-off-by on every commit).
 
-- Your work is done in your own individual branch. Make sure to Signed-off-by and GPG sign all commits you intend to merge.
-- All community Pull Requests are pulled into the devel branch
-- Pull Requests into devel will confirm your commits have a GPG signature, Signed-off-by, and a functional test before being approved
-- Once your changes are merged and a more detailed review is complete, an authorized member will merge your changes into the main branch for a new release
-
-## Pipeline Testing 🔄
+## Pipeline Testing
 
 uses:
 
@@ -204,7 +226,7 @@ uses:
 
 ## Known Issues
 
-## Local Testing 💻
+## Local Testing
 
 ### example
 
@@ -223,7 +245,9 @@ local testing uses:
 - molecule-vagrant 1.0.0
 - molecule-azure 0.5.0
 
-## Credits and Thanks 🙏
+For running the molecule `default` scenario locally (converge, idempotence, and the syver audit), see [molecule/README_Molecule_QuickStart.md](molecule/README_Molecule_QuickStart.md).
+
+## Credits and Thanks
 
 Massive thanks to the fantastic community and all its members.
 

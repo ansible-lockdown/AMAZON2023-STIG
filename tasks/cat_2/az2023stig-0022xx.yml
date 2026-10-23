@@ -22,6 +22,8 @@
   failed_when: discovered_audit_tools_group_owner.state not in '[ file, absent ]'
   register: discovered_audit_tools_group_owner
   loop: "{{ az2023stig_audit_tools }}"
+  loop_control:
+    label: "{{ item }}"
 
 - name: MEDIUM | AZLX-23-002205 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/passwd.
   when: az2023stig_002205
@@ -96,22 +98,6 @@
   ansible.builtin.set_fact:
     update_audit_template: true
 
-- name: MEDIUM | AZLX-23-002215 | PATCH | Amazon Linux 2023 must alert the information system security officer (ISSO) and system administrator (SA), at a minimum, in the event of an audit processing failure.
-  when: az2023stig_002215
-  tags:
-    - azlx-23-002215
-    - CAT2
-    - SV-274106r1120657_rule
-    - V-274106
-    - SRG-OS-000046-GPOS-00022
-    - CCI-000139
-    - NIST800-53R4_AU-5
-    - auditd
-  ansible.builtin.lineinfile:
-    path: /etc/audit/auditd.conf
-    regexp: ^(#?)action_mail_acct\s*=\s*{{ az2023stig_auditd_action_mail_acct }}.*
-    line: action_mail_acct = {{ az2023stig_auditd_action_mail_acct }}
-
 - name: MEDIUM | AZLX-23-002220 | PATCH | Amazon Linux 2023 must off-load audit records onto a different system in the event the audit storage volume is full.
   when: az2023stig_002220
   tags:
@@ -148,23 +134,30 @@
     - auditd
   block:
     - name: MEDIUM | AZLX-23-002225 | AUDIT | Amazon Linux 2023 audit logs must be group-owned by root or by a restricted logging group to prevent unauthorized read access.
-      ansible.builtin.shell: grep log_group /etc/audit/auditd.conf | awk '{ print $NF }'
+      ansible.builtin.shell: |
+        set -o pipefail
+        grep -E '^\s*log_group\s*=' /etc/audit/auditd.conf | awk '{ print $NF }'
+      args:
+        executable: "{{ az2023stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_auditd_log_group.rc not in [ 0, 1]
       register: discovered_auditd_log_group
 
     - name: MEDIUM | AZLX-23-002225 | AUDIT | Amazon Linux 2023 audit logs must be group-owned by root or by a restricted logging group to prevent unauthorized read access.
-      ansible.builtin.shell: grep log_file /etc/audit/auditd.conf | awk '{ print $NF }'
+      ansible.builtin.shell: |
+        set -o pipefail
+        grep -E '^\s*log_file\s*=' /etc/audit/auditd.conf | awk '{ print $NF }'
+      args:
+        executable: "{{ az2023stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_auditd_log_file_group_owner.rc not in [ 0, 1]
       register: discovered_auditd_log_file_group_owner
 
     - name: MEDIUM | AZLX-23-002225 | PATCH | Amazon Linux 2023 audit logs must be group-owned by root or by a restricted logging group to prevent unauthorized read access.
       ansible.builtin.file:
-        path: "{{ discovered_auditd_log_file_group_owner.stdout }}"
-        state: directory
-        group: "{{ discovered_auditd_log_group.stdout | default('root') }}"
-        mode: 'u-x,go-wx'
+        path: "{{ discovered_auditd_log_file_group_owner.stdout | default('/var/log/audit/audit.log', true) }}"
+        state: file
+        group: "{{ discovered_auditd_log_group.stdout | default('root', true) }}"
 
 - name: MEDIUM | AZLX-23-002230 | PATCH | Amazon Linux 2023 audit log directory must be owned by root to prevent unauthorized read access.
   when: az2023stig_002230
@@ -185,7 +178,11 @@
     - NIST800-53R4_SI-11
   block:
     - name: MEDIUM | AZLX-23-002230 | AUDIT | Amazon Linux 2023 audit log directory must be owned by root to prevent unauthorized read access.
-      ansible.builtin.shell: grep log_file /etc/audit/auditd.conf | awk '{ print $NF }'
+      ansible.builtin.shell: |
+        set -o pipefail
+        grep -E '^\s*log_file\s*=' /etc/audit/auditd.conf | awk '{ print $NF }'
+      args:
+        executable: "{{ az2023stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_auditd_log_file_dir_owner.rc not in [ 0, 1]
       register: discovered_auditd_log_file_dir_owner
@@ -197,7 +194,7 @@
         owner: root
         mode: 'u-x,go-wx'
 
-- name: MEDIUM | AZLX-23-002235 | PATCH | Amazon Linux 2023 audit logs file must have mode "0600" or less permissive to prevent unauthorized access to the audit log
+- name: MEDIUM | AZLX-23-002235 | PATCH | Amazon Linux 2023 audit logs file must have mode "0600" or less permissive to prevent unauthorized access to the audit log.
   when: az2023stig_002235
   tags:
     - azlx-23-002235
@@ -215,18 +212,22 @@
     - NIST800-53R4_AU-9
     - NIST800-53R4_SI-11
   block:
-    - name: MEDIUM | AZLX-23-002235 | AUDIT | Amazon Linux 2023 audit logs file must have mode "0600" or less permissive to prevent unauthorized access to the audit log
-      ansible.builtin.shell: grep ^log_file /etc/audit/auditd.conf | awk '{ print $NF }'
+    - name: MEDIUM | AZLX-23-002235 | AUDIT | Amazon Linux 2023 audit logs file must have mode "0600" or less permissive to prevent unauthorized access to the audit log.
+      ansible.builtin.shell: |
+        set -o pipefail
+        grep ^log_file /etc/audit/auditd.conf | awk '{ print $NF }'
+      args:
+        executable: "{{ az2023stig_shell_executable }}"
       changed_when: false
       register: discovered_auditd_logfile_perms
 
-    - name: MEDIUM | AZLX-23-002235 | AUDIT | Amazon Linux 2023 audit logs file must have mode "0600" or less permissive to prevent unauthorized access to the audit log
+    - name: MEDIUM | AZLX-23-002235 | AUDIT | Amazon Linux 2023 audit logs file must have mode "0600" or less permissive to prevent unauthorized access to the audit log.
       ansible.builtin.find:
         paths: "{{ discovered_auditd_logfile_perms.stdout | dirname }}"
         file_type: file
       register: discovered_auditd_logs
 
-    - name: MEDIUM | AZLX-23-002235 | PATCH | Amazon Linux 2023 audit logs file must have mode "0600" or less permissive to prevent unauthorized access to the audit log
+    - name: MEDIUM | AZLX-23-002235 | PATCH | Amazon Linux 2023 audit logs file must have mode "0600" or less permissive to prevent unauthorized access to the audit log.
       ansible.builtin.file:
         path: "{{ item.path }}"
         state: file
@@ -234,13 +235,15 @@
       failed_when: discovered_auditd_log_perm_change.state not in [ 'file', 'absent' ]
       register: discovered_auditd_log_perm_change
       loop: "{{ discovered_auditd_logs.files }}"
+      loop_control:
+        label: "{{ item.path }}"
 
 - name: MEDIUM | AZLX-23-002240 | PATCH | Amazon Linux 2023 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to select which auditable events are to be audited.
   when: az2023stig_002240
   tags:
     - azlx-23-002240
     - CAT2
-    - SV-274111r1120321_rule
+    - SV-274111r1210984_rule
     - V-274111
     - SRG-OS-000063-GPOS-00032
     - CCI-000171
@@ -248,24 +251,29 @@
   block:
     - name: MEDIUM | AZLX-23-002240 | AUDIT | Amazon Linux 2023 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to select which auditable events are to be audited.
       ansible.builtin.find:
-        paths: /etc/audit/rules.d/
-        patterns: '*.(conf|rules)'
+        paths:
+          - /etc/audit/rules.d/
+          - /etc/audit/
+        patterns: '*.rules'
+        excludes: audit-stop.rules
       register: discovered_auditd_conf_rules
 
     - name: MEDIUM | AZLX-23-002240 | PATCH | Amazon Linux 2023 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to select which auditable events are to be audited.
       ansible.builtin.file:
         path: "{{ item.path }}"
         state: file
-        mode: 'u-x,g-wx,o-rwx'
-      failed_when: discovered_auditd_log_perm_change.state not in [ 'file', 'absent' ]
+        mode: 'u-x,g-rwx,o-rwx'
+      failed_when: discovered_auditd_conf_rules_change.state not in [ 'file', 'absent' ]
       register: discovered_auditd_conf_rules_change
       loop: "{{ discovered_auditd_conf_rules.files }}"
+      loop_control:
+        label: "{{ item.path }}"
 
     - name: MEDIUM | AZLX-23-002240 | PATCH | Amazon Linux 2023 must allow only the information system security manager (ISSM) (or individuals or roles appointed by the ISSM) to select which auditable events are to be audited.
       ansible.builtin.file:
         path: /etc/audit/auditd.conf
         state: file
-        mode: 'u-x,g-wx,o-rwx'
+        mode: 'u-x,g-rwx,o-rwx'
 
 - name: MEDIUM | AZLX-23-002245 | PATCH | Amazon Linux 2023 must audit all uses of the sudo command.
   when: az2023stig_002245
@@ -436,11 +444,15 @@
     - SV-274117r1120339_rule
     - V-274117
     - SRG-OS-000206-GPOS-00084
-    - CCI-0001314
+    - CCI-001314
     - NIST800-53R4_SI-11
   block:
     - name: MEDIUM | AZLX-23-002270 | AUDIT | Amazon Linux 2023 must ensure the audit log directory be owned by root to prevent unauthorized read access.
-      ansible.builtin.shell: grep log_file /etc/audit/auditd.conf | awk '{ print $NF }'
+      ansible.builtin.shell: |
+        set -o pipefail
+        grep -E '^\s*log_file\s*=' /etc/audit/auditd.conf | awk '{ print $NF }'
+      args:
+        executable: "{{ az2023stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_auditd_log_file_dir_owner_002270.rc not in [ 0, 1]
       register: discovered_auditd_log_file_dir_owner_002270
@@ -449,29 +461,6 @@
       ansible.builtin.file:
         path: "{{ discovered_auditd_log_file_dir_owner_002270.stdout | dirname }}"
         owner: root
-
-- name: MEDIUM | AZLX-23-002275 | PATCH | Amazon Linux 2023 audit logs file must have mode "0600" or less permissive to prevent unauthorized access to the audit log.
-  when: az2023stig_002275
-  tags:
-    - azlx-23-002275
-    - CAT2
-    - SV-274118r1120342_rule
-    - V-274118
-    - SRG-OS-000206-GPOS-00084
-    - CCI-0001314
-    - NIST800-53R4_SI-11
-    - auditd
-  block:
-    - name: MEDIUM | AZLX-23-002275 | AUDIT | Amazon Linux 2023 audit logs file must have mode "0600" or less permissive to prevent unauthorized access to the audit log.
-      ansible.builtin.shell: grep log_file /etc/audit/auditd.conf | awk '{ print $NF }'
-      changed_when: false
-      failed_when: discovered_auditd_log_file_perms.rc not in [ 0, 1]
-      register: discovered_auditd_log_file_perms
-
-    - name: MEDIUM | AZLX-23-002275 | PATCH | Amazon Linux 2023 audit logs file must have mode "0600" or less permissive to prevent unauthorized access to the audit log.
-      ansible.builtin.file:
-        path: "{{ discovered_auditd_log_file_perms.stdout }}"
-        mode: 'u-x,go-rwx'
 
 - name: MEDIUM | AZLX-23-002280 | PATCH | AAmazon Linux 2023 library directories must be group-owned by root or a system account.
   when: az2023stig_002280
@@ -486,7 +475,11 @@
     - permissions
   block:
     - name: MEDIUM | AZLX-23-002280 | AUDIT | Amazon Linux 2023 library directories must be group-owned by root or a system account.
-      ansible.builtin.shell: find /lib /lib64 /usr/lib /usr/lib64 ! -group root -type d
+      ansible.builtin.shell: |
+        set -o pipefail
+        find /lib /lib64 /usr/lib /usr/lib64 ! -group root -type d
+      args:
+        executable: "{{ az2023stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_lib_dirs_group.rc not in [ 0, 1]
       register: discovered_lib_dirs_group
@@ -496,6 +489,8 @@
         path: "{{ item }}"
         group: root
       loop: "{{ discovered_lib_dirs_group.stdout_lines }}"
+      loop_control:
+        label: "{{ item }}"
 
 - name: MEDIUM | AZLX-23-002285 | PATCH | Amazon Linux 2023 library directories must have mode "755" or less permissive.
   when: az2023stig_002285
@@ -510,7 +505,11 @@
     - permissions
   block:
     - name: MEDIUM | AZLX-23-002285 | AUDIT | Amazon Linux 2023 library directories must have mode "755" or less permissive.
-      ansible.builtin.shell: find /lib /lib64 /usr/lib /usr/lib64 ! -group root -type f
+      ansible.builtin.shell: |
+        set -o pipefail
+        find /lib /lib64 /usr/lib /usr/lib64 ! -group root -type f
+      args:
+        executable: "{{ az2023stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_lib_files_group_perms.rc not in [ 0, 1]
       register: discovered_lib_files_group_perms
@@ -520,6 +519,8 @@
         path: "{{ item }}"
         mode: 'g-wx,o-rwx'
       loop: "{{ discovered_lib_files_group_perms.stdout_lines }}"
+      loop_control:
+        label: "{{ item }}"
 
 - name: MEDIUM | AZLX-23-002290 | PATCH | Amazon Linux 2023 library files must have mode "755" or less permissive.
   when: az2023stig_002290
@@ -534,7 +535,11 @@
     - permissions
   block:
     - name: MEDIUM | AZLX-23-002290 | AUDIT | Amazon Linux 2023 library files must have mode "755" or less permissive.
-      ansible.builtin.shell: find /lib /lib64 /usr/lib /usr/lib64 -type f -name '*.so*' -perm /022
+      ansible.builtin.shell: |
+        set -o pipefail
+        find /lib /lib64 /usr/lib /usr/lib64 -type f -name '*.so*' -perm /022
+      args:
+        executable: "{{ az2023stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_lib_files_mode.rc not in [ 0, 1]
       register: discovered_lib_files_mode
@@ -544,6 +549,8 @@
         path: "{{ item }}"
         mode: 'go-w'
       loop: "{{ discovered_lib_files_mode.stdout_lines }}"
+      loop_control:
+        label: "{{ item }}"
 
 - name: MEDIUM | AZLX-23-002295 | PATCH | Amazon Linux 2023 library files must be owned by root.
   when: az2023stig_002295
@@ -558,7 +565,11 @@
     - permissions
   block:
     - name: MEDIUM | AZLX-23-002295 | AUDIT | Amazon Linux 2023 library files must be owned by root.
-      ansible.builtin.shell: find /lib /lib64 /usr/lib /usr/lib64 -type f -name '*.so*' ! -user root
+      ansible.builtin.shell: |
+        set -o pipefail
+        find /lib /lib64 /usr/lib /usr/lib64 -type f -name '*.so*' ! -user root
+      args:
+        executable: "{{ az2023stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_lib_files_owner.rc not in [ 0, 1]
       register: discovered_lib_files_owner
@@ -568,3 +579,5 @@
         path: "{{ item }}"
         owner: root
       loop: "{{ discovered_lib_files_owner.stdout_lines }}"
+      loop_control:
+        label: "{{ item }}"

@@ -1,0 +1,53 @@
+---
+# Molecule configuration
+# https://molecule.readthedocs.io/en/latest/
+
+dependency:
+  name: galaxy
+  options:
+    requirements-file: collections/requirements.yml
+driver:
+  name: docker
+platforms:
+  - name: amazon2023-stig
+    image: robertdebock/amazonlinux:latest
+    # The image is multi-arch. Default keeps local Apple Silicon runs on arm64;
+    # CI exports MOLECULE_DOCKER_PLATFORM=linux/amd64 for its amd64 runners.
+    platform: "${MOLECULE_DOCKER_PLATFORM:-linux/arm64}"
+    command: /usr/lib/systemd/systemd
+    pre_build_image: true
+    privileged: true
+    cgroupns_mode: host
+    tmpfs:
+      - /run
+      - /tmp
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+provisioner:
+  name: ansible
+  env:
+    ANSIBLE_PIPELINING: "true"
+  config_options:
+    defaults:
+      interpreter_python: auto_silent
+      callbacks_enabled: profile_tasks, timer
+  playbooks:
+    converge: converge.yml
+    prepare: prepare.yml
+    verify: verify.yml
+  inventory:
+    host_vars:
+      amazon2023-stig:
+        ansible_become: false
+        az2023stig_disruption_high: true
+        az2023stig_skip_for_test: true
+        system_is_container: true
+        skip_reboot: true
+        setup_audit: true
+        run_audit: true
+        fetch_audit_output: true
+        # Files land one level above the role repo (working dir root), e.g.
+        # `<working_dir>/_temp_fetched_audits/`. Override with `-e audit_output_destination=...`.
+        audit_output_destination: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}/../../_temp_fetched_audits/"
+verifier:
+  name: ansible

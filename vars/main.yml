@@ -1,7 +1,10 @@
 ---
-# vars file forAMAZON2023-STIG
+# vars file for AMAZON2023-STIG
 
-min_ansible_version: 2.14.1
+min_ansible_version: 2.16.1
+
+# Shell used by ansible.builtin.shell tasks (paired with set -o pipefail)
+az2023stig_shell_executable: /bin/bash
 
 # tweak role to run in a non-privileged container (default value)- dynamically discovered in tasks/main.yml
 system_is_container: false
@@ -10,7 +13,7 @@ system_is_container: false
 warn_control_list: ""
 warn_count: 0
 
-gpg_key_package: "{{ ansible_distribution | lower }}-gpg-keys"
+gpg_key_package: "{{ ansible_facts['distribution'] | lower }}-gpg-keys"
 
 os_gpg_key_pubkey_name: gpg-pubkey-d832c631-6515c85e  # pragma: allowlist secret
 os_gpg_key_pubkey_content: "Amazon Linux <amazon-linux@amazon.com> public key"
@@ -18,8 +21,10 @@ os_gpg_key_pubkey_content: "Amazon Linux <amazon-linux@amazon.com> public key"
 # Allow automated discovery of uids
 discover_int_uid: true
 
+# Set by the 'Reboot required' handler; read by the reboot step in tasks/post.yml
+reboot_required: false
+
 # Default for facts
-change_requires_reboot: false
 update_audit_template: false
 
 combined_crypto_policy_config: FIPS
@@ -46,7 +51,7 @@ aide_packages:
 # Aide initiate command for new DB creation
 aide_initiate_command: /usr/sbin/aide --init
 
-company_title: 'MindPoint Group - A Tyto Athene Company'
+company_title: 'MindPoint Group - A Quantum Sky Company'
 
 file_managed_by_ansible: |-
   # File managed by ansible as part of {{ benchmark }} benchmark

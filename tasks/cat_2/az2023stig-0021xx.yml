@@ -82,7 +82,7 @@
   ansible.builtin.set_fact:
     update_audit_template: true
 
-- name: MEDIUM | AZLX-23-002110 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/opasswd.
+- name: MEDIUM | AZLX-23-002110 | PATCH | Amazon Linux 2023 must audit uses of the "execve" system call.
   when: az2023stig_002110
   tags:
     - azlx-23-002110
@@ -151,7 +151,7 @@
   ansible.builtin.set_fact:
     update_audit_template: true
 
-- name: MEDIUM | AZLX-23-002120 | PATCH | Amazon Linux 2023 must audit all uses of the chown, fchown, fchownat, and lchown system calls
+- name: MEDIUM | AZLX-23-002120 | PATCH | Amazon Linux 2023 must audit all uses of the chown, fchown, fchownat, and lchown system calls.
   when: az2023stig_002120
   tags:
     - azlx-23-002120
@@ -179,7 +179,7 @@
   ansible.builtin.set_fact:
     update_audit_template: true
 
-- name: MEDIUM | AZLX-23-002125 | PATCH | Amazon Linux 2023 must audit all uses of the chown, fchown, fchownat, and lchown system calls
+- name: MEDIUM | AZLX-23-002125 | PATCH | Amazon Linux 2023 must audit all uses of the setxattr, fsetxattr, lsetxattr, removexattr, fremovexattr, and lremovexattr system calls.
   when: az2023stig_002125
   tags:
     - azlx-23-002125
@@ -375,7 +375,7 @@
   ansible.builtin.set_fact:
     update_audit_template: true
 
-- name: MEDIUM | AZLX-23-002160 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /var/log/faillock
+- name: MEDIUM | AZLX-23-002160 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /var/log/faillock.
   when: az2023stig_002160
   tags:
     - azlx-23-002160
@@ -493,6 +493,8 @@
   failed_when: discovered_audit_tools_file_perms.state not in '[ file, absent ]'
   register: discovered_audit_tools_file_perms
   loop: "{{ az2023stig_audit_tools }}"
+  loop_control:
+    label: "{{ item }}"
 
 - name: MEDIUM | AZLX-23-002195 | PATCH | Amazon Linux 2023 audit tools must be owned by root.
   when:
@@ -516,3 +518,5 @@
   failed_when: discovered_audit_tools_owner.state not in '[ file, absent ]'
   register: discovered_audit_tools_owner
   loop: "{{ az2023stig_audit_tools }}"
+  loop_control:
+    label: "{{ item }}"

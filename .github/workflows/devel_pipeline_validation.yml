@@ -17,18 +17,16 @@ on: # yamllint disable-line rule:truthy
   # Allow manual running of workflow
   workflow_dispatch:
 
-# Allow permissions for AWS auth
-permissions:
-  id-token: write
-  contents: read
-  pull-requests: read
-
 # A workflow run is made up of one or more jobs
 # that can run sequentially or in parallel
 jobs:
-  # This will create messages for first time contributers and direct them to the Discord server
+  # This will create messages for first time contributors and direct them to the Discord server
   welcome:
     runs-on: ubuntu-latest
+
+    permissions:
+      issues: write
+      pull-requests: write
 
     steps:
       - uses: actions/first-interaction@main
@@ -43,8 +41,20 @@ jobs:
 
   # This workflow contains a single job that tests the playbook
   playbook-test:
+    # Fork pull requests are skipped, not run. This job checks out the PR head on the self-hosted
+    # runner with AWS credentials, and actions/checkout refuses fork code under pull_request_target
+    # because running it in that trusted context is a "pwn request". Skipping shows the check as
+    # skipped rather than failed. A fork change that needs this test goes through a maintainer branch.
+    if: github.event_name != 'pull_request_target' || github.event.pull_request.head.repo.full_name == github.repository
     # The type of runner that the job will run on
     runs-on: self-hosted
+
+    # Allow permissions for AWS auth
+    permissions:
+      id-token: write
+      contents: read
+      pull-requests: read
+
     env:
       ENABLE_DEBUG: ${{ vars.ENABLE_DEBUG }}
       # Imported as a variable by terraform
@@ -60,7 +70,7 @@ jobs:
     steps:
 
       - name: Git clone the lockdown repository to test
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -68,15 +78,15 @@ jobs:
         working-directory: .github/workflows
         run: |
           if [ ${{ vars.IAC_BRANCH }} != '' ]; then
-              echo "IAC_BRANCH=${{ vars.IAC_BRANCH }}" >> $GITHUB_ENV
-              echo "Pipeline using the following IAC branch ${{ vars.IAC_BRANCH }}"
+            echo "IAC_BRANCH=${{ vars.IAC_BRANCH }}" >> $GITHUB_ENV
+            echo "Pipeline using the following IAC branch ${{ vars.IAC_BRANCH }}"
           else
-              echo IAC_BRANCH=main >> $GITHUB_ENV
+            echo IAC_BRANCH=main >> $GITHUB_ENV
           fi
 
       # Pull in terraform code for linux servers
       - name: Clone GitHub IaC plan
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7
         with:
           repository: ansible-lockdown/github_linux_IaC
           path: .github/workflows/github_linux_IaC
@@ -122,10 +132,10 @@ jobs:
         id: apply
         env:
           OSVAR: ${{ vars.OSVAR }}
-          TF_VAR_ansible_version: ${{ vars.ANSIBLE_RUNNER_VERSION }}
           TF_VAR_benchmark_type: ${{ vars.BENCHMARK_TYPE }}
           TF_VAR_privsubnet_id: ${{ secrets.AWS_PRIVSUBNET_ID }}
           TF_VAR_vpc_secgrp_id: ${{ secrets.AWS_VPC_SECGRP_ID }}
+          TF_VAR_ansible_version: ${{ vars.ANSIBLE_RUNNER_VERSION }}
         run: tofu apply -var-file "${OSVAR}.tfvars" --auto-approve -input=false
 
 ## Debug Section
@@ -133,7 +143,7 @@ jobs:
         if: env.ENABLE_DEBUG == 'true'
         run: cat hosts.yml
 
-## Aws deployments taking a while to come up insert sleep or playbook fails
+# Aws deployments taking a while to come up insert sleep or playbook fails
 
       - name: Sleep to allow system to come up
         run: sleep ${{ vars.BUILD_SLEEPTIME }}

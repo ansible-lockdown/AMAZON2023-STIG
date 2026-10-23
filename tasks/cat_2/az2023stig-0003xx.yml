@@ -15,7 +15,7 @@
     name: sendmail
     state: absent
 
-- name: MEDIUM | AZLX-23-000310 | PATCH | Amazon Linux 2023 must not have the nfs-utils package installed
+- name: MEDIUM | AZLX-23-000310 | PATCH | Amazon Linux 2023 must not have the nfs-utils package installed.
   when: az2023stig_000310
   tags:
     - azlx-23-000310
@@ -50,8 +50,8 @@
   tags:
     - azlx-23-000320
     - CAT2
-    - SV-274010r1120018_rule
-    - V-274010
+    - SV-274011r1184000_rule
+    - V-274011
     - SRG-OS-000095-GPOS-00049
     - CCI-000381
     - NIST800-53R4_CM-7
