@@ -38,7 +38,7 @@
   tags:
     - azlx-23-001010
     - CAT2
-    - SV-274043r1120030_rule
+    - SV-274014r1120030_rule
     - V-274014
     - SRG-OS-000373-GPOS-00157
     - CCI-002038
@@ -54,6 +54,8 @@
         replace: ''
         validate: '/usr/sbin/visudo -cf %s'
       loop: "{{ prelim_sudoers_files.stdout_lines }}"
+      loop_control:
+        label: "{{ item }}"
 
     - name: MEDIUM | AZLX-23-001010 | PATCH | Amazon Linux 2023 must require reauthentication when using the "sudo" command.
       ansible.builtin.lineinfile:
@@ -84,6 +86,8 @@
     replace: ''
     validate: '/usr/sbin/visudo -cf %s'
   loop: "{{ prelim_sudoers_files.stdout_lines }}"
+  loop_control:
+    label: "{{ item }}"
 
 - name: MEDIUM | AZLX-23-001020 | PATCH | Amazon Linux 2023 must require users to provide a password for privilege escalation.
   when:
@@ -105,6 +109,8 @@
     replace: ''
     validate: '/usr/sbin/visudo -cf %s'
   loop: "{{ prelim_sudoers_files.stdout_lines }}"
+  loop_control:
+    label: "{{ item }}"
 
 - name: MEDIUM | AZLX-23-001025 | PATCH | Amazon Linux 2023 must have the audit package installed.
   when: az2023stig_001025
@@ -236,7 +242,7 @@
     - NIST800-53R4_AU-14
     - NIST800-53R4_MA-4
     - auditd
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: auditd
     state: started
     enabled: true
@@ -261,7 +267,7 @@
   tags:
     - azlx-23-001040
     - CAT2
-    - SV-274020r1155173_rule
+    - SV-274020r1208263_rule
     - V-274020
     - SRG-OS-000051-GPOS-00024
     - SRG-OS-000479-GPOS-00224
@@ -270,17 +276,25 @@
     - NIST800-53R4_AU-4
     - NIST800-53R4_AU-6
     - syslog
-  block:
-    - name: MEDIUM | AZLX-23-001040 | PATCH | Amazon Linux 2023 must have the rsyslog package installed. | installed
-      ansible.builtin.package:
-        name: rsyslog
-        state: present
+  ansible.builtin.package:
+    name: rsyslog
+    state: present
 
-    - name: MEDIUM | AZLX-23-001040 | PATCH | Amazon Linux 2023 must have the rsyslog package installed. | enabled started
-      ansible.builtin.systemd:
-        name: rsyslog
-        state: started
-        enabled: true
+- name: MEDIUM | AZLX-23-001041 | PATCH | Amazon Linux 2023 must ensure that the rsyslog service is running and persistent.
+  when: az2023stig_001041
+  tags:
+    - azlx-23-001041
+    - CAT2
+    - SV-284944r1208267_rule
+    - V-284944
+    - SRG-OS-000479-GPOS-00224
+    - CCI-001851
+    - NIST800-53R4_AU-4
+    - syslog
+  ansible.builtin.systemd_service:
+    name: rsyslog
+    state: started
+    enabled: true
 
 - name: MEDIUM | AZLX-23-001045 | PATCH | Amazon Linux 2023 must monitor remote access methods.
   when: az2023stig_001045
@@ -323,7 +337,7 @@
     - SRG-OS-000355-GPOS-00143
     - NIST800-53R4_NA
     - chrony
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: chronyd
     state: started
     enabled: true
@@ -333,7 +347,7 @@
   tags:
     - azlx-23-001060
     - CAT2
-    - SV-274024r1120060_rule
+    - SV-274024r1190697_rule
     - V-274024
     - SRG-OS-000363-GPOS-00150
     - SRG-OS-000445-GPOS-00199
@@ -346,15 +360,15 @@
     - NIST800-53R4_AU-8
     - aide
   ansible.builtin.package:
-    name: chrony
+    name: "{{ aide_packages }}"
     state: present
 
-- name: MEDIUM | AZLX-23-001065 | PATCH | Amazon Linux 2023 must routinely check the baseline configuration for unauthorized changes and notify the system administrator when anomalies in the operation of any security functions are discovered.
+- name: MEDIUM | AZLX-23-001065 | PATCH | Amazon Linux 2023 must routinely check the baseline configuration for unauthorized changes and notify the system administrator (SA) when anomalies in the operation of any security functions are discovered.
   when: az2023stig_001065
   tags:
     - azlx-23-001065
     - CAT2
-    - SV-274025r1120723_rule
+    - SV-274025r1192649_rule
     - V-274025
     - SRG-OS-000363-GPOS-00150
     - SRG-OS-000446-GPOS-00200
@@ -430,12 +444,12 @@
     name: firewalld
     state: present
 
-- name: MEDIUM | AZLX-23-001080 | PATCH | Amazon Linux 2023 must have the firewalld package installed.
+- name: MEDIUM | AZLX-23-001080 | PATCH | Amazon Linux 2023 must have the firewalld service active.
   when: az2023stig_001080
   tags:
     - azlx-23-001080
     - CAT2
-    - SV-274028r1120072_rule
+    - SV-274028r1190806_rule
     - V-274028
     - SRG-OS-000096-GPOS-00050
     - SRG-OS-000297-GPOS-00115
@@ -452,44 +466,10 @@
     - NIST800-53R4_CM-6
     - NIST800-53R4_AC-2
     - firewall
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: firewalld
     state: started
     enabled: true
-
-# To add rules prior to starting firewall
-- name: MEDIUM | AZLX-23-001085 | PATCH | Amazon Linux 2023 must be configured to disable nonessential capabilities.
-  when: az2023stig_001085
-  tags:
-    - azlx-23-001085
-    - CAT2
-    - SV-274029r1120075_rule
-    - V-274029
-    - SRG-OS-000095-GPOS-00049
-    - CCI-000381
-    - NIST800-53R4_CM-7
-  block:
-    - name: MEDIUM | AZLX-23-001085 | PATCH | Amazon Linux 2023 must be configured to disable nonessential capabilities. | services
-      ansible.posix.firewalld:
-        service: "{{ (item == (item | regex_search('^[a-z]+$'))) | bool | ternary(item, omit) }}"
-        state: enabled
-        permanent: true
-        immediate: true
-        offline: true
-      loop: "{{ az2023_firewalld_service }}"
-
-    - name: MEDIUM | AZLX-23-001085 | PATCH | Amazon Linux 2023 must be configured to disable nonessential capabilities. | ports
-      when: az2023_firewalld_ports is defined
-      ansible.posix.firewalld:
-        port: "{{ (item == (item | regex_search('^[0-9]+/[a-z]+$'))) | bool | ternary(item, omit) }}"
-        state: enabled
-        permanent: true
-        immediate: true
-        offline: true
-      loop: "{{ az2023_firewalld_ports }}"
-      loop_control:
-        label: "{{ item.port }}"
-      notify: Restart firewalld
 
 - name: MEDIUM | AZLX-23-001090 | PATCH | Amazon Linux 2023 must manage excess capacity, bandwidth, or other redundancy to limit the effects of information flooding types of denial-of-service (DoS) attacks.
   when: az2023stig_001090
@@ -528,7 +508,7 @@
   tags:
     - azlx-23-001105
     - CAT2
-    - SV-274032r1120084_rule
+    - SV-274032r1184010_rule
     - V-274032
     - SRG-OS-000120-GPOS-00061
     - CCI-000803
@@ -583,7 +563,7 @@
     name: rsyslog-openssl
     state: present
 
-- name: MEDIUM | AZLX-23-001125 | PATCH | Amazon Linux 2023 must have the packages required for encrypting off-loaded audit logs installed.
+- name: MEDIUM | AZLX-23-001125 | PATCH | Amazon Linux 2023 must have the opensc package installed.
   when: az2023stig_001125
   tags:
     - azlx-23-001125
@@ -615,85 +595,6 @@
   ansible.builtin.package:
     name: openssl-pkcs11
     state: present
-
-- name: MEDIUM | AZLX-23-001195 | PATCH | Amazon Linux 2023 must have the crypto-policies package installed.
-  when: az2023stig_001195
-  tags:
-    - azlx-23-001195
-    - CAT2
-    - SV-274040r1120108_rule
-    - V-274040
-    - SRG-OS-000396-GPOS-00176
-    - SRG-OS-000393-GPOS-00173
-    - SRG-OS-000394-GPOS-00174
-    - SRG-OS-000424-GPOS-00188
-    - CCI-002450
-    - CCI-002890
-    - CCI-003123
-    - CCI-002421
-    - NIST800-53R4_SC-13
-    - NIST800-53R4_MA-4
-    - NIST800-53R4_SC-8
-    - crypto
-  ansible.builtin.package:
-    name: crypto-policies
-    state: present
-
-- name: MEDIUM | AZLX-23-001200 | PATCH | Amazon Linux 2023 SSH server must be configured to use systemwide crypto policies.
-  when: az2023stig_001200
-  tags:
-    - azlx-23-001200
-    - CAT2
-    - SV-274041r1120111_rule
-    - V-274041
-    - SRG-OS-000250-GPOS-00093
-    - CCI-001453
-    - NIST800-53R4_AC-17
-    - ssh
-    - crypto
-  block:
-    - name: MEDIUM | AZLX-23-001200 | AUDIT | Amazon Linux 2023 SSH server must be configured to use systemwide crypto policies.
-      ansible.builtin.command:
-        grep -E "Include (/etc/ssh/sshd_config.d/*.conf|Include /etc/crypto-policies/back-ends/opensshserver.config" /etc/ssh/sshd_config | grep -v '^#' | awk '{print $NF}'
-      changed_when: false
-      failed_when: false
-      register: discovered_sshd_include
-
-    - name: MEDIUM | AZLX-23-001200 | PATCH | Amazon Linux 2023 SSH server must be configured to use systemwide crypto policies.
-      when: discovered_sshd_include.rc == 1
-      ansible.builtin.package:
-        name: openssh-server
-        state: present
-
-- name: MEDIUM | AZLX-23-001205 | PATCH | Amazon Linux 2023 server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-2/140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH server connections.
-  when: az2023stig_001205
-  tags:
-    - azlx-23-001205
-    - CAT2
-    - SV-274042r1120114_rule
-    - V-274042
-    - SRG-OS-000250-GPOS-00093
-    - CCI-001453
-    - NIST800-53R4_AC-17
-    - ssh
-    - crypto
-  ansible.builtin.set_fact:
-    fips_required: true
-
-- name: MEDIUM | AZLX-23-001210 | PATCH | Amazon Linux 2023 SSH server must be configured to use only Message Authentication Codes (MACs) employing FIPS 140-2/140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH server connections
-  when: az2023stig_001210
-  tags:
-    - azlx-23-001210
-    - CAT2
-    - SV-274043r1120117_rule
-    - V-274043
-    - SRG-OS-000250-GPOS-00093
-    - CCI-001453
-    - NIST800-53R4_AC-17
-    - ssh
-    - crypto
-  ansible.builtin.set_fact:
-    fips_required: true
 
 - name: MEDIUM | AZLX-23-001215 | PATCH | Amazon Linux 2023 SSH daemon must not allow Generic Security Service Application Program Interface (GSSAPI) authentication.
   when: az2023stig_001215
@@ -826,6 +727,8 @@
         replace: ''
         validate: sshd -t -f %s
       loop: "{{ prelim_sshd_config_files.files }}"
+      loop_control:
+        label: "{{ item.path }}"
       notify: Restart ssh
 
 - name: MEDIUM | AZLX-23-001240 | PATCH | Amazon Linux 2023 must not permit direct logons to the root account using remote access via SSH.
@@ -895,7 +798,7 @@
         label: "{{ item.path }}"
       notify: Restart ssh
 
-- name: MEDIUM | AZLX-23-001250 | PATCH | Amazon Linux 2023 must be configured so that all network connections associated with SSH traffic are terminated after 10 minutes of becoming unresponsive.
+- name: MEDIUM | AZLX-23-001250 | PATCH | Amazon Linux 2023 must be configured so that all network connections associated with SSH traffic terminate after becoming unresponsive.
   when: az2023stig_001250
   tags:
     - azlx-23-001250
@@ -910,7 +813,7 @@
     - NIST800-53R4_AC-12
     - ssh
   block:
-    - name: MEDIUM | AZLX-23-001250 | PATCH | Amazon Linux 2023 must be configured so that all network connections associated with SSH traffic are terminated after 10 minutes of becoming unresponsive.
+    - name: MEDIUM | AZLX-23-001250 | PATCH | Amazon Linux 2023 must be configured so that all network connections associated with SSH traffic terminate after becoming unresponsive.
       ansible.builtin.lineinfile:
         path: /etc/ssh/sshd_config
         regexp: (?i)^(#?)ClientAliveCountMax (?!{{ az2023stig_ssh_clientalive_countmax }})\d*
@@ -918,127 +821,16 @@
         validate: sshd -t -f %s
       notify: Restart ssh
 
-    - name: MEDIUM | AZLX-23-001250 | PATCH | Amazon Linux 2023 must be configured so that all network connections associated with SSH traffic are terminated after 10 minutes of becoming unresponsive.
+    - name: MEDIUM | AZLX-23-001250 | PATCH | Amazon Linux 2023 must be configured so that all network connections associated with SSH traffic terminate after becoming unresponsive.
       ansible.builtin.replace:
         path: "{{ item.path }}"
         regexp: (?i)^(#?)ClientAliveCountMax (?!{{ az2023stig_ssh_clientalive_countmax }})\d*
         replace: ''
         validate: sshd -t -f %s
       loop: "{{ prelim_sshd_config_files.files }}"
-      notify: Restart ssh
-
-- name: MEDIUM | AZLX-23-001260 | PATCH | Amazon Linux 2023 must implement DOD-approved encryption in the OpenSSL package.
-  when: az2023stig_001260
-  tags:
-    - azlx-23-001260
-    - CAT2
-    - SV-274053r1120147_rule
-    - V-274053
-    - SRG-OS-000250-GPOS-00093
-    - CCI-001453
-    - NIST800-53R4_AC-17
-    - ssl
-  ansible.builtin.lineinfile:
-    path: /etc/pki/tls/openssl.cnf
-    regexp: ^\.include = /etc/crypto-policies/back-ends/opensslcnf.config
-    line: .include = /etc/crypto-policies/back-ends/opensslcnf.config
-
-- name: MEDIUM | AZLX-23-001265 | PATCH | Amazon Linux 2023 must implement DOD-approved TLS encryption in the OpenSSL package.
-  when: az2023stig_001265
-  tags:
-    - azlx-23-001265
-    - CAT2
-    - SV-274054r1120150_rule
-    - V-274054
-    - SRG-OS-000250-GPOS-00093
-    - CCI-001453
-    - NIST800-53R4_AC-17
-    - ssl
-  ansible.builtin.lineinfile:
-    path: /etc/crypto-policies/back-ends/opensslcnf.config
-    regexp: ^{{ item.type }}.MinProtocol\s*=\s*=(?!{{ item.type }}{{ item.version }}).*
-    line: "{{ item.type }}.MinProtocol = {{ item.type }}{{ item.version }}"
-  loop:
-    - { type: 'TLS', version: 'v1.2' }
-    - { type: 'DTLS', version: 'v1.2' }
-
-- name: MEDIUM | AZLX-23-001270 | PATCH | Amazon Linux 2023 must implement a FIPS 140-2/140-3 compliant systemwide cryptographic policy.
-  when: az2023stig_001270
-  tags:
-    - azlx-23-001270
-    - CAT2
-    - SV-274055r1120153_rule
-    - V-274055
-    - SRG-OS-000120-GPOS-00061
-    - SRG-OS-000396-GPOS-00176
-    - SRG-OS-000393-GPOS-00173
-    - SRG-OS-000394-GPOS-00174
-    - SRG-OS-000424-GPOS-00188
-    - CCI-000803
-    - CCI-002450
-    - CCI-002890
-    - CCI-003123
-    - CCI-002421
-    - NIST800-53R4_IA-7
-    - NIST800-53R4_SC-13
-    - NIST800-53R4_MA-4
-    - NIST800-53R4_SC-8
-    - crypto
-    - fips
-  block:
-    - name: MEDIUM | AZLX-23-001270 | PATCH | Amazon Linux 2023 must implement a FIPS 140-2/140-3 compliant systemwide cryptographic policy.
-      ansible.builtin.template:
-        src: etc/crypto-policies/policies/modules/SCOPES-AND-WILDCARDS.pmod.j2
-        dest: /etc/crypto-policies/policies/modules/SCOPES-AND-WILDCARDS.pmod
-        owner: root
-        group: root
-        mode: 'go-rwx'
-
-    - name: MEDIUM | AZLX-23-001270 | PATCH | Amazon Linux 2023 must implement a FIPS 140-2/140-3 compliant systemwide cryptographic policy.
-      ansible.builtin.set_fact:
-        fips_required: true
-
-- name: MEDIUM | AZLX-23-001285 | PATCH | Amazon Linux 2023 crypto policy must not be overridden.
-  when: az2023stig_001285
-  tags:
-    - azlx-23-001285
-    - CAT2
-    - SV-274058r1120162_rule
-    - V-274058
-    - SRG-OS-000396-GPOS-00176
-    - SRG-OS-000393-GPOS-00173
-    - SRG-OS-000394-GPOS-00174
-    - SRG-OS-000424-GPOS-00188
-    - SRG-OS-000073-GPOS-00041
-    - SRG-OS-000120-GPOS-00061
-    - CCI-002450
-    - CCI-002890
-    - CCI-003123
-    - CCI-002421
-    - CCI-000803
-    - NIST800-53R4_IA-7
-    - NIST800-53R4_SC-13
-    - NIST800-53R4_MA-4
-    - NIST800-53R4_SC-8
-    - crypto
-    - fips
-  block:
-    - name: MEDIUM | AZLX-23-001285 | AUDIT | Amazon Linux 2023 crypto policy must not be overridden.
-      ansible.builtin.find:
-        paths: /usr/share/crypto-policies/FIPS
-        patterns: "*.txt"
-        excludes: "nss.txt"
-      register: discovered_fips_policies_files
-
-    - name: MEDIUM | AZLX-23-001285 | PATCH | Amazon Linux 2023 crypto policy must not be overridden.
-      ansible.builtin.file:
-        src: "{{ item.path }}"
-        dest: "/etc/crypto-policies/back-ends/{{ item.path | basename | regex_replace('\\.txt$', '.config') }}"
-        state: link
-        force: true
-      loop: "{{ discovered_fips_policies_files.files }}"
       loop_control:
-        label: "{{ item.path | basename }}"
+        label: "{{ item.path }}"
+      notify: Restart ssh
 
 - name: MEDIUM | AZLX-23-001290 | PATCH | Amazon Linux 2023 must enable certificate-based smart card authentication.
   when:
@@ -1106,7 +898,7 @@
     group: root
     mode: 'go-wx'
 
-- name: MEDIUM | AZLX-23-001305 | PATCH | Amazon Linux 2023 must prohibit the use of cached authenticators after one day
+- name: MEDIUM | AZLX-23-001305 | PATCH | Amazon Linux 2023 must prohibit the use of cached authenticators after one day.
   when:
     - az2023stig_001305
     - az2023stig_disruption_high
@@ -1120,12 +912,12 @@
     - NIST800_53R4_IA-5
     - sssd
   ansible.builtin.lineinfile:
-    path: etc/sssd/sssd.conf
+    path: /etc/sssd/sssd.conf
     regexp: ^offline_credentials_expiration = (?!1)\d
     line: offline_credentials_expiration = 1
     insertafter: '[pam]'
-  register: discovered_sssd_offline_credentials_expiration
   failed_when: discovered_sssd_offline_credentials_expiration.rc not in [ 0, 1, 257 ]
+  register: discovered_sssd_offline_credentials_expiration
 
 - name: MEDIUM | AZLX-23-001310 | PATCH | Amazon Linux 2023, for PKI-based authentication, must validate certificates by constructing a certification path (which includes status information) to an accepted trust anchor.
   when:
@@ -1192,6 +984,8 @@
       changed_when: false
       failed_when: false
       loop: "{{ discovered_private_ssh_keys.files }}"
+      loop_control:
+        label: "{{ item.path }}"
       register: discovered_ssh_private_passwd_check
 
     - name: MEDIUM | AZLX-23-001315 | AUDIT | Amazon Linux 2023, for PKI-based authentication, must enforce authorized access to the corresponding private key.

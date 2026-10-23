@@ -1,0 +1,62 @@
+{
+  "tool_version": "2.8.4",
+  "date": "2026-10-22T09:49:31.210313",
+  "findings": [
+    {
+      "file": "vars/main.yml",
+      "line": 52,
+      "description": "Defined but never referenced: 'aide_initiate_command'",
+      "severity": "warning",
+      "check": "unused_vars"
+    },
+    {
+      "file": "defaults/main/main.yml",
+      "line": 315,
+      "description": "Defined but never referenced: 'az2023stig_firewalld_service'",
+      "severity": "warning",
+      "check": "unused_vars"
+    },
+    {
+      "file": "defaults/main/main.yml",
+      "line": 28,
+      "description": "Defined but never referenced: 'az2023stig_sssd_configure'",
+      "severity": "warning",
+      "check": "unused_vars"
+    },
+    {
+      "file": "vars/main.yml",
+      "line": 45,
+      "description": "Defined but never referenced: 'az2023stig_ungrouped_files_found'",
+      "severity": "warning",
+      "check": "unused_vars"
+    },
+    {
+      "file": "vars/main.yml",
+      "line": 46,
+      "description": "Defined but never referenced: 'az2023stig_unowned_files_found'",
+      "severity": "warning",
+      "check": "unused_vars"
+    },
+    {
+      "file": "vars/main.yml",
+      "line": 30,
+      "description": "Defined but never referenced: 'combined_crypto_policy_config'",
+      "severity": "warning",
+      "check": "unused_vars"
+    },
+    {
+      "file": "vars/main.yml",
+      "line": 22,
+      "description": "Defined but never referenced: 'discover_int_uid'",
+      "severity": "warning",
+      "check": "unused_vars"
+    },
+    {
+      "file": "vars/main.yml",
+      "line": 16,
+      "description": "Defined but never referenced: 'gpg_key_package'",
+      "severity": "warning",
+      "check": "unused_vars"
+    }
+  ]
+}

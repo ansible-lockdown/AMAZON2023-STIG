@@ -25,7 +25,7 @@
     name: openssh-server
     state: present
 
-- name: HIGH | AZLX-23-001185 | PATCH | Amazon Linux 2023 must have SSH installed.
+- name: HIGH | AZLX-23-001185 | PATCH | Amazon Linux 2023 must implement SSH to protect the confidentiality and integrity of transmitted and received information, as well as information during preparation for transmission.
   when: az2023stig_001185
   tags:
     - azlx-23-001185
@@ -46,7 +46,7 @@
     - CCI-002420
     - CCI-002422
     - ssh
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: sshd
     state: started
     enabled: true

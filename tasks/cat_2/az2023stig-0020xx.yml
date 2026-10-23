@@ -5,7 +5,7 @@
   tags:
     - azlx-23-002000
     - CAT2
-    - SV-274065r1120699_rule
+    - SV-274065r1184021_rule
     - V-274065
     - SRG-OS-000023-GPOS-00006
     - CCI-000048
@@ -52,14 +52,18 @@
     - auditd
   block:
     - name: MEDIUM | AZLX-23-002015 | AUDIT | Amazon Linux 2023 must allocate audit record storage capacity to store at least one week's worth of audit records, when audit records are not immediately sent to a central audit record storage facility.
-      ansible.builtin.shell: grep ^log_file /etc/audit/auditd.conf | awk '{ print $NF }'
+      ansible.builtin.shell: |
+        set -o pipefail
+        grep ^log_file /etc/audit/auditd.conf | awk '{ print $NF }'
+      args:
+        executable: "{{ az2023stig_shell_executable }}"
       changed_when: false
       register: discovered_auditd_logfile
 
     - name: MEDIUM | AZLX-23-002015 | AUDIT | Amazon Linux 2023 must allocate audit record storage capacity to store at least one week's worth of audit records, when audit records are not immediately sent to a central audit record storage facility.
-      when: az2023stig_audit_log_filesystem in ansible_facts.mounts | map(attribute='mount') | list
+      when: az2023stig_audit_log_filesystem in ansible_facts['mounts'] | map(attribute='mount') | list
       ansible.builtin.set_fact:
-        audit_filesystem_space_left: "{{ (ansible_facts.mounts | selectattr('mount', 'equalto', az2023stig_audit_log_filesystem) | list | first).size_available / 1024 / 1024 | int }}"
+        audit_filesystem_space_left: "{{ (ansible_facts['mounts'] | selectattr('mount', 'equalto', az2023stig_audit_log_filesystem) | list | first).size_available / 1024 / 1024 | int }}"
 
     - name: MEDIUM | AZLX-23-002015 | AUDIT | Amazon Linux 2023 must allocate audit record storage capacity to store at least one week's worth of audit records, when audit records are not immediately sent to a central audit record storage facility.
       when: audit_filesystem_space_left is defined
@@ -121,7 +125,7 @@
   tags:
     - azlx-23-002035
     - CAT2
-    - SV-274071r1120201_rule
+    - SV-274071r1184023_rule
     - V-274071
     - SRG-OS-000343-GPOS-00134
     - CCI-001851
@@ -244,21 +248,29 @@
     regexp: ^(#?)\$ActionSendStreamDriverMode .*
     line: '$ActionSendStreamDriverMode 1'
 
-- name: MEDIUM | AZLX-23-002075 | PATCH | Amazon Linux 2023 must encrypt via the gtls driver the transfer of audit records off-loaded onto a different system or media from the system being audited via rsyslog.
+- name: MEDIUM | AZLX-23-002075 | PATCH | Amazon Linux 2023 must encrypt, via the OpenSSL TLS (ossl) driver, the transfer of audit records off-loaded onto a different system or media from the system being audited by rsyslog.
   when: az2023stig_002075
   tags:
     - azlx-23-002075
     - CAT2
-    - SV-274079r1120724_rule
+    - SV-274079r1210985_rule
     - V-274079
     - SRG-OS-000479-GPOS-00224
     - CCI-001851
     - NIST800-53R4_AU-4
     - syslog
-  ansible.builtin.lineinfile:
-    path: "{{ az2023stig_rsyslog_offload_conf_file | default('/etc/rsyslog.conf') }}"
-    regexp: ^(#?)\$ActionSendStreamDriverMode .*
-    line: '$ActionSendStreamDriverMode 1'
+  block:
+    - name: MEDIUM | AZLX-23-002075 | PATCH | Amazon Linux 2023 must encrypt, via the OpenSSL TLS (ossl) driver, the transfer of audit records off-loaded onto a different system or media from the system being audited by rsyslog. | set OpenSSL TLS driver
+      ansible.builtin.lineinfile:
+        path: "{{ az2023stig_rsyslog_offload_conf_file | default('/etc/rsyslog.conf') }}"
+        regexp: ^(#?)\$DefaultNetstreamDriver .*
+        line: '$DefaultNetstreamDriver ossl'
+
+    - name: MEDIUM | AZLX-23-002075 | PATCH | Amazon Linux 2023 must encrypt, via the OpenSSL TLS (ossl) driver, the transfer of audit records off-loaded onto a different system or media from the system being audited by rsyslog. | set stream driver mode
+      ansible.builtin.lineinfile:
+        path: "{{ az2023stig_rsyslog_offload_conf_file | default('/etc/rsyslog.conf') }}"
+        regexp: ^(#?)\$ActionSendStreamDriverMode .*
+        line: '$ActionSendStreamDriverMode 1'
 
 - name: MEDIUM | AZLX-23-002085 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/sudoers.
   when: az2023stig_002085
@@ -301,7 +313,7 @@
   ansible.builtin.set_fact:
     update_audit_template: true
 
-- name: MEDIUM | AZLX-23-002090 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/sudoers.
+- name: MEDIUM | AZLX-23-002090 | PATCH | Amazon Linux 2023 must generate audit records for all account creations, modifications, disabling, and termination events that affect /etc/sudoers.d/ directory.
   when: az2023stig_002090
   tags:
     - azlx-23-002090

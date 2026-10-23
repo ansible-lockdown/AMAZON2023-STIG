@@ -1,0 +1,15 @@
+---
+
+- name: Converge
+  hosts: all
+  become: true
+  vars:
+    az2023stig_disruption_high: true
+    az2023stig_skip_for_test: true
+    system_is_container: true
+    skip_reboot: true
+    setup_audit: true
+    run_audit: true
+    az2023stig_auditd_required: false
+  roles:
+    - role: "{{ lookup('env', 'MOLECULE_PROJECT_DIRECTORY') }}"

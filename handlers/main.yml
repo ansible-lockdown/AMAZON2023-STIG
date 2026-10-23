@@ -7,7 +7,7 @@
   when:
   - prelim_chronyd_source_status.stat.exists
   - prelim_chronyd_source_status.stat.lnk_target == "/usr/share/chrony/ntp-pool.sources"
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: chronyd
     state: stopped
   register: discovered_chronyd_stopped
@@ -30,36 +30,42 @@
   listen: Restart chrony
 
 - name: Restart chrony daemon
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: chronyd
     state: restarted
   listen: Restart chrony
 
+- name: Validate sshd config
+  ansible.builtin.command: sshd -t
+  changed_when: false
+  listen: Restart ssh
+
 - name: Restart ssh
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: sshd
     state: restarted
+  listen: Restart ssh
 
 - name: Restart rsyslog
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: rsyslog
     state: restarted
 
 - name: Restart firewalld
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: firewalld
     state: restarted
 
 - name: Check for sssd config
-  when: "'sssd' in ansible_facts.packages"
+  when: "'sssd' in ansible_facts['packages']"
   ansible.builtin.stat:
     path: /etc/sssd/sssd.conf
   register: discovered_sssd_config_stat
   listen: Restart sssd
 
 - name: Restart sssd
-  when: "'sssd' in ansible_facts.packages and discovered_sssd_config_stat.stat.exists"
-  ansible.builtin.systemd:
+  when: "'sssd' in ansible_facts['packages'] and discovered_sssd_config_stat.stat.exists"
+  ansible.builtin.systemd_service:
     name: sssd
     state: restarted
   listen: Restart sssd
@@ -71,7 +77,7 @@
   notify: Reboot required
 
 - name: Systemd daemon reload
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     daemon_reload: true
   notify: Reboot required
 
@@ -86,11 +92,12 @@
     state: remounted
 
 - name: Restart systemd-journal-upload
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: systemd-journal-upload
     state: restarted
 
 - name: Restart auditd
+  when: not system_is_container
   ansible.builtin.command: /sbin/service auditd restart  # noqa command-instead-of-module
   changed_when: true
   failed_when: false

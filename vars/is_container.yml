@@ -1,0 +1,101 @@
+---
+
+# File to skip controls if running in a container
+# Containers lack kernel audit support, bootloader, FIPS capability,
+# and independent mount/sysctl control
+
+# FIPS mode (requires kernel support)
+az2023stig_000050: false
+az2023stig_001270: false
+
+# auditd (requires kernel audit subsystem)
+az2023stig_001025: false
+az2023stig_001030: false
+az2023stig_001035: false
+az2023stig_002015: false
+az2023stig_002020: false
+az2023stig_002025: false
+az2023stig_002030: false
+az2023stig_002035: false
+az2023stig_002040: false
+az2023stig_002045: false
+az2023stig_002050: false
+az2023stig_002055: false
+az2023stig_002060: false
+az2023stig_002065: false
+az2023stig_002070: false
+az2023stig_002075: false
+az2023stig_002085: false
+az2023stig_002090: false
+az2023stig_002095: false
+az2023stig_002100: false
+az2023stig_002105: false
+az2023stig_002110: false
+az2023stig_002115: false
+az2023stig_002120: false
+az2023stig_002125: false
+az2023stig_002130: false
+az2023stig_002135: false
+az2023stig_002140: false
+az2023stig_002145: false
+az2023stig_002150: false
+az2023stig_002155: false
+az2023stig_002160: false
+az2023stig_002165: false
+az2023stig_002175: false
+az2023stig_002180: false
+az2023stig_002185: false
+az2023stig_002190: false
+az2023stig_002195: false
+az2023stig_002200: false
+az2023stig_002205: false
+az2023stig_002210: false
+az2023stig_002220: false
+az2023stig_002225: false
+az2023stig_002230: false
+az2023stig_002235: false
+az2023stig_002240: false
+az2023stig_002245: false
+az2023stig_002250: false
+az2023stig_002255: false
+az2023stig_002260: false
+az2023stig_002265: false
+az2023stig_002270: false
+az2023stig_005000: false
+
+# auditd GRUB parameters (audit=1, audit_backlog_limit)
+az2023stig_002515: false
+az2023stig_002520: false
+
+# systemd-journal-upload
+az2023stig_002080: false
+
+# Mount point options (containers cannot manage mounts)
+az2023stig_002580: false
+az2023stig_002585: false
+az2023stig_002590: false
+
+# Kernel sysctl (containers share host kernel)
+az2023stig_000200: false
+az2023stig_000205: false
+az2023stig_000210: false
+az2023stig_000215: false
+az2023stig_000220: false
+az2023stig_000225: false
+az2023stig_002535: false
+az2023stig_002540: false
+az2023stig_002575: false
+
+# SELinux (not available in containers)
+az2023stig_002445: false
+az2023stig_002450: false
+
+# Firewalld (cannot run in containers)
+az2023stig_002475: false
+az2023stig_002480: false
+
+# Chrony/time sync (containers use host time)
+az2023stig_000305: false
+az2023stig_000310: false
+az2023stig_000315: false
+az2023stig_000320: false

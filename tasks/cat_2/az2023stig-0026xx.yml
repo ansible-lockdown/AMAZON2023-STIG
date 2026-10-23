@@ -4,7 +4,7 @@
   when:
     - az2023stig_002600
     - not az2023stig_autofs_required
-    - "'autofs' in ansible_facts.packages"
+    - "'autofs' in ansible_facts['packages']"
   tags:
     - azlx-23-002600
     - CAT2
@@ -14,10 +14,17 @@
     - CCI-001958
     - NIST800-53R4_IA-3
     - autofs
-  ansible.builtin.service:
-    name: autofs
-    enabled: false
-    state: stopped
+  block:
+    - name: MEDIUM | AZLX-23-002600 | PATCH | Amazon Linux 2023 file system automount function must be disabled unless required. | stop and disable
+      ansible.builtin.service:
+        name: autofs
+        enabled: false
+        state: stopped
+
+    - name: MEDIUM | AZLX-23-002600 | PATCH | Amazon Linux 2023 file system automount function must be disabled unless required. | mask
+      ansible.builtin.systemd_service:
+        name: autofs
+        masked: true
 
 - name: MEDIUM | AZLX-23-002605 | PATCH | Amazon Linux 2023 must protect against or limit the effects of denial-of-service (DoS) attacks by ensuring rate-limiting measures are configured on impacted network interfaces.
   when: az2023stig_002605
@@ -59,7 +66,11 @@
 
     - name: MEDIUM | AZLX-23-002610 | PATCH | Amazon Linux 2023 must implement nonexecutable data to protect its memory from unauthorized code execution. | discover status
       when: discovered_dmesg_nx_value.stdout is not defined
-      ansible.builtin.shell: grep flags /proc/cpuinfo | grep -w nx | sort -u
+      ansible.builtin.shell: |
+        set -o pipefail
+        grep flags /proc/cpuinfo | grep -w nx | sort -u
+      args:
+        executable: "{{ az2023stig_shell_executable }}"
       changed_when: false
       failed_when: discovered_nx_cpuinfo_settings.rc not in [ 0, 1 ]
       register: discovered_nx_cpuinfo_settings
@@ -84,7 +95,7 @@
     - SV-274185r1120543_rule
     - V-274185
     - SRG-OS-000437-GPOS-00194
-    - CCI-0002617
+    - CCI-002617
     - NIST800-53R4_SI-2
     - dnf
   ansible.builtin.lineinfile:

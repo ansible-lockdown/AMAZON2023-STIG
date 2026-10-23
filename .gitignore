@@ -36,29 +36,31 @@ tramp
 rh-creds.env
 travis.env
 
-# Secret/key files
-*.vault
-*.key
-*.pem
-*.p12
-*.pfx
-*.keystore
-*.jks
-*.credentials
-*vault_pass*
-.vault_pass
-
 # Lockdown-specific
 benchparse/
 *xccdf.xml
 *.retry
-*.pdf
+
+# Secrets
+*.pem
+*.key
+*.p12
+*.pfx
+.vault_pass
+*vault_pass*
+*.vault
+
+# Molecule artifacts
+.molecule/
+
+# pre-commit ansible-lint temp
+.ansible
+
+# QA tooling output (Repo_QA_Checker + cross_repo_validator)
+qa_report_*.md
+cross_repo_report_*.md
+plan.md
+prompt.md
+test_inv
 *history.md
-*plan.md
-*qa_report*
-
-# GitHub Action/Workflow files
-.github/
-
-# ansible-lint
-.ansible/
+*.pdf

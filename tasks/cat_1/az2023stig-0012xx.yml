@@ -30,6 +30,8 @@
         replace: '#\1'
         validate: sshd -t -f %s
       loop: "{{ discovered_ssh_rekey.files }}"
+      loop_control:
+        label: "{{ item.path }}"
       notify: Restart ssh
 
     - name: HIGH | AZLX-23-001225 | PATCH | Amazon Linux 2023 must force a frequent session key renegotiation for SSH connections to the server.
@@ -59,59 +61,183 @@
     state: present
   notify: Restart ssh
 
-- name: HIGH | AZLX-23-001275 | PATCH | Amazon Linux 2023 must implement DOD-approved encryption to protect the confidentiality of remote access sessions.
-  when: az2023stig_001275
+- name: HIGH | AZLX-23-001195 | PATCH | Amazon Linux 2023 must have the crypto-policies package installed.
+  when: az2023stig_001195
   tags:
-    - azlx-23-001275
+    - azlx-23-001195
     - CAT1
-    - SV-274056r1120156_rule
-    - V-274056
-    - SRG-OS-000033-GPOS-00014
-    - NIST800-53R4_AC-17
-    - CCI-000068
-    - ssh
-  ansible.builtin.lineinfile:
-    path: /etc/crypto-policies/back-ends/opensshserver.config
-    regexp: ^Ciphers .*
-    line: Ciphers {{ az2023stig_dod_ciphers | join(',') }}
-  notify: Reboot required
-
-- name: HIGH | AZLX-23-001280 | PATCH | Amazon Linux 2023 must enable FIPS mode.
-  when:
-    - az2023stig_001280
-    - not ansible_facts.fips
-    - az2023stig_disruption_high
-  tags:
-    - azlx-23-001280
-    - CAT1
-    - SV-274057r1120159_rule
-    - V-274057
-    - SRG-OS-000033-GPOS-00014
-    - SRG-OS-000125-GPOS-00065
+    - SV-274040r1184011_rule
+    - V-274040
     - SRG-OS-000396-GPOS-00176
-    - SRG-OS-000423-GPOS-00187
-    - SRG-OS-000478-GPOS-00223
-    - NIST800-53R4_AC-17
-    - NIST800-53R4_MA-4
-    - NIST800-53R4_SC-13
-    - CCI-000068
-    - CCI-000877
+    - SRG-OS-000393-GPOS-00173
+    - SRG-OS-000394-GPOS-00174
+    - SRG-OS-000424-GPOS-00188
     - CCI-002450
-    - CCI-002418
+    - CCI-002890
+    - CCI-003123
+    - CCI-002421
+    - NIST800-53R4_SC-13
+    - NIST800-53R4_MA-4
+    - NIST800-53R4_SC-8
+    - crypto
+  ansible.builtin.package:
+    name: crypto-policies
+    state: present
+
+- name: HIGH | AZLX-23-001205 | PATCH | Amazon Linux 2023 server must be configured to use only DOD-approved encryption ciphers employing FIPS 140-2/140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH server connections.
+  when: az2023stig_001205
+  tags:
+    - azlx-23-001205
+    - CAT1
+    - SV-274042r1184013_rule
+    - V-274042
+    - SRG-OS-000250-GPOS-00093
+    - CCI-001453
+    - NIST800-53R4_AC-17
+    - ssh
+    - crypto
+  ansible.builtin.set_fact:
+    fips_required: true
+
+- name: HIGH | AZLX-23-001206 | PATCH | The Amazon Linux 2023 SSH client must be configured to use only DOD-approved encryption ciphers employing FIPS 140-3-validated cryptographic hash algorithms to protect the confidentiality of SSH client connections.
+  when: az2023stig_001206
+  tags:
+    - azlx-23-001206
+    - CAT1
+    - SV-283442r1192640_rule
+    - V-283442
+    - SRG-OS-000250-GPOS-00093
+    - CCI-001453
+    - NIST800-53R4_AC-17
+    - ssh
+    - crypto
+  ansible.builtin.set_fact:
+    fips_required: true
+
+- name: HIGH | AZLX-23-001210 | PATCH | Amazon Linux 2023 SSH server must be configured to use only Message Authentication Codes (MACs) employing FIPS 140-2/140-3 validated cryptographic hash algorithms to protect the confidentiality of SSH server connections.
+  when: az2023stig_001210
+  tags:
+    - azlx-23-001210
+    - CAT1
+    - SV-274043r1184014_rule
+    - V-274043
+    - SRG-OS-000250-GPOS-00093
+    - CCI-001453
+    - NIST800-53R4_AC-17
+    - ssh
+    - crypto
+  ansible.builtin.set_fact:
+    fips_required: true
+
+- name: HIGH | AZLX-23-001211 | PATCH | The Amazon Linux 2023 SSH client must be configured to use only DOD-approved Message Authentication Codes (MACs) employing FIPS 140-3-validated cryptographic hash algorithms to protect the confidentiality of SSH client connections.
+  when: az2023stig_001211
+  tags:
+    - azlx-23-001211
+    - CAT1
+    - SV-283443r1192643_rule
+    - V-283443
+    - SRG-OS-000250-GPOS-00093
+    - CCI-001453
+    - NIST800-53R4_AC-17
+    - ssh
+    - crypto
+  ansible.builtin.set_fact:
+    fips_required: true
+
+- name: HIGH | AZLX-23-001270 | PATCH | Amazon Linux 2023 must implement a FIPS 140-2/140-3 compliant systemwide cryptographic policy.
+  when: az2023stig_001270
+  tags:
+    - azlx-23-001270
+    - CAT1
+    - SV-283452r1188500_rule
+    - V-283452
+    - SRG-OS-000120-GPOS-00061
+    - SRG-OS-000396-GPOS-00176
+    - SRG-OS-000393-GPOS-00173
+    - SRG-OS-000394-GPOS-00174
+    - SRG-OS-000424-GPOS-00188
+    - CCI-000803
+    - CCI-002450
+    - CCI-002890
+    - CCI-003123
+    - CCI-002421
+    - NIST800-53R4_IA-7
+    - NIST800-53R4_SC-13
+    - NIST800-53R4_MA-4
+    - NIST800-53R4_SC-8
+    - crypto
+    - fips
   block:
-    - name: HIGH | AZLX-23-001280 | AUDIT | Amazon Linux 2023 must enable FIPS mode.
-      ansible.builtin.command: fips-mode-setup --check
-      changed_when: false
-      failed_when: discovered_fips_state.rc not in [0, 1]
-      register: discovered_fips_state
+    - name: HIGH | AZLX-23-001270 | PATCH | Amazon Linux 2023 must implement a FIPS 140-2/140-3 compliant systemwide cryptographic policy.
+      ansible.builtin.template:
+        src: etc/crypto-policies/policies/modules/SCOPES-AND-WILDCARDS.pmod.j2
+        dest: /etc/crypto-policies/policies/modules/SCOPES-AND-WILDCARDS.pmod
+        owner: root
+        group: root
+        mode: 'go-rwx'
 
-    - name: HIGH | AZLX-23-001280 | PATCH | Amazon Linux 2023 must enable FIPS mode.
-      when: "'FIPS mode is disabled.' in discovered_fips_state.stdout"
-      ansible.builtin.command: echo "FIPS mode is not enabled."
-      changed_when: true
-      failed_when: false
-
-    - name: HIGH | AZLX-23-001280 | PATCH | Amazon Linux 2023 must enable FIPS mode.
-      when: "'FIPS mode is not enabled.' in discovered_fips_state.stdout"
+    - name: HIGH | AZLX-23-001270 | PATCH | Amazon Linux 2023 must implement a FIPS 140-2/140-3 compliant systemwide cryptographic policy.
       ansible.builtin.set_fact:
         fips_required: true
+
+- name: HIGH | AZLX-23-001285 | PATCH | Amazon Linux 2023 crypto policy must not be overridden.
+  when: az2023stig_001285
+  tags:
+    - azlx-23-001285
+    - CAT1
+    - SV-274058r1186176_rule
+    - V-274058
+    - SRG-OS-000396-GPOS-00176
+    - SRG-OS-000393-GPOS-00173
+    - SRG-OS-000394-GPOS-00174
+    - SRG-OS-000424-GPOS-00188
+    - SRG-OS-000073-GPOS-00041
+    - SRG-OS-000120-GPOS-00061
+    - CCI-002450
+    - CCI-002890
+    - CCI-003123
+    - CCI-002421
+    - CCI-000803
+    - NIST800-53R4_IA-7
+    - NIST800-53R4_SC-13
+    - NIST800-53R4_MA-4
+    - NIST800-53R4_SC-8
+    - crypto
+    - fips
+  block:
+    - name: HIGH | AZLX-23-001285 | AUDIT | Amazon Linux 2023 crypto policy must not be overridden.
+      ansible.builtin.find:
+        paths: /usr/share/crypto-policies/FIPS
+        patterns: "*.txt"
+        excludes: "nss.txt"
+      register: discovered_fips_policies_files
+
+    - name: HIGH | AZLX-23-001285 | PATCH | Amazon Linux 2023 crypto policy must not be overridden.
+      ansible.builtin.file:
+        src: "{{ item.path }}"
+        dest: "/etc/crypto-policies/back-ends/{{ item.path | basename | regex_replace('\\.txt$', '.config') }}"
+        state: link
+        force: true
+      loop: "{{ discovered_fips_policies_files.files }}"
+      loop_control:
+        label: "{{ item.path | basename }}"
+
+- name: HIGH | AZLX-23-001286 | PATCH | Amazon Linux 2023 must implement DOD-approved encryption in the bind package.
+  when:
+    - az2023stig_001286
+    - "'bind' in ansible_facts['packages']"
+  tags:
+    - azlx-23-001286
+    - CAT1
+    - SV-283440r1192648_rule
+    - V-283440
+    - SRG-OS-000423-GPOS-00187
+    - CCI-002418
+    - NIST800-53R4_SC-8
+    - crypto
+    - bind
+  ansible.builtin.lineinfile:
+    path: /etc/named.conf
+    regexp: ^include "/etc/crypto-policies/back-ends/bind.config"
+    line: 'include "/etc/crypto-policies/back-ends/bind.config";'
+    insertafter: 'options'

@@ -13,14 +13,22 @@
     - ssh
   block:
     - name: MEDIUM | AZLX-23-000110 | AUDIT | Amazon Linux 2023 must ensure cryptographic verification of vendor software packages.
-      ansible.builtin.shell: "rpm -qa | grep {{ os_gpg_key_pubkey_name }}"  # noqa: command-instead-of-module
+      ansible.builtin.shell: |  # noqa: command-instead-of-module
+        set -o pipefail
+        rpm -qa | grep {{ os_gpg_key_pubkey_name }}
+      args:
+        executable: "{{ az2023stig_shell_executable }}"
       changed_when: false
       failed_when: false
       register: discovered_os_installed_pub_keys
 
     - name: MEDIUM | AZLX-23-000110 | AUDIT | Amazon Linux 2023 must ensure cryptographic verification of vendor software packages.
       when: discovered_os_installed_pub_keys.rc == 0
-      ansible.builtin.shell: 'rpm -q --queryformat "%{PACKAGER} %{VERSION}\\n" {{ os_gpg_key_pubkey_name }} | grep "{{ os_gpg_key_pubkey_content }}"'  # noqa: command-instead-of-module
+      ansible.builtin.shell: |  # noqa: command-instead-of-module
+        set -o pipefail
+        rpm -q --queryformat "%{PACKAGER} %{VERSION}\\n" {{ os_gpg_key_pubkey_name }} | grep "{{ os_gpg_key_pubkey_content }}"
+      args:
+        executable: "{{ az2023stig_shell_executable }}"
       changed_when: false
       failed_when: false
       register: discovered_os_gpg_key_check
@@ -43,12 +51,12 @@
   tags:
     - azlx-23-000135
     - CAT2
-    - SV-274000r1119991_rule
+    - SV-274000r1119988_rule
     - V-274000
     - SRG-OS-000366-GPOS-00153
     - NIST800-53R4_NA
     - dnf
-  ansible.builtin.systemd:
+  ansible.builtin.systemd_service:
     name: systemd-journald
     state: started
     enabled: true
